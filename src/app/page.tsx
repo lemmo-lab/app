@@ -1,9 +1,9 @@
 /**
- * Home Page — Redirects to the default studio entry point (/chat).
+ * Home Page — Redirects to /app
  */
 
 import { redirect } from 'next/navigation';
 
 export default function HomePage() {
-  redirect('/chat');
+  redirect('/app');
 }

@@ -1,0 +1,551 @@
+/**
+ * Single Image / Feed Detail Wireframe — /app/feed/[filename]
+ * Responsive implementation of Single-image-web.html & Single-image-mobile.html:
+ * - Desktop:
+ *   - Sidebar (sticky 72px)
+ *   - Little Gallery Thumbnail strip (64px vertical strip of focus-pic items)
+ *   - Details Content (Prompt card, tags, references, regenerate button)
+ *   - Main Content Area (Back button + main preview rectangle #D9D9D9)
+ * - Mobile / Tablet:
+ *   - Back button top
+ *   - Content area (preview rectangle) on top
+ *   - Details content (prompt, tags, references, action button) stacked below
+ *   - Little gallery hidden on small screens per mobile spec
+ */
+
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+
+export default function SingleImageFeedPage() {
+  const params = useParams();
+  const filename = params?.filename as string || 'image-01';
+
+  // 14 little gallery focus pics matching wireframe
+  const focusPics = Array.from({ length: 14 });
+
+  return (
+    <div className="single-image-app">
+      {/* ===== MAIN BODY ===== */}
+      <div className="main-body">
+        <div className="content">
+          {/* 1. Little Gallery Strip (Left on Desktop, Hidden on Mobile) */}
+          <div className="little-gallery">
+            {focusPics.map((_, i) => (
+              <div key={i} className="focus-pic">
+                <div className={`rect-14 ${i === 0 ? 'active' : ''}`} />
+              </div>
+            ))}
+          </div>
+
+          {/* 2. Details Content (Prompt, Metadata, Actions) */}
+          <div className="details-content">
+            {/* Top info & prompt container */}
+            <div className="promp">
+              {/* Quick action header */}
+              <div className="top_section">
+                <div className="quick-action">
+                  <div className="copy-button" title="Copy" />
+                  <div className="share-button" title="Share" />
+                </div>
+                <div className="label" />
+              </div>
+
+              {/* Prompt card with text skeleton bars */}
+              <div className="promp_card">
+                <div className="text" />
+                <div className="text" />
+                <div className="text" />
+                <div className="text" />
+                <div className="text" />
+                <div className="text" />
+                <div className="text" />
+                <div className="text short" />
+              </div>
+
+              {/* Tag Container */}
+              <div className="tag-container">
+                <div className="tag-box"><div className="tag_" /></div>
+                <div className="tag-box"><div className="tag_" /></div>
+              </div>
+
+              {/* Reference Section */}
+              <div className="refrance">
+                <div className="label-box" />
+                <div className="refrances">
+                  <div className="ref-item"><div className="refrance-image" /></div>
+                  <div className="ref-item"><div className="refrance-image" /></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Action Base (Regenerate / Primary Action) */}
+            <div className="action_base">
+              <div className="regreat-button" />
+            </div>
+          </div>
+
+          {/* 3. Central Media Content Area */}
+          <div className="content-area">
+            <Link href="/app" className="back-button" title="Back to App Index">
+              <div className="rect-11" />
+            </Link>
+            <div className="rect-17" />
+          </div>
+        </div>
+      </div>
+
+      {/* ===== SIDEBAR ===== */}
+      <nav className="side">
+        <div className="button">
+          <div className="icon"><div className="rect-8" /></div>
+        </div>
+
+        <div className="primary-cats">
+          <div className="nav-button active">
+            <div className="icon-small"><div className="rect-8-small" /></div>
+            <div className="rect-9-indicator" />
+          </div>
+          <div className="nav-button">
+            <div className="icon-small"><div className="rect-8-small" /></div>
+            <div className="rect-9-indicator" />
+          </div>
+          <div className="nav-button">
+            <div className="icon-small"><div className="rect-8-small" /></div>
+            <div className="rect-9-indicator" />
+          </div>
+          <div className="nav-button">
+            <div className="icon-small"><div className="rect-8-small" /></div>
+            <div className="rect-9-indicator" />
+          </div>
+        </div>
+
+        <div className="tools-section">
+          <div className="nav-button">
+            <div className="icon-small"><div className="rect-8-small" /></div>
+            <div className="rect-9-indicator" />
+          </div>
+        </div>
+
+        <div className="footer-sidebar">
+          <div className="nav-button">
+            <div className="icon-small"><div className="rect-8-small" /></div>
+            <div className="rect-9-indicator" />
+          </div>
+          <div className="button">
+            <div className="icon"><div className="rect-8" /></div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Scoped CSS based on Single-image-web.html and Single-image-mobile.html */}
+      <style jsx>{`
+        .single-image-app {
+          position: relative;
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          width: 100%;
+          min-height: 100dvh;
+          background: #0a0a0a;
+          color: #fff;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          overflow-x: hidden;
+        }
+
+        /* ===== MAIN BODY ===== */
+        .main-body {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+          align-items: flex-start;
+          padding: 3rem;
+          flex: 1 1 0;
+          min-width: 0;
+        }
+
+        .content {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+          align-items: flex-start;
+          gap: 3rem;
+          width: 100%;
+          min-height: calc(100dvh - 6rem);
+        }
+
+        /* ---- Little Gallery Strip ---- */
+        .little-gallery {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          width: 64px;
+          height: calc(100dvh - 6rem);
+          flex-shrink: 0;
+          overflow-y: auto;
+        }
+
+        .focus-pic {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 58px;
+          height: 58px;
+          flex-shrink: 0;
+        }
+
+        .rect-14 {
+          width: 58px;
+          height: 58px;
+          background: #474747;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background 0.15s ease;
+        }
+
+        .rect-14.active, .rect-14:hover {
+          background: #dedede;
+        }
+
+        /* ---- Details Content ---- */
+        .details-content {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 1rem;
+          width: 450px;
+          max-width: 100%;
+          flex-shrink: 0;
+        }
+
+        .promp {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 1rem;
+          flex: 1 1 0;
+        }
+
+        .top_section {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          height: 18px;
+        }
+
+        .quick-action {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 8px;
+          height: 18px;
+        }
+
+        .copy-button, .share-button {
+          width: 18px;
+          height: 18px;
+          background: #d9d9d9;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        .top_section .label {
+          width: 89px;
+          height: 14px;
+          background: #d9d9d9;
+          border-radius: 99px;
+        }
+
+        .promp_card {
+          display: flex;
+          flex-direction: column;
+          padding: 1rem;
+          gap: 10px;
+          width: 100%;
+          background: #272525;
+          border-radius: 16px;
+        }
+
+        .promp_card .text {
+          width: 100%;
+          height: 12px;
+          background: #484848;
+          border-radius: 99px;
+        }
+
+        .promp_card .text.short {
+          width: 92px;
+        }
+
+        .tag-container {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          height: 28px;
+        }
+
+        .tag-box {
+          display: flex;
+          width: 106px;
+          height: 28px;
+        }
+
+        .tag_ {
+          width: 106px;
+          height: 28px;
+          background: #464646;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        .refrance {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+        }
+
+        .label-box {
+          width: 65px;
+          height: 12px;
+          background: #424242;
+          border-radius: 99px;
+        }
+
+        .refrances {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+          height: 48px;
+        }
+
+        .ref-item {
+          width: 48px;
+          height: 48px;
+        }
+
+        .refrance-image {
+          width: 48px;
+          height: 48px;
+          background: #464646;
+          border-radius: 8px;
+        }
+
+        .action_base {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          width: 100%;
+          height: 40px;
+          margin-top: auto;
+        }
+
+        .regreat-button {
+          width: 100%;
+          height: 40px;
+          background: #d9d9d9;
+          border-radius: 999px;
+          cursor: pointer;
+          transition: opacity 0.15s;
+        }
+        .regreat-button:hover {
+          opacity: 0.9;
+        }
+
+        /* ---- Central Content Area ---- */
+        .content-area {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          background: #111111;
+          border-radius: 16px;
+          flex: 1 1 0;
+          min-width: 0;
+          height: calc(100dvh - 6rem);
+          position: relative;
+        }
+
+        .back-button {
+          position: absolute;
+          top: 1.5rem;
+          left: 1.5rem;
+          display: flex;
+          width: 32px;
+          height: 32px;
+          cursor: pointer;
+          text-decoration: none;
+        }
+
+        .rect-11 {
+          width: 32px;
+          height: 32px;
+          background: #d9d9d9;
+          border-radius: 6px;
+        }
+
+        .rect-17 {
+          width: 100%;
+          max-width: 450px;
+          height: 80%;
+          background: #d9d9d9;
+          border-radius: 4px;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .side {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 8px;
+          width: 72px;
+          min-height: 100dvh;
+          background: #131517;
+          flex-shrink: 0;
+          position: sticky;
+          top: 0;
+          border-inline-start: 1px solid rgba(255, 255, 255, 0.08);
+          z-index: 20;
+        }
+
+        .side .button {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 8px;
+          width: 56px;
+          height: 56px;
+          background: #171717;
+          border-radius: 8px;
+          margin-bottom: 8px;
+        }
+
+        .rect-8 {
+          width: 40px;
+          height: 40px;
+          background: #d9d9d9;
+          border-radius: 4px;
+        }
+
+        .primary-cats {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 16px 0;
+          width: 56px;
+          gap: 8px;
+        }
+
+        .nav-button {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 8px;
+          gap: 8px;
+          width: 56px;
+          height: 60px;
+          background: #171717;
+          border-radius: 8px;
+          cursor: pointer;
+        }
+
+        .nav-button.active {
+          background: #453d3d;
+        }
+
+        .rect-8-small {
+          width: 20px;
+          height: 20px;
+          background: #d9d9d9;
+          border-radius: 4px;
+        }
+
+        .rect-9-indicator {
+          width: 40px;
+          height: 10px;
+          background: #d9d9d9;
+          border-radius: 99px;
+        }
+
+        .tools-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 56px;
+          margin-top: 8px;
+        }
+
+        .footer-sidebar {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          align-items: center;
+          padding: 16px 0;
+          width: 56px;
+          flex: 1 0 0;
+          gap: 8px;
+          margin-top: auto;
+        }
+
+        /* ===== RESPONSIVENESS (MOBILE / TABLET) ===== */
+        @media (max-width: 1024px) {
+          .main-body {
+            padding: 1.5rem;
+          }
+          .content {
+            gap: 1.5rem;
+          }
+          .details-content {
+            width: 360px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .single-image-app {
+            flex-direction: column;
+          }
+          .side {
+            display: none;
+          }
+          .little-gallery {
+            display: none;
+          }
+          .main-body {
+            padding: 1rem 1rem 3rem 1rem;
+            width: 100%;
+          }
+          .content {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1.5rem;
+            height: auto;
+          }
+          .content-area {
+            height: 480px;
+            width: 100%;
+            border-radius: 8px;
+          }
+          .rect-17 {
+            max-width: 280px;
+            height: 380px;
+          }
+          .details-content {
+            width: 100%;
+            height: auto;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}

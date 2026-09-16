@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 10, "column": 0}, "map": {"version":3,"sources":["file:///home/behroz/Documents/Git/lemu/app/src/app/(workspace)/chat/page.tsx"],"sourcesContent":["/**\n * Chat Page — Lemmo Chat Studio surface.\n * TODO M6: Implement ChatWindow, CommandAutocomplete, InlineToolForm.\n */\n\nexport default function ChatPage() {\n  return (\n    <div\n      style={{\n        display: 'flex',\n        alignItems: 'center',\n        justifyContent: 'center',\n        minHeight: '100dvh',\n        color: 'var(--lemmo-text-secondary, #8a8f96)',\n        fontFamily: 'inherit',\n      }}\n    >\n      <p>Chat Studio — Coming in M6</p>\n    </div>\n  );\n}\n"],"names":["ChatPage","style","display","alignItems","justifyContent","minHeight","color","fontFamily"],"mappings":"AAAA;;;CAGC;;;;;;AAEc,SAASA;IACtB,qBACE,mbAAC;QACCC,OAAO;YACLC,SAAS;YACTC,YAAY;YACZC,gBAAgB;YAChBC,WAAW;YACXC,OAAO;YACPC,YAAY;QACd;kBAEA,cAAA,mbAAC;sBAAE;;;;;;;;;;;AAGT"}},
+    {"offset": {"line": 53, "column": 0}, "map": {"version":3,"sources":["file:///home/behroz/Documents/Git/lemu/app/src/app/favicon.ico.mjs%20(structured%20image%20object)"],"sourcesContent":["import src from \"IMAGE\";\nexport default { src, width: 256, height: 256 }\n"],"names":["src","width","height"],"mappings":";;;;AAAA;;uCACe;IAAEA,KAAAA,0IAAG;IAAEC,OAAO;IAAKC,QAAQ;AAAI"}}]
+}

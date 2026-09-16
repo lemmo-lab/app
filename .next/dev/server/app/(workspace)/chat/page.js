@@ -1,6 +1,6 @@
 var R=require("../../../chunks/ssr/[turbopack]_runtime.js")("server/app/(workspace)/chat/page.js")
 R.c("server/chunks/ssr/1v6e_next_dist_0c8w38v._.js")
-R.c("server/chunks/ssr/[root-of-the-server]__12gdrxo._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__1_rlnm0._.js")
 R.c("server/chunks/ssr/1v6e_next_dist_esm_server_0mvhie9._.js")
 R.c("server/chunks/ssr/1v6e_next_dist_esm_lib_0_e3-7u._.js")
 R.c("server/chunks/ssr/1v6e_next_dist_esm_0uvfxfz._.js")
