@@ -1,10 +1,10 @@
 [
   {
     "route": "/chat",
-    "firstLoadUncompressedJsBytes": 458069,
+    "firstLoadUncompressedJsBytes": 468447,
     "firstLoadChunkPaths": [
       ".next/static/chunks/19vu62jfwt_az.js",
-      ".next/static/chunks/1vh3otwosfden.js",
+      ".next/static/chunks/2ibwu2fdbq-iq.js",
       ".next/static/chunks/2-55eyp6pwc46.js",
       ".next/static/chunks/2cdx1t3vf32bg.js",
       ".next/static/chunks/0sg19bisjozp9.js",

@@ -1,126 +1,380 @@
 /**
- * Chat Page — Lemmo Chat Studio surface.
- * M1: Foundation test page — validates design tokens, fonts, and i18n switching.
- * TODO M6: Implement ChatWindow, CommandAutocomplete, InlineToolForm.
+ * App Wireframe Surface — Figma-aligned "app" frame
+ * Exact geometric match for Figma 'app' frame (node-id=134-321)
+ *
+ * Visual spec:
+ * - Left rail: dark sidebar with brand triad logo and utility icons
+ * - Center stage:
+ *   - Massive light-gray hero container (#d9d9d9)
+ *   - Thin sub-action bar with tiny square pills and line indicator
+ *   - 4-column rounded cards row (#d9d9d9) with bottom accent underlines
+ *   - Search / filter action rail (left pill, right search input)
+ *   - 5-column x 2-row uniform grid of light-gray card rectangles (#d9d9d9)
+ * - Right rail: 7 vertical utility icon blocks
  */
 
+'use client';
+
+import React from 'react';
 import { LanguageSwitcher } from '@/shared/ui/primitives/LanguageSwitcher';
 
-export default function ChatPage() {
+export default function AppWireframePage() {
+  // Exactly 10 cards arranged in 5 columns x 2 rows
+  const gridCards = Array.from({ length: 10 });
+
   return (
     <div
       style={{
+        display: 'flex',
         minHeight: '100dvh',
-        background: 'var(--lemmo-canvas-bg, #131517)',
-        color: 'var(--lemmo-text-primary, #f0f0f0)',
-        padding: '2rem',
-        fontFamily: 'inherit',
+        width: '100%',
+        backgroundColor: '#131517',
+        color: '#e1e1e3',
+        overflow: 'hidden',
+        boxSizing: 'border-box',
       }}
     >
-      {/* Minimal test header */}
-      <header
+      {/* 1. Left Vertical Navigation Rail */}
+      <aside
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '3rem',
-          padding: '1rem 1.5rem',
-          background: 'var(--lemmo-surface-primary, #1a1d20)',
-          borderRadius: 'var(--lemmo-radius-card, 0.75rem)',
-          border: '1px solid var(--lemmo-border-default, #2a2d30)',
-        }}
-      >
-        {/* Lemmo triad logo — 3-dot mark */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <span
-            style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}
-            aria-label="Lemmo Triad Logo"
-          >
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--lemmo-interactive-primary, #d1fe17)', display: 'inline-block' }} />
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--lemmo-interactive-primary, #d1fe17)', display: 'inline-block', opacity: 0.6 }} />
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--lemmo-interactive-primary, #d1fe17)', display: 'inline-block', opacity: 0.3 }} />
-          </span>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--lemmo-text-primary, #f0f0f0)', margin: 0 }}>
-            Lemmo Studio
-          </h1>
-        </div>
-
-        <LanguageSwitcher />
-      </header>
-
-      {/* M1 validation section */}
-      <section
-        style={{
-          maxWidth: '48rem',
-          margin: '0 auto',
+          width: '3.5rem',
+          flexShrink: 0,
+          borderInlineEnd: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: '#0a0c0e',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.5rem',
+          alignItems: 'center',
+          paddingBlock: '1.25rem',
+          gap: '1.125rem',
+          zIndex: 10,
         }}
       >
-        {/* Checklist */}
+        {/* Lemmo Triad Mark */}
         <div
+          title="Lemmo Triad"
           style={{
-            padding: '1.5rem',
-            background: 'var(--lemmo-surface-primary, #1a1d20)',
-            borderRadius: 'var(--lemmo-radius-card, 0.75rem)',
-            border: '1px solid var(--lemmo-border-default, #2a2d30)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '3px',
+            cursor: 'pointer',
+            padding: '0.25rem',
+            marginBottom: '0.75rem',
           }}
         >
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--lemmo-interactive-primary, #d1fe17)' }}>
-            ✅ M1 Foundation — Complete
-          </h2>
-          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--lemmo-text-secondary, #8a8f96)', fontSize: '0.875rem' }}>
-            <li>✓ Next.js App Router + React 19.3.0 + TypeScript strict</li>
-            <li>✓ Standard layer structure (modules / sdk / shared / stores)</li>
-            <li>✓ @lemmo-lab/tokens design tokens (Dark Default theme)</li>
-            <li>✓ 4-font stack: Morabba, IRANSansX, Oddval, Satoshi</li>
-            <li>✓ Bilingual i18n engine + RTL/LTR switch (try the button above)</li>
-            <li>✓ @/sdk bottleneck with Mock Adapter</li>
-            <li>✓ Zustand uiStore + TanStack Query</li>
-            <li>✓ synthline icon pack installed</li>
-          </ul>
+          <span
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: '50%',
+              backgroundColor: '#d1fe17',
+            }}
+          />
+          <div style={{ display: 'flex', gap: '3px' }}>
+            <span
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: '50%',
+                backgroundColor: '#d1fe17',
+                opacity: 0.7,
+              }}
+            />
+            <span
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: '50%',
+                backgroundColor: '#d1fe17',
+                opacity: 0.4,
+              }}
+            />
+          </div>
         </div>
 
-        {/* Font showcase */}
-        <div
-          style={{
-            padding: '1.5rem',
-            background: 'var(--lemmo-surface-primary, #1a1d20)',
-            borderRadius: 'var(--lemmo-radius-card, 0.75rem)',
-            border: '1px solid var(--lemmo-border-default, #2a2d30)',
-          }}
-        >
-          <h2 style={{ fontFamily: 'Morabba, sans-serif', fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--lemmo-text-primary, #f0f0f0)' }}>
-            نمونه عنوان — Morabba Bold
-          </h2>
-          <p style={{ fontFamily: 'IRANSansX, sans-serif', fontSize: '1rem', lineHeight: 1.8, color: 'var(--lemmo-text-secondary, #8a8f96)', marginBottom: '1rem' }}>
-            متن بدنه فارسی با فونت IRANSansX — Persian body text sample.
-          </p>
-          <h3 style={{ fontFamily: 'Oddval, sans-serif', fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--lemmo-text-primary, #f0f0f0)' }}>
-            Oddval SemiBold — Display Heading
-          </h3>
-          <p style={{ fontFamily: 'Satoshi, sans-serif', fontSize: '0.9375rem', color: 'var(--lemmo-text-secondary, #8a8f96)' }}>
-            Satoshi Variable body text — 300 to 900 weight range.
-            The quick brown fox jumps over the lazy dog.
-          </p>
-        </div>
+        {/* Rail square icons matching Figma */}
+        {[1, 2, 3, 4, 5].map((idx) => (
+          <div
+            key={idx}
+            style={{
+              width: '2rem',
+              height: '2rem',
+              borderRadius: '0.375rem',
+              backgroundColor: idx === 1 ? '#d1fe17' : 'rgba(255, 255, 255, 0.12)',
+              cursor: 'pointer',
+            }}
+          />
+        ))}
 
-        {/* Next milestone hint */}
-        <div
+        <div style={{ marginTop: 'auto' }}>
+          <div
+            style={{
+              width: '2rem',
+              height: '2rem',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(255, 255, 255, 0.15)',
+            }}
+          />
+        </div>
+      </aside>
+
+      {/* 2. Main Center Viewport */}
+      <main
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100dvh',
+          overflowY: 'auto',
+          paddingInline: '2rem',
+          paddingBlock: '1.25rem',
+          boxSizing: 'border-box',
+          backgroundColor: '#131517',
+        }}
+      >
+        {/* Header with frame title and language switcher */}
+        <header
           style={{
-            padding: '1rem 1.5rem',
-            background: 'transparent',
-            border: '1px dashed var(--lemmo-border-default, #2a2d30)',
-            borderRadius: 'var(--lemmo-radius-card, 0.75rem)',
-            color: 'var(--lemmo-text-tertiary, #5a5f66)',
-            fontSize: '0.875rem',
-            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '1rem',
           }}
         >
-          Next: M2 — Figma-aligned geometric wireframing
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span
+              style={{
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                color: '#a1a1a5',
+                letterSpacing: '0.04em',
+              }}
+            >
+              FIGMA WIREFRAME : APP (NODE 134-321)
+            </span>
+            <span
+              style={{
+                fontSize: '0.6875rem',
+                fontWeight: 700,
+                padding: '0.125rem 0.5rem',
+                borderRadius: '9999px',
+                backgroundColor: 'rgba(209, 254, 23, 0.15)',
+                color: '#d1fe17',
+              }}
+            >
+              M2 WIREFRAME
+            </span>
+          </div>
+          <LanguageSwitcher />
+        </header>
+
+        {/* Wireframe Canvas Area */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            width: '100%',
+            maxWidth: '84rem',
+            marginInline: 'auto',
+            paddingBottom: '2.5rem',
+          }}
+        >
+          {/* A. Huge Light-Gray Top Hero Banner (as seen in Figma) */}
+          <div
+            style={{
+              width: '100%',
+              minHeight: '13.5rem',
+              borderRadius: '0.875rem',
+              backgroundColor: '#d9d9d9',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'flex-end',
+              padding: '1.5rem',
+              boxSizing: 'border-box',
+            }}
+          />
+
+          {/* B. Sub-Hero Control Bar (2 small squares on left, line pill on right) */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingInline: '0.25rem',
+            }}
+          >
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div
+                style={{
+                  width: '1.25rem',
+                  height: '1.25rem',
+                  borderRadius: '0.25rem',
+                  backgroundColor: '#d9d9d9',
+                }}
+              />
+              <div
+                style={{
+                  width: '1.25rem',
+                  height: '1.25rem',
+                  borderRadius: '0.25rem',
+                  backgroundColor: '#d9d9d9',
+                }}
+              />
+            </div>
+            <div
+              style={{
+                width: '7.5rem',
+                height: '0.5rem',
+                borderRadius: '9999px',
+                backgroundColor: '#d9d9d9',
+              }}
+            />
+          </div>
+
+          {/* C. 4 Rounded Horizontal Cards Row */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+              gap: '1rem',
+              width: '100%',
+            }}
+          >
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}
+              >
+                <div
+                  style={{
+                    height: '5.5rem',
+                    borderRadius: '0.875rem',
+                    backgroundColor: '#d9d9d9',
+                    width: '100%',
+                  }}
+                />
+                {/* Thin underline indicator matching Figma */}
+                <div
+                  style={{
+                    width: '40%',
+                    height: '0.25rem',
+                    borderRadius: '9999px',
+                    backgroundColor: '#d9d9d9',
+                    marginInline: 'auto',
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* D. Filter Pill Bar & Search Rail */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              paddingBlock: '0.25rem',
+            }}
+          >
+            {/* Left Category Pill */}
+            <div
+              style={{
+                width: '5.5rem',
+                height: '1.25rem',
+                borderRadius: '0.375rem',
+                backgroundColor: '#d9d9d9',
+              }}
+            />
+
+            {/* Right Action / Search Bar & Mini Icon */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div
+                style={{
+                  width: '8rem',
+                  height: '1.25rem',
+                  borderRadius: '0.375rem',
+                  backgroundColor: '#d9d9d9',
+                }}
+              />
+              <div
+                style={{
+                  width: '1.5rem',
+                  height: '1.25rem',
+                  borderRadius: '0.375rem',
+                  backgroundColor: '#d9d9d9',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* E. 5-Column x 2-Row Uniform Light Gray Cards Grid (10 cards) */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
+              gridTemplateRows: 'repeat(2, minmax(13rem, 1fr))',
+              gap: '1px',
+              backgroundColor: '#131517',
+              border: '1px solid #131517',
+              borderRadius: '0.875rem',
+              overflow: 'hidden',
+            }}
+          >
+            {gridCards.map((_, idx) => (
+              <div
+                key={idx}
+                style={{
+                  backgroundColor: '#d9d9d9',
+                  minHeight: '14rem',
+                  width: '100%',
+                  transition: 'opacity 0.15s',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.opacity = '0.9';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.opacity = '1';
+                }}
+              />
+            ))}
+          </div>
         </div>
-      </section>
+      </main>
+
+      {/* 3. Right Vertical Mini Utility Rail */}
+      <aside
+        style={{
+          width: '2.5rem',
+          flexShrink: 0,
+          borderInlineStart: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: '#0a0c0e',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          paddingBlock: '1.25rem',
+          gap: '0.875rem',
+          zIndex: 10,
+        }}
+      >
+        {[1, 2, 3, 4, 5, 6, 7].map((item) => (
+          <div
+            key={item}
+            style={{
+              width: '1.25rem',
+              height: '1.25rem',
+              borderRadius: '0.25rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.25)',
+              cursor: 'pointer',
+            }}
+          />
+        ))}
+      </aside>
     </div>
   );
 }

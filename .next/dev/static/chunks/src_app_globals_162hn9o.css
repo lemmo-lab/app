@@ -1,0 +1,627 @@
+/* [project]/src/app/globals.css [app-client] (css) */
+@layer properties {
+  @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
+    *, :before, :after, ::backdrop {
+      --tw-rotate-x: initial;
+      --tw-rotate-y: initial;
+      --tw-rotate-z: initial;
+      --tw-skew-x: initial;
+      --tw-skew-y: initial;
+      --tw-border-style: solid;
+      --tw-blur: initial;
+      --tw-brightness: initial;
+      --tw-contrast: initial;
+      --tw-grayscale: initial;
+      --tw-hue-rotate: initial;
+      --tw-invert: initial;
+      --tw-opacity: initial;
+      --tw-saturate: initial;
+      --tw-sepia: initial;
+      --tw-drop-shadow: initial;
+      --tw-drop-shadow-color: initial;
+      --tw-drop-shadow-alpha: 100%;
+      --tw-drop-shadow-size: initial;
+    }
+  }
+}
+
+:root {
+  --lemmo-space-0: 0;
+  --lemmo-space-50: .125rem;
+  --lemmo-space-100: .25rem;
+  --lemmo-space-150: .375rem;
+  --lemmo-space-200: .5rem;
+  --lemmo-space-250: .625rem;
+  --lemmo-space-300: .75rem;
+  --lemmo-space-400: 1rem;
+  --lemmo-space-500: 1.25rem;
+  --lemmo-space-600: 1.5rem;
+  --lemmo-space-700: 1.75rem;
+  --lemmo-space-800: 2rem;
+  --lemmo-space-1000: 2.5rem;
+  --lemmo-space-1200: 3rem;
+  --lemmo-space-1400: 3.5rem;
+  --lemmo-space-1600: 4rem;
+  --lemmo-space-2000: 5rem;
+  --lemmo-space-2400: 6rem;
+  --lemmo-gap-1: .25rem;
+  --lemmo-gap-2: .5rem;
+  --lemmo-gap-3: .75rem;
+  --lemmo-gap-4: 1rem;
+  --lemmo-gap-0-5: .125rem;
+  --lemmo-gap-1-5: .375rem;
+  --lemmo-gap-2-5: .625rem;
+  --lemmo-gap-card-grid: .5rem;
+  --lemmo-gap-card-inner: .5rem;
+  --lemmo-gap-section-sm: 2.5rem;
+  --lemmo-gap-section-lg: 5rem;
+  --lemmo-radius-0: 0;
+  --lemmo-radius-100: .25rem;
+  --lemmo-radius-150: .375rem;
+  --lemmo-radius-200: .5rem;
+  --lemmo-radius-250: .625rem;
+  --lemmo-radius-300: .75rem;
+  --lemmo-radius-400: 1rem;
+  --lemmo-radius-500: 1.25rem;
+  --lemmo-radius-600: 1.5rem;
+  --lemmo-radius-base: .5rem;
+  --lemmo-radius-050: .125rem;
+  --lemmo-radius-full: 9999px;
+  --lemmo-radius-badge: calc(var(--lemmo-radius-base) * .75);
+  --lemmo-radius-control: var(--lemmo-radius-base);
+  --lemmo-radius-card: calc(var(--lemmo-radius-base) * 1.5);
+  --lemmo-radius-media: calc(var(--lemmo-radius-base) * 2);
+  --lemmo-radius-featured-card: calc(var(--lemmo-radius-base) * 2.5);
+  --lemmo-radius-media-lg: calc(var(--lemmo-radius-base) * 3);
+  --lemmo-radius-pill: 9999px;
+  --lemmo-font-sans: Satoshi, system-ui, sans-serif;
+  --lemmo-font-sans-fa: IRANSansX, Tahoma, sans-serif;
+  --lemmo-font-display: var(--lemmo-font-display);
+  --lemmo-font-display-fa: Morabba, Tahoma, sans-serif;
+  --lemmo-font-heading: var(--lemmo-font-heading);
+  --lemmo-font-heading-fa: Morabba, Tahoma, sans-serif;
+  --lemmo-font-numeric: var(--lemmo-font-numeric);
+  --lemmo-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --lemmo-font-body: var(--lemmo-font-sans);
+  --lemmo-leading-factor: 1;
+  --lemmo-font-weight-regular: 400;
+  --lemmo-font-weight-medium: 500;
+  --lemmo-font-weight-cta: 510;
+  --lemmo-font-weight-semi-bold: 600;
+  --lemmo-font-weight-bold: 700;
+  --lemmo-font-weight-black: 900;
+  --lemmo-type-size-100: .75rem;
+  --lemmo-type-size-200: .875rem;
+  --lemmo-type-size-300: 1rem;
+  --lemmo-type-size-400: 1.125rem;
+  --lemmo-type-size-500: 1.25rem;
+  --lemmo-type-size-600: 1.5rem;
+  --lemmo-type-size-700: 1.75rem;
+  --lemmo-type-size-800: 2rem;
+  --lemmo-type-size-900: 2.25rem;
+  --lemmo-type-size-1000: 2.5rem;
+  --lemmo-type-size-1100: 3rem;
+  --lemmo-type-size-1200: 3.5rem;
+  --lemmo-type-size-1300: 4rem;
+  --lemmo-type-size-1400: 4.5rem;
+  --lemmo-type-size-050: .625rem;
+  --lemmo-type-leading-300: 1.25;
+  --lemmo-type-leading-400: 1.28;
+  --lemmo-type-leading-500: 1.43;
+  --lemmo-type-leading-600: 1.5;
+  --lemmo-type-leading-700: 1.4;
+  --lemmo-type-leading-800: 1.33;
+  --lemmo-type-leading-900: 1.25;
+  --lemmo-type-leading-1000: 1.2;
+  --lemmo-type-leading-1100: 1.15;
+  --lemmo-type-leading-1200: 1.1;
+  --lemmo-type-leading-1300: 1.05;
+  --lemmo-type-leading-1400: 1;
+  --lemmo-type-track-none: 0;
+  --lemmo-type-track-slight: -.025rem;
+  --lemmo-type-track-tight: -.075rem;
+  --lemmo-type-track-loose: .00625rem;
+  --lemmo-type-track-wide: .0125rem;
+  --lemmo-type-track-xxs: -.3px;
+  --lemmo-type-track-5xl: -1.2px;
+  --lemmo-type-track-heading: -2%;
+  --lemmo-type-track-caps: -4%;
+  --lemmo-type-track-label: .2px;
+  --lemmo-type-track-caption: 0;
+  --lemmo-type-track-table-head: -.56px;
+  --lemmo-bp-base: 20rem;
+  --lemmo-bp-sm: 40rem;
+  --lemmo-bp-md: 48rem;
+  --lemmo-bp-lg: 64rem;
+  --lemmo-bp-xl: 80rem;
+  --lemmo-bp-2xl: 120rem;
+  --lemmo-bp-3xl: 158rem;
+  --lemmo-bp-tablet: var(--lemmo-bp-md);
+  --lemmo-bp-desktop: var(--lemmo-bp-xl);
+  --lemmo-bp-wide: var(--lemmo-bp-2xl);
+  --lemmo-stroke-none: 0;
+  --lemmo-stroke-hairline: .5px;
+  --lemmo-stroke-thin: 1px;
+  --lemmo-stroke-medium: 1.5px;
+  --lemmo-stroke-thick: 2px;
+  --lemmo-stroke-rim: var(--lemmo-stroke-thin);
+  --lemmo-stroke-border: var(--lemmo-stroke-thin);
+  --lemmo-stroke-border-gradient: var(--lemmo-stroke-thick);
+  --lemmo-stroke-divider: var(--lemmo-stroke-hairline);
+  --lemmo-size-control-xs: 2rem;
+  --lemmo-size-control-sm: 2.25rem;
+  --lemmo-size-control-md: 2.5rem;
+  --lemmo-size-control-lg: 2.75rem;
+  --lemmo-size-control-xl: 3rem;
+  --lemmo-size-icon-xs: .75rem;
+  --lemmo-size-icon-sm: 1rem;
+  --lemmo-size-icon-md: 1.25rem;
+  --lemmo-size-icon-lg: 1.5rem;
+  --lemmo-size-icon-xl: 1.75rem;
+  --lemmo-size-header: 3.25rem;
+  --lemmo-size-header-compact: 2.25rem;
+  --lemmo-size-gutter: 1rem;
+  --lemmo-size-container-base: 100%;
+  --lemmo-size-container-sm: 40rem;
+  --lemmo-size-container-md: 48rem;
+  --lemmo-size-container-lg: 64rem;
+  --lemmo-size-container-xl: 80rem;
+  --lemmo-size-container-2xl: 120rem;
+  --lemmo-size-container-3xl: 158rem;
+  --lemmo-size-container-media: calc(100vw - 2rem);
+  --lemmo-size-container-copy: 80rem;
+  --lemmo-size-container-content: 56rem;
+  --lemmo-size-container-wide: 96rem;
+  --lemmo-size-pricing-column-sm: 66.5rem;
+  --lemmo-size-pricing-column-lg: 89rem;
+  --lemmo-size-pricing-max-default: 90rem;
+  --lemmo-size-pricing-max-wide: 92rem;
+  --lemmo-size-pricing-pad-x: 1rem;
+  --lemmo-size-pricing-pad-x-lg: 3.75rem;
+  --lemmo-size-pricing-pad-y: 2rem;
+  --lemmo-duration-fast: .1s;
+  --lemmo-duration-normal: .2s;
+  --lemmo-duration-slow: .3s;
+  --lemmo-duration-slower: .5s;
+  --lemmo-duration-slider: .15s;
+  --lemmo-duration-plan-swap: .42s;
+  --lemmo-duration-breathe: 1.8s;
+  --lemmo-ease-out: ease-out;
+  --lemmo-ease-in-out: ease-in-out;
+  --lemmo-ease-snap: cubic-bezier(.77, 0, .175, 1);
+  --lemmo-ease-spring: cubic-bezier(.68, -.55, .265, 1.55);
+  --lemmo-ease-swift: cubic-bezier(.55, 0, .1, 1);
+  --lemmo-ease-emphasized: cubic-bezier(.2, 0, 0, 1);
+  --lemmo-ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+  --lemmo-ease-out-quart: cubic-bezier(.165, .84, .44, 1);
+  --lemmo-shadow-card-featured: 0 1.5rem 4rem #0000003d;
+  --lemmo-shadow-card-base: 10px 34px 24px 0 #00000026;
+  --lemmo-shadow-button-brand-inset: inset 0 .8px 0 0 #d1fe17, inset 0 -1.6px 0 0 #829b19, inset 0 -2.4px 0 0 #829b19;
+  --lemmo-shadow-button-brand: inset 0 .8px 0 0 #d1fe17, inset 0 -1.6px 0 0 #829b19, inset 0 -2.4px 0 0 #829b19, 10px 34px 24px 0px #00000026;
+  --lemmo-shadow-gloss-inset: inset 0 -2px 2px 0 #fff6, inset 0 2px 2px 0 #fff6;
+  --lemmo-shadow-glow-brand: 0 0 .4rem #d1fe178f;
+  --lemmo-page-background: #131517;
+  --lemmo-page-foreground: #e1e1e3;
+  --lemmo-surface-primary-background: #1c1e20;
+  --lemmo-surface-primary-foreground: #e1e1e3;
+  --lemmo-surface-secondary-background: #23262a;
+  --lemmo-surface-secondary-foreground: #a1a1a5;
+  --lemmo-surface-tertiary-background: #0a0c0e;
+  --lemmo-surface-tertiary-foreground: #e1e1e3;
+  --lemmo-surface-elevated-background: #18191c;
+  --lemmo-surface-elevated-foreground: #e1e1e3;
+  --lemmo-surface-glass-background: #0f1113e0;
+  --lemmo-surface-glass-foreground: #e1e1e3;
+  --lemmo-surface-brand-background: #d1fe17;
+  --lemmo-surface-brand-foreground: #131517;
+  --lemmo-text-primary: #e1e1e3;
+  --lemmo-text-secondary: #a1a1a5;
+  --lemmo-text-muted: #898a8b;
+  --lemmo-text-faint: #737475;
+  --lemmo-text-on-brand: #131517;
+  --lemmo-text-reverted: #060515;
+  --lemmo-text-danger: #ff5462;
+  --lemmo-text-warning: #dfab01;
+  --lemmo-text-success: #4ee466;
+  --lemmo-text-info: #5b91fe;
+  --lemmo-border-default: #ffffff26;
+  --lemmo-border-subtle: #ffffff0a;
+  --lemmo-border-mid: #ffffff14;
+  --lemmo-border-danger: #fa0019;
+  --lemmo-border-warning: #dfab01;
+  --lemmo-border-success: #2eb844;
+  --lemmo-border-info: #0256fe;
+  --lemmo-interactive-primary-background: #d1fe17;
+  --lemmo-interactive-primary-foreground: #131517;
+  --lemmo-interactive-primary-hover: #c4ee0b;
+  --lemmo-interactive-secondary-background: #0256fe;
+  --lemmo-interactive-secondary-foreground: #fff;
+  --lemmo-interactive-secondary-hover: #245ef1;
+  --lemmo-status-danger-background: #5c000f;
+  --lemmo-status-danger-foreground: #ff5462;
+  --lemmo-status-danger-border: #fa0019;
+  --lemmo-status-danger-glow: #ff1f2e;
+  --lemmo-status-warning-background: #523f00;
+  --lemmo-status-warning-foreground: #ffef33;
+  --lemmo-status-warning-border: #dfab01;
+  --lemmo-status-warning-glow: #fff05a;
+  --lemmo-status-success-background: #0d4a17;
+  --lemmo-status-success-foreground: #4ee466;
+  --lemmo-status-success-border: #2eb844;
+  --lemmo-status-success-glow: #00e62e;
+  --lemmo-status-info-background: #000d26;
+  --lemmo-status-info-foreground: #5b91fe;
+  --lemmo-status-info-border: #0256fe;
+  --lemmo-status-info-glow: #3cd8ff;
+  --lemmo-gradient-surface-featured: linear-gradient(225deg, #d1fe1729 0%, #d1fe1714 28%, #d1fe1700 62%), #18191c;
+  --lemmo-gradient-surface-pink-haze: radial-gradient(145% 54% at 100% 0%, #ff005b52 0%, #ff005b26 42%, #ff005b00 78%), #18191c;
+  --lemmo-gradient-surface-olive: linear-gradient(180deg, #1f2022 0%, #222420 55%, #272a20 100%);
+  --lemmo-gradient-surface-ocean: linear-gradient(180deg, #121d23 0%, #152026 45%, #1d282e 75%, #273238 100%);
+  --lemmo-gradient-surface-steel: linear-gradient(180deg, #1f2024 0%, #232428 40%, #343539 75%, #48494d 100%);
+  --lemmo-gradient-surface-base: linear-gradient(180deg, #1c1e20 0%, #131517 100%);
+  --lemmo-gradient-surface-soft: radial-gradient(58% 220% at 3% 42%, #ffffff18 0%, #ffffff09 42%, #ffffff03 100%), linear-gradient(180deg, #1c1e20 0%, #131517 100%);
+  --lemmo-gradient-surface-lime-wash: radial-gradient(56.49% 230.73% at 2.37% 40.91%, #bbfb0c12 0%, #0cfb2003 100%), radial-gradient(41.8% 183.68% at 10.4% 53.71%, #c5c5c514 0%, #c5c5c503 100%), linear-gradient(180deg, #1c1e20 0%, #131517 100%);
+  --lemmo-gradient-surface-pink-wash: radial-gradient(56.49% 230.73% at 2.37% 40.91%, #ed15721a 0%, #ed157203 100%), linear-gradient(180deg, #1c1e20 0%, #131517 100%);
+  --lemmo-gradient-surface-blue-wash: radial-gradient(56.49% 230.73% at 2.37% 40.91%, #1544ed1a 0%, #1544ed03 100%), linear-gradient(180deg, #1c1e20 0%, #131517 100%);
+  --lemmo-gradient-surface-steel-flat: linear-gradient(180deg, #6e91bc05 0%, #6e91bc33 100%), #1c1e20;
+  --lemmo-gradient-surface-plain: linear-gradient(180deg, #1c1e20 0%, #131517 100%);
+  --lemmo-gradient-rim-vertical: linear-gradient(180deg, #ffffff26 0%, #ffffff17 18%, #ffffff08 38%, #fff0 72%);
+  --lemmo-gradient-rim-diagonal: linear-gradient(225deg, #ffffff26 0%, #ffffff1a 18%, #ffffff0a 42%, #fff0 76%);
+  --lemmo-gradient-border-pink: radial-gradient(86.59% 115.91% at 50% 45.45%, #fb398c 0%, #ed1572 100%);
+  --lemmo-gradient-border-blue: radial-gradient(86.59% 115.91% at 50% 45.45%, #245ef1 0%, #1544ed 100%);
+  --lemmo-gradient-pill-lime: radial-gradient(ellipse 55% 95% at 73% 50%, #75ef1d99 0%, #c2ed1500 100%), radial-gradient(ellipse 25% 42% at 85% 37%, #fff9 0%, #d1fe1700 100%), radial-gradient(ellipse 33% 70% at 12% 76%, #c8ef1d99 0%, #c2ed1500 100%), linear-gradient(90deg, #d1fe17 0%, #d1fe17 100%);
+  --lemmo-gradient-pill-blue: radial-gradient(ellipse 75% 300% at 73% 50%, #1d63ef 0%, #5150d0 45%, #ed157200 100%), radial-gradient(ellipse 30% 120% at 85% 37%, #fff9 0%, #d1fe1700 100%), #0256fe;
+  --lemmo-gradient-pill-ultraviolet: radial-gradient(ellipse 55% 95% at 73% 50%, #1d63ef99 0%, #5150d073 25%, #853cb04d 50%, #ed157200 100%), radial-gradient(ellipse 25% 42% at 85% 37%, #fff9 0%, #d1fe1700 100%), radial-gradient(ellipse 33% 70% at 12% 76%, #1d63ef99 0%, #853cb04d 50%, #ed157200 100%), linear-gradient(90deg, #0256fe 0%, #0256fe 100%);
+  --lemmo-gradient-pill-pink: radial-gradient(ellipse 55% 95% at 73% 50%, #ef1dba99 0%, #ed157200 100%), radial-gradient(ellipse 25% 42% at 85% 37%, #fff9 0%, #d1fe1700 100%), radial-gradient(ellipse 33% 70% at 12% 76%, #b01def99 0%, #ce19b04d 50%, #ed157200 100%), linear-gradient(90deg, #ff005b 0%, #ff005b 100%);
+  --lemmo-gradient-offer-base: radial-gradient(120% 90% at 50% 0%, #55142c 0%, #35101d 38%, #1e0c14 70%, #140a0f 100%);
+  --lemmo-gradient-offer-flash: linear-gradient(0deg, #ff005b52 0%, #ff005b04 100%), linear-gradient(90deg, #0a0c0e 0%, #0a0c0e 100%);
+  --lemmo-gradient-offer-dots: radial-gradient(circle at 1px 1px, #ffffff14 1px, #d1fe1700 0);
+  --lemmo-gradient-offer-combo: linear-gradient(135deg, #ff005b 0%, #d1004e 40%, #8b006a 100%);
+  --lemmo-gradient-table-cyan: radial-gradient(211% 211% at 50.16% 100%, #3c8cff33 0%, #3cd8ff33 100%), #ffffff0d;
+  --lemmo-gradient-overlay-darken: linear-gradient(#0003, #0003);
+}
+
+:root[lang="fa"], [lang="fa"] {
+  --lemmo-font-body: var(--lemmo-font-sans-fa);
+  --lemmo-font-heading: var(--lemmo-font-heading-fa);
+  --lemmo-font-display: var(--lemmo-font-display-fa);
+  --lemmo-leading-factor: 1.15;
+  --lemmo-type-track-slight: normal;
+  --lemmo-type-track-tight: normal;
+  --lemmo-type-track-heading: normal;
+  --lemmo-type-track-caps: normal;
+  --lemmo-type-track-table-head: normal;
+}
+
+.tabular-nums, [data-numeric] {
+  font-family: var(--lemmo-font-numeric, "Satoshi", sans-serif);
+  font-feature-settings: "tnum" 1;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.visible {
+  visibility: visible;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.relative {
+  position: relative;
+}
+
+.container {
+  width: 100%;
+}
+
+.block {
+  display: block;
+}
+
+.flex {
+  display: flex;
+}
+
+.grid {
+  display: grid;
+}
+
+.hidden {
+  display: none;
+}
+
+.inline {
+  display: inline;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.transform {
+  transform: var(--tw-rotate-x, ) var(--tw-rotate-y, ) var(--tw-rotate-z, ) var(--tw-skew-x, ) var(--tw-skew-y, );
+}
+
+.border {
+  border-style: var(--tw-border-style);
+  border-width: 1px;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.underline {
+  text-decoration-line: underline;
+}
+
+.filter {
+  filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
+}
+
+.transition {
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
+  transition-timing-function: var(--tw-ease, ease);
+  transition-duration: var(--tw-duration, 0s);
+}
+
+@font-face {
+  font-family: IRANSansX;
+  src: url("/fonts/iransans/IRANSansXV.woff2") format("woff2");
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Morabba;
+  src: url("/fonts/morabba/Morabba-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Morabba;
+  src: url("/fonts/morabba/Morabba-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Morabba;
+  src: url("/fonts/morabba/Morabba-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Morabba;
+  src: url("/fonts/morabba/Morabba-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Oddval;
+  src: url("/fonts/oddval/Oddval-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Satoshi;
+  src: url("/fonts/satoshi/Satoshi-Variable.woff2") format("woff2");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Satoshi;
+  src: url("/fonts/satoshi/Satoshi-VariableItalic.woff2") format("woff2");
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@layer base {
+  *, :before, :after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    background-color: var(--lemmo-canvas-bg, #131517);
+    color: var(--lemmo-text-primary, #f0f0f0);
+    font-family: var(--lemmo-font-sans-fa, IRANSansX, Tahoma, sans-serif);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizelegibility;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  html[dir="ltr"] {
+    font-family: var(--lemmo-font-sans, Satoshi, system-ui, sans-serif);
+  }
+
+  body {
+    min-height: 100dvh;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, html[dir="rtl"] h4, html[dir="rtl"] h5, html[dir="rtl"] h6 {
+    font-family: var(--lemmo-font-display-fa, Morabba, Tahoma, sans-serif);
+  }
+
+  html[dir="ltr"] h1, html[dir="ltr"] h2, html[dir="ltr"] h3, html[dir="ltr"] h4, html[dir="ltr"] h5, html[dir="ltr"] h6 {
+    font-family: var(--lemmo-font-display, Oddval, Satoshi, system-ui, sans-serif);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--lemmo-interactive-primary, #d1fe17);
+    outline-offset: 2px;
+    border-radius: var(--lemmo-radius-100, .25rem);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: none;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--lemmo-border-default, #2a2d30);
+    border-radius: var(--lemmo-radius-full, 9999px);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--lemmo-border-strong, #404448);
+  }
+}
+
+@layer utilities {
+  .ms-auto {
+    margin-inline-start: auto;
+  }
+
+  .me-auto {
+    margin-inline-end: auto;
+  }
+
+  .surface-canvas {
+    background-color: var(--lemmo-canvas-bg, #131517);
+  }
+
+  .surface-panel {
+    background-color: var(--lemmo-surface-primary, #1a1d20);
+  }
+
+  .surface-elevated {
+    background-color: var(--lemmo-surface-secondary, #22262a);
+  }
+
+  .text-lemmo {
+    color: var(--lemmo-interactive-primary, #d1fe17);
+  }
+
+  .bg-lemmo {
+    background-color: var(--lemmo-interactive-primary, #d1fe17);
+  }
+
+  .border-lemmo {
+    border-color: var(--lemmo-interactive-primary, #d1fe17);
+  }
+}
+
+@property --tw-rotate-x {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-rotate-y {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-rotate-z {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-skew-x {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-skew-y {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+
+@property --tw-blur {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-brightness {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-contrast {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-grayscale {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-hue-rotate {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-invert {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-opacity {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-saturate {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-sepia {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-drop-shadow {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-drop-shadow-color {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-drop-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+@property --tw-drop-shadow-size {
+  syntax: "*";
+  inherits: false
+}
+
+/*# sourceMappingURL=src_app_globals_162hn9o.css.map*/

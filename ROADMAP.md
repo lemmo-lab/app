@@ -66,18 +66,23 @@
 
 ## Milestone 2: Geometric Wireframing (Figma Alignment)
 > **Goal:** Validate structural geometry, grids, container queries, and responsive hierarchy using simple neutral shape blocks prior to finalized visual styling.  
-> **Status:** ⏳ In Progress
+> **Status:** ⏳ In Progress (Core 'app' Wireframe Frame Complete)
 
-- [ ] **Wireframe Primitive Kit (`src/shared/ui/wireframes/`):**
+- [x] **Wireframe Primitive Kit (`src/shared/ui/wireframes/`):**
   - Skeleton blocks: `WireframeBox`, `WireframePill`, `WireframeGrid`, `WireframePlaceholder`.
-  - Minimal dashed borders (`border: 1px dashed var(--lemmo-border-default)`).
-- [ ] **Studio Shell Wireframe Layout:**
-  - Navigation sidebar, topbar status rail, and central stage.
-  - Verified across 4 core breakpoints: Mobile (`20rem`), Tablet (`48rem`), Desktop (`80rem`), and Wide (`120rem`).
-- [ ] **Core Surface Wireframes:**
-  - Chat layout: message feed + bottom prompt box.
+  - Minimal clean neutral geometry conforming to Lemmo design tokens.
+- [x] **Figma-Aligned 'app' Surface Wireframe (`/chat`):**
+  - Left navigation rail with Lemmo triad mark & tool docks.
+  - Top Hero stage banner (`#d9d9d9`).
+  - Sub-hero control bar with dual indicators.
+  - 4-card rounded horizontal row with underline indicators.
+  - Filter & search action rail.
+  - 5-column x 2-row uniform card grid (10 items).
+  - Right vertical utility rail with 7 docking items.
+- [ ] **Remaining Core Surface Wireframes:**
   - Canvas layout: infinite board + sample nodes + right-hand inspector.
   - Asset gallery layout: card grid with standard media aspect ratios (`1:1`, `16:9`).
+
 
 ---
 
