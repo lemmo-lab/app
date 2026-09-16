@@ -1,9 +1,9 @@
 /**
- * globals.css — استایل‌های پایه‌ای Lemmo Studio
- * توکن‌های دیزاین سیستم + تایپوگرافی + ریست
+ * globals.css — Lemmo Studio base styles.
+ * Design token imports + typography declarations + CSS reset.
  */
 
-/* توکن‌های دیزاین سیستم Lemmo — نسخه محلی */
+/* Lemmo Design System tokens — local copy from @lemmo-lab/tokens */
 @import "../styles/lemmo-tokens.css";
 
 @tailwind base;
@@ -14,7 +14,7 @@
 /* FONT DECLARATIONS                                                    */
 /* ================================================================== */
 
-/* IRANSansX — فونت بدنه فارسی (Variable Weight 100–1000) */
+/* IRANSansX — Persian body font (Variable Weight 100–1000) */
 @font-face {
   font-family: 'IRANSansX';
   src: url('/fonts/iransans/IRANSansXV.woff2') format('woff2');
@@ -23,7 +23,7 @@
   font-display: swap;
 }
 
-/* Morabba — فونت نمایشی/عناوین فارسی */
+/* Morabba — Persian display / heading font */
 @font-face {
   font-family: 'Morabba';
   src: url('/fonts/morabba/Morabba-Regular.woff2') format('woff2');
@@ -53,7 +53,7 @@
   font-display: swap;
 }
 
-/* Oddval — فونت نمایشی انگلیسی (فقط SemiBold 600) */
+/* Oddval — English display font (SemiBold 600 only) */
 @font-face {
   font-family: 'Oddval';
   src: url('/fonts/oddval/Oddval-SemiBold.woff2') format('woff2');
@@ -62,7 +62,7 @@
   font-display: swap;
 }
 
-/* Satoshi — فونت بدنه انگلیسی (Variable Weight 300–900) */
+/* Satoshi — English body font (Variable Weight 300–900) */
 @font-face {
   font-family: 'Satoshi';
   src: url('/fonts/satoshi/Satoshi-Variable.woff2') format('woff2');
@@ -92,37 +92,34 @@
   }
 
   html {
-    /* تم پیش‌فرض دارک */
+    /* Default dark theme */
     background-color: var(--lemmo-canvas-bg, #131517);
     color: var(--lemmo-text-primary, #f0f0f0);
 
-    /* فونت پیش‌فرض بر اساس زبان — از CSS Logical Properties استفاده می‌کنیم */
+    /* Default to Persian body font; switched to Satoshi in LTR via selector below */
     font-family: var(--lemmo-font-sans-fa, IRANSansX, Tahoma, sans-serif);
     font-size: 16px;
     line-height: 1.6;
 
-    /* Smooth scrolling */
     scroll-behavior: smooth;
-
-    /* تنظیمات پیش‌فرض متن */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
-  /* در حالت LTR، فونت انگلیسی اعمال می‌شود */
+  /* Use English body font when direction is LTR */
   html[dir='ltr'] {
     font-family: var(--lemmo-font-sans, Satoshi, system-ui, sans-serif);
   }
 
   body {
     min-height: 100dvh;
-    /* استفاده از CSS Logical Properties برای سازگاری RTL/LTR */
+    /* CSS Logical Properties for RTL/LTR compatibility */
     padding-inline: 0;
     margin-inline: 0;
   }
 
-  /* Headings — فارسی */
+  /* Persian headings */
   html[dir='rtl'] h1,
   html[dir='rtl'] h2,
   html[dir='rtl'] h3,
@@ -132,7 +129,7 @@
     font-family: var(--lemmo-font-display-fa, Morabba, Tahoma, sans-serif);
   }
 
-  /* Headings — انگلیسی */
+  /* English headings */
   html[dir='ltr'] h1,
   html[dir='ltr'] h2,
   html[dir='ltr'] h3,
@@ -142,14 +139,14 @@
     font-family: var(--lemmo-font-display, Oddval, Satoshi, system-ui, sans-serif);
   }
 
-  /* Focus Ring استاندارد */
+  /* Standard focus ring using the Lemmo accent color */
   :focus-visible {
     outline: 2px solid var(--lemmo-interactive-primary, #d1fe17);
     outline-offset: 2px;
     border-radius: var(--lemmo-radius-100, 0.25rem);
   }
 
-  /* Scrollbar کمرنگ */
+  /* Subtle scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -167,15 +164,15 @@
 }
 
 /* ================================================================== */
-/* CSS LOGICAL PROPERTIES — کلاس‌های کمکی                              */
+/* UTILITIES — CSS Logical Properties helpers                           */
 /* ================================================================== */
 
 @layer utilities {
-  /* استفاده از margin-inline به جای margin-left/right */
+  /* Logical margin shorthands */
   .ms-auto { margin-inline-start: auto; }
   .me-auto { margin-inline-end: auto; }
 
-  /* ایجاد سطح پس‌زمینه اصلی استودیو */
+  /* Surface level helpers */
   .surface-canvas {
     background-color: var(--lemmo-canvas-bg, #131517);
   }
@@ -186,7 +183,7 @@
     background-color: var(--lemmo-surface-secondary, #22262a);
   }
 
-  /* رنگ تأکیدی لیمو */
+  /* Lemmo accent color utilities */
   .text-lemmo { color: var(--lemmo-interactive-primary, #d1fe17); }
   .bg-lemmo { background-color: var(--lemmo-interactive-primary, #d1fe17); }
   .border-lemmo { border-color: var(--lemmo-interactive-primary, #d1fe17); }

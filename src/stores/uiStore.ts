@@ -1,6 +1,6 @@
 /**
- * uiStore — استور سراسری رابط کاربری
- * مدیریت زبان فعال (fa/en) و جهت‌بندی (rtl/ltr)
+ * uiStore — Global UI state store
+ * Manages the active locale (fa/en) and text direction (rtl/ltr)
  */
 
 import { create } from 'zustand';
@@ -12,9 +12,9 @@ export type Direction = 'rtl' | 'ltr';
 interface UiState {
   locale: Locale;
   dir: Direction;
-  /** تغییر زبان و جهت‌بندی به‌صورت هم‌زمان */
+  /** Set locale and direction simultaneously */
   setLocale: (locale: Locale) => void;
-  /** toggle سریع بین فارسی و انگلیسی */
+  /** Toggle between 'fa' and 'en' */
   toggleLocale: () => void;
 }
 
@@ -26,14 +26,11 @@ export const useUiStore = create<UiState>()(
 
       setLocale: (locale) => {
         set({ locale, dir: locale === 'fa' ? 'rtl' : 'ltr' });
-        // تنظیم مستقیم تگ html بدون نیاز به re-render کامل
+        // Update html attributes directly without triggering a full re-render
         if (typeof document !== 'undefined') {
           document.documentElement.lang = locale;
           document.documentElement.dir = locale === 'fa' ? 'rtl' : 'ltr';
-          document.documentElement.setAttribute(
-            'data-locale',
-            locale
-          );
+          document.documentElement.setAttribute('data-locale', locale);
         }
       },
 

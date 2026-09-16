@@ -1,214 +1,196 @@
-# نقشه راه جامع توسعه فرانت‌اند برنامه کاربردی (Lemmo Workspace Frontend Roadmap)
+# Lemmo Workspace Studio Frontend Roadmap
 
-> **سند زمان‌بندی و گام‌های اجرایی توسعه مستقل فرانت‌اند با رویکرد Front-First و Mock-Driven**  
-> **نسخه:** ۱.۰.۰ — شهریور ۱۴۰۵ (سپتامبر ۲۰۲۶)  
-> **مسیر پروژه:** `/home/behroz/Documents/Git/lemu/app`  
-> **استراتژی کلیدی:** توسعه ۱۰۰٪ فرانت‌اند، تعاملات و ابزارها با داده‌های مصنوعی، رسیدن به نسخه کاملاً تعاملی و قابل استفاده (Usable Studio)، و در نهایت باز شدن گیت اتصال به بک‌اند (Integration-Ready Gate).
+> **Comprehensive Milestone Execution Plan, Front-First Development Strategy & Delivery Gates**  
+> **Version:** 1.0.0 — September 2026  
+> **Project Directory:** `/home/behroz/Documents/Git/lemu/app`  
+> **Core Strategy:** 100% independent frontend execution with zero-leakage mock data, progressing through geometric Figma wireframing to a fully functional interactive studio, unlocking the Integration-Ready Gate (M8) before connecting to live backend endpoints.
 
 ---
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                            مسیر فازبندی توسعه فرانت‌اند استودیو LEMMO                           │
+│                            LEMMO WORKSPACE FRONTEND EXECUTION PHASES                             │
 ├──────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ M1: فونداسیون، i18n دوزبانه (RTL/LTR) و ادغام توکن‌های برند Lemmo                               │
+│ M1: Foundations, Bilingual i18n (RTL/LTR), and Design Token Integration                          │
 │                                           ▼                                                      │
-│ M2: وایرفریمینگ هندسی ساده (Simple Shapes) مطابق چیدمان و گرید فیگما                             │
+│ M2: Simple Geometric Wireframing (Figma Layout Alignment)                                        │
 │                                           ▼                                                      │
-│ M3: کامپوننت‌های دیزاین سیستم و مونتاژ پوسته استودیو (Studio Shell)                              │
+│ M3: Design System Primitives & Studio Shell Assembly (Sidebar, Header, Surface Switcher)         │
 │                                           ▼                                                      │
-│ M4: گلوگاه متمرکز @/sdk و شبیه‌ساز بلادرنگ کارهای هوش مصنوعی (Mock Job Simulator)               │
+│ M4: Central @/sdk Bottleneck & Simulated AI Job Manager (Mock-Driven)                            │
 │                                           ▼                                                      │
-│ M5: موتور رندر خودکار مانیفست‌محور (Schema-Driven Tool Engine)                                   │
+│ M5: Schema-Driven Tool Rendering Engine (Manifests -> Dynamic Controls)                          │
 │                                           ▼                                                      │
-│ M6: پیاده‌سازی دو سطح اصلی تعامل: استودیوی چت (Chat) و بوم تعاملی (Canvas)                       │
+│ M6: Dual Parallel Surfaces: Conversational Chat Studio & 2D Graph Canvas                         │
 │                                           ▼                                                      │
-│ M7: ماژول‌های مکمل دارایی‌ها (Assets)، گالری نمونه‌ها (Gallery) و مالی (Billing)                │
+│ M7: Supporting Feature Modules: Asset Library, Template Gallery & Billing                        │
 │                                           ▼                                                      │
-│ 🎯 M8: گیت طلایی آمادگی اتصال (INTEGRATION-READY GATE) ──> فرانت کاملاً کارآمد و قابل استفاده   │
+│ 🎯 M8: INTEGRATION-READY GATE ──> Fully interactive, usable standalone creative studio             │
 │                                           ▼                                                      │
-│ M9: سوئیچ تک‌نقطه‌ای و اتصال تدریجی اندپوینت‌های واقعی بک‌اند                                     │
+│ M9: Single-Switch Live Backend Connection via LiveAdapter                                         │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## مایلستون ۱: فونداسیون، زیرساخت و هویت برند (Foundations & Setup)
-> **هدف:** پی‌ریزی یک پروژه تمیز Next.js App Router هماهنگ با توکن‌های بصری، تایپوگرافی و پشتیبانی دوزبانه بدون کوچک‌ترین درگیری با منطق تجاری.
-> **وضعیت:** ✅ تکمیل‌شده — شهریور ۱۴۰۵
+## Code Comment & In-Code Caption Policy (Strict Standard)
 
-- [x] **راه‌اندازی پروژه Next.js:**
-  - پیکربندی بر پایه **React 19.3.0**، TypeScript سخت‌گیرانه (`strict: true`) و Next.js App Router.
-  - تنظیم ساختار استاندارد لایه‌ها (`src/app/`, `src/modules/`, `src/sdk/`, `src/shared/`, `src/stores/`).
-- [x] **هویت برند و توکن‌های دیزاین:**
-  - واردسازی متغیرهای CSS رنگی (`--lemmo-*`)، فواصل، شعاع گوشه‌ها و سایه‌ها از مستندات دیزاین سیستم.
-  - پیاده‌سازی پالت‌های دارک‌مود اختصاصی لیمو با تاکید بر کنتراست WCAG AA.
-- [x] **تایپوگرافی ۴گانه اختصاصی:**
-  - کانفیگ فونت‌های محلی با `@font-face` در `globals.css`:
-    - فارسی: **Morabba** (عناوین) و **IRANSansX** (متن بدنه).
-    - انگلیسی: **Oddval 600** (عناوین) و **Satoshi Variable** (متن بدنه).
-- [x] **موتور چندزبانه و جهت‌بندی پویا (i18n & RTL/LTR):**
-  - استور کلاینت برای نگهداری زبان فعال کاربر (`fa` / `en`) — `src/stores/uiStore.ts`.
-  - تنظیم خودکار تگ `<html dir="rtl" lang="fa">` یا `<html dir="ltr" lang="en">` — `DirectionProvider`.
-  - استفاده سراسری از خصوصیات منطقی مدرن CSS (`margin-inline`, `padding-inline`, `inset-inline`) جهت جلوگیری از به‌هم‌ریختگی در تغییر زبان.
-- [x] **آیکونوگرافی:**
-  - نصب و پیکربندی انحصاری کتابخانه **`synthline/react`** (`strokeWidth={1.5}`).
-
+> 🚨 **MANDATORY CODING RULE: ENGLISH-ONLY IN CODE, COMMENTS & CAPTIONS**  
+> - **All code comments, JSDoc/TSDoc type annotations, docstrings, variable names, and commit messages MUST be written strictly in clear, professional English.**
+> - Non-English comments (such as Persian comments) inside `.ts`, `.tsx`, `.js`, `.css`, or code blocks are **strictly banned**.
+> - User-facing UI copy supports both Persian and English via the i18n subsystem, but all underlying engineering artifacts, logic documentation, and codebase comments remain 100% English.
 
 ---
 
-## مایلستون ۲: وایرفریمینگ هندسی ساده بر مبنای فیگما (Figma-Aligned Wireframing)
-> **هدف:** تست و اعتبارسنجی هندسی، گریدها، فاصله‌گذاری‌ها و رفتار واکنش‌گرا (Responsive) در قالب بلوک‌های ساده خاکستری قبل از ورود به جزئیات استایل و رندر.
+## Milestone 1: Foundations, Infrastructure & Brand Setup (Completed)
+> **Goal:** Establish a clean Next.js App Router environment aligned with design tokens, bilingual i18n, and strict typography without business logic.  
+> **Status:** ✅ Completed
 
-- [ ] **کیت وایرفریم در `src/shared/ui/wireframes/`:**
-  - کامپوننت‌های پایه اسکلتی: `WireframeBox`, `WireframePill`, `WireframeGrid`, `WireframePlaceholder`.
-  - استایل خط‌چین خاکستری مینیمال (`border: 1px dashed var(--lemmo-border-default)`).
-- [ ] **وایرفریم ساختار پوسته سراسری (Studio Shell Layout):**
-  - سایدبار ناوبری (چپ در LTR / راست در RTL)، هدر بالا و بوم میانی.
-  - تست واکنش‌گرایی در ۴ بریک‌پوینت اصلی:
-    - موبایل (`20rem` / 320px)
-    - تبلت (`48rem` / 768px)
-    - دسکتاپ (`80rem` / 1280px)
-    - مانیتور عریض (`120rem` / 1920px)
-- [ ] **وایرفریم صفحات اصلی با اشکال ساده هندسی:**
-  - اسکلت چت: استریم پیام‌ها + جعبه ورودی پرامپت پایینی.
-  - اسکلت کانواس: سطح بوم نامحدود + نودهای نمونه + پنل تنظیمات سمت راست (Inspector).
-  - اسکلت گالری دارایی‌ها: کارت‌های دارای نسبت تصویر استاندارد (`1:1`, `16:9`).
-
----
-
-## مایلستون ۳: دیزاین سیستم و پوسته استودیو (Studio Shell & Primitives)
-> **هدف:** جایگزینی وایرفریم‌های ساختاری با کامپوننت‌های تعاملی نهایی پوسته استودیو.
-
-- [ ] **پریمیتیوهای پایه (`src/shared/ui/primitives/`):**
-  - کامپوننت‌های مستقل: `Button`, `Input`, `Textarea`, `Slider`, `Select`, `Modal`, `Tooltip`, `Badge`.
-  - استانداردها: وراثت نیتیو، پشتیبانی اجباری از `forwardRef`، و قابلیت چندریختی با الگوی `asChild`.
-- [ ] **پوسته مشترک استودیو (`src/app/(workspace)/layout.tsx`):**
-  - **سایدبار استودیو (`AppSidebar`):**
-    - حالت باز (Full-rail) با آیکون و برچسب.
-    - قابلیت جمع‌شدن به نوار باریک (Mini-rail) یا کشوی مخفی در موبایل.
-  - **هدر استودیو (`StudioHeader`):**
-    - نشان ترایاد ۳ نقطه‌ای لیمو، کلید سوئیچ زبان (فارسی / انگلیسی)، نمایش زنده توکن‌ها.
-    - **نشانگر وضعیت کارهای فعال (`ActiveJobIndicator`):** آیکون انیمیشن‌دار در هدر که تعداد کارهای در حال پردازش را نشان می‌دهد و با کلیک روی آن لیست کارها باز می‌شود.
-  - **سوئیچر سطوح (`SurfaceSwitcher`):**
-    - کلید تعاملی زیبا برای تغییر سریع فضا میان «چت مکالمه‌ای» (`/chat`) و «کانواس گراف» (`/canvas`).
+- [x] **Next.js Project Initialization:**
+  - Configured with **React 19.3.0**, TypeScript (`strict: true`), and Next.js App Router.
+  - Standardized layered structure (`src/app/`, `src/modules/`, `src/sdk/`, `src/shared/`, `src/stores/`).
+- [x] **Brand Identity & Design Tokens:**
+  - Integrated `@lemmo-lab/tokens` CSS custom properties (`--lemmo-*`).
+  - Default Dark Theme enabled (`#131517` primary canvas, Lime `#d1fe17` accent, WCAG AAA 14.02:1).
+- [x] **4 Dedicated Font Stacks:**
+  - Configured local WOFF2 font loading:
+    - Persian: **Morabba** (headings) and **IRANSansX** (body).
+    - English: **Oddval 600** (headings) and **Satoshi Variable** (body & numerals).
+- [x] **Bilingual Engine & Directionality (i18n & RTL/LTR):**
+  - Dynamic `dir="rtl"` / `dir="ltr"` and `lang="fa"` / `lang="en"` on `<html>`.
+  - Modern logical CSS properties (`margin-inline`, `padding-inline`, `inset-inline`).
+- [x] **Iconography:**
+  - Configured official **`synthline/react`** package (`strokeWidth={1.5}`, `currentColor`).
 
 ---
 
-## مایلستون ۴: گلوگاه SDK و شبیه‌ساز پردازش‌های هوش مصنوعی (Mock SDK Engine)
-> **هدف:** پیاده‌سازی قلب ارتباطی کلاینت بر مبنای قانون عدم نشت (Zero-Leakage) به طوری که تمام داده‌های ساختگی از یک نقطه توزیع شوند.
+## Milestone 2: Geometric Wireframing (Figma Alignment)
+> **Goal:** Validate structural geometry, grids, container queries, and responsive hierarchy using simple neutral shape blocks prior to finalized visual styling.  
+> **Status:** ⏳ In Progress
 
-- [ ] **ایجاد گلوگاه متمرکز `@/sdk` (`src/sdk/index.ts`):**
-  - تعریف اینترفیس مشترک `interface SdkClient`.
-  - تنظیم سوئیچ تک‌نقطه‌ای بر اساس متغیر `NEXT_PUBLIC_API_MODE`.
-  - مسدودسازی هرگونه ایمپورت از پوشه `mock/` در کدهای خارج از SDK.
-- [ ] **توسعه Mock Adapter (`src/sdk/mock/`):**
-  - اعمال تاخیرهای شبکه‌ای ساختگی (۳۰۰ تا ۸۰۰ میلی‌ثانیه) جهت تست لودینگ‌ها.
-  - شبیه‌ساز توابع متدی:
-    - `sdk.tools.list()`: برگرداندن مانیفست‌های آماده ابزارها.
-    - `sdk.tools.execute(toolId, inputs)`: ایجاد فوری یک کار و بازگرداندن `jobId`.
+- [ ] **Wireframe Primitive Kit (`src/shared/ui/wireframes/`):**
+  - Skeleton blocks: `WireframeBox`, `WireframePill`, `WireframeGrid`, `WireframePlaceholder`.
+  - Minimal dashed borders (`border: 1px dashed var(--lemmo-border-default)`).
+- [ ] **Studio Shell Wireframe Layout:**
+  - Navigation sidebar, topbar status rail, and central stage.
+  - Verified across 4 core breakpoints: Mobile (`20rem`), Tablet (`48rem`), Desktop (`80rem`), and Wide (`120rem`).
+- [ ] **Core Surface Wireframes:**
+  - Chat layout: message feed + bottom prompt box.
+  - Canvas layout: infinite board + sample nodes + right-hand inspector.
+  - Asset gallery layout: card grid with standard media aspect ratios (`1:1`, `16:9`).
+
+---
+
+## Milestone 3: Design System Primitives & Studio Shell Assembly
+> **Goal:** Replace simple geometric wireframes with interactive, production-ready design system primitives and studio chrome.
+
+- [ ] **Base Primitives (`src/shared/ui/primitives/`):**
+  - Reusable components: `Button`, `Input`, `Textarea`, `Slider`, `Select`, `Modal`, `Tooltip`, `Badge`.
+  - Native element attribute inheritance, mandatory `forwardRef`, and Radix `asChild` polymorphism.
+- [ ] **Shared Studio Shell (`src/app/(workspace)/layout.tsx`):**
+  - **`AppSidebar`**: Collapsible floating navigation rail with mini-rail mode for mobile/tablet.
+  - **`StudioHeader`**: Lemmo 3-dot triad, language toggle, live token counter, and `ActiveJobIndicator`.
+  - **`SurfaceSwitcher`**: Smooth interactive switcher between Chat (`/chat`) and Canvas (`/canvas`).
+
+---
+
+## Milestone 4: Central SDK Bottleneck & AI Job Simulator (Mock SDK)
+> **Goal:** Implement the central network gateway adhering strictly to the Zero-Leakage Mock Rule so all mock data is distributed through a single bottleneck.
+
+- [ ] **Central `@/sdk` Gateway (`src/sdk/index.ts`):**
+  - Strict `interface SdkClient` contract.
+  - Single-switch toggle via `process.env.NEXT_PUBLIC_API_MODE`.
+  - Ban on external imports from `src/sdk/mock/`.
+- [ ] **Mock Adapter Implementation (`src/sdk/mock/`):**
+  - Simulated latency (300ms to 800ms) for skeleton states.
+  - Mocked endpoints:
+    - `sdk.tools.list()`: returns tool manifests.
+    - `sdk.tools.execute(toolId, inputs)`: returns immediate `jobId`.
     - `sdk.chat.sendMessage()`, `sdk.chat.getThreads()`.
     - `sdk.assets.list()`, `sdk.billing.getBalance()`.
-- [ ] **شبیه‌ساز بلادرنگ پردازش هوش مصنوعی (Job Simulator):**
-  - استور سراسری `jobStore` با Zustand.
-  - تولید چرخه واقعی در فرانت‌اند با تایمر:  
+- [ ] **Simulated Real-time AI Job Manager:**
+  - Global `jobStore` with Zustand.
+  - Realistic lifecycle timer:  
     $$\text{Pending } (0\%) \longrightarrow \text{Processing } (45\%) \longrightarrow \text{Done } (100\%)$$
-  - تولید خودکار یک تصویر یا ویدیو باکیفیت و تزریق آن به استور دارایی‌ها پس از اتمام ۱۰۰٪ کار.
-- [ ] **شبیه‌ساز رهگیری خطای توکن (Token Interceptor):**
-  - شبیه‌سازی خطای `INSUFFICIENT_TOKENS` و ریدایرکت خودکار به صفحه شارژ حساب (`/settings/billing`).
+  - Auto-injects completed media into user assets upon 100% completion.
+- [ ] **Token Exhaustion Interceptor:**
+  - Simulates `INSUFFICIENT_TOKENS` error and redirects to `/settings/billing`.
 
 ---
 
-## مایلستون ۵: موتور رندر خودکار مانیفست‌محور (Schema-Driven Tool Engine)
-> **هدف:** پیاده‌سازی هسته رندر خودکار که بدون نیاز به کدنویسی استاتیک، فرم‌ها و گزینه‌های هر مدل هوش مصنوعی را از روی مانیفست JSON رندر می‌کند.
+## Milestone 5: Schema-Driven Tool Rendering Engine
+> **Goal:** Enable dynamic generation of model parameter forms and node bodies from standard JSON manifests without hardcoded form components.
 
-- [ ] **ماژول رجیستری ابزارها (`src/modules/tool-engine/registry/`):**
-  - کش و نگهداری مانیفست‌ها، اعتبارسنجی اسکیمای ورودی و خروجی.
-- [ ] **رندرر فیلدها (`src/modules/tool-engine/schema-renderer/`):**
-  - کامپوننت مادر `FieldRenderer.tsx`.
-  - کنترلرهای داینامیک:
-    - `TextField`: ورودی پرامپت و توضیحات متنی.
-    - `ImageUploadField`: انتخاب تصویر با Drag & Drop یا انتخاب از گالری داخلی.
-    - `SliderField`: فیلد اسلایدر برای گام‌ها (Steps) یا مقیاس راهنمایی (CFG).
-    - `SelectField`: انتخاب نسبت ابعاد تصویر (`1:1`, `16:9`, `9:16`) یا سبک‌های بصری.
-    - `ToggleField`: کلیدهای فعال/غیرفعال‌سازی گزینه‌های پیشرفته.
-- [ ] **پیاده‌سازی مانیفست‌های کامل تستی (Mock Tool Manifests):**
-  - ابزار ۱: `flux-dev` (تولید تصویر متنی چندپارامتری).
-  - ابزار ۲: `remove-background` (حذف پس‌زمینه تک‌ورودی).
-  - ابزار ۳: `upscale-ultra` (افزایش رزولوشن با ضریب مقیاس).
-  - ابزار ۴: `face-swap` (ترکیب دو تصویر با اعتبارسنجی ورودی).
+- [ ] **Manifest Registry (`src/modules/tool-engine/registry/`):**
+  - Manifest loader, caching, schema validation.
+- [ ] **Dynamic Field Renderer (`src/modules/tool-engine/schema-renderer/`):**
+  - Core `FieldRenderer.tsx` dispatcher.
+  - Field controls: `TextField`, `ImageUploadField`, `SliderField`, `SelectField`, `ToggleField`.
+- [ ] **Standard Mock Tool Manifests:**
+  - `flux-dev`: Text-to-image with multi-field prompt, aspect ratio, steps.
+  - `remove-background`: Single-image input with transparent PNG output.
+  - `upscale-ultra`: Image input with 2x/4x resolution multiplier.
+  - `face-swap`: Dual-image input with input validation.
 
 ---
 
-## مایلستون ۶: پیاده‌سازی دو سطح اصلی تعامل (Chat & Canvas Surfaces)
-> **هدف:** به کار انداختن دو فضای اصلی استودیو با بهره‌گیری هم‌زمان از موتور مشترک ابزارها.
+## Milestone 6: Dual Parallel Surfaces (Chat & Canvas)
+> **Goal:** Bring both creative interaction spaces to life, consuming the shared tool engine.
 
-### ۶.۱. استودیوی چت (`src/modules/chat/` & `src/app/(workspace)/chat/`)
-- [ ] **پنجره گفتگو (`ChatWindow`):**
-  - اسکرول خودکار، نمایش تاریخچه پیام‌ها، حباب‌های پیام کاربر و هوش مصنوعی.
-- [ ] **پیشنهاد و تکمیل خودکار دستورات (`CommandAutocomplete`):**
-  - هنگام تایپ کاراکتر `/` در ورودی، لیست ابزارهای فعال مانیفست باز شود (مانند `/flux`، `/remove-bg`).
-- [ ] **فرم اجرای ابزار درون پیام (Inline Tool Form):**
-  - پس از انتخاب دستور، فرم ابزار مستقیماً توسط `schema-renderer` درون چت ظاهر شود.
-- [ ] **حباب وضعیت پردازش و نتیجه:**
-  - نوار پیشرفت درصدی در حال تولید و نمایش تصویر خروجی نهایی پس از اتمام.
+### 6.1. Conversational Chat Studio (`modules/chat` & `app/(workspace)/chat`)
+- [ ] **`ChatWindow`**: Auto-scrolling feed, bidirectional message bubbles, history.
+- [ ] **`CommandAutocomplete`**: Triggers on `/` input to offer active tools (`/flux`, `/remove-bg`).
+- [ ] **Inline Tool Form**: Expands dynamically via `schema-renderer` directly within chat bubbles.
+- [ ] **Job Progress Bubbles**: Displays percentage completion and renders final output upon completion.
 
-### ۶.۲. استودیوی کانواس (`src/modules/canvas/` & `src/app/(workspace)/canvas/`)
-- [ ] **بوم تعاملی دوبُعدی (`CanvasBoard`):**
-  - قابلیت بزرگ‌نمایی (Zoom)، جابجایی در صفحه (Pan) و گرید شطرنجی پس‌زمینه.
-- [ ] **نودهای ابزار داینامیک (`ToolNode`):**
-  - بدنه نود از روی همان مانیفست رندر شود.
-  - پورت‌های سوکت ورودی و خروجی با رنگ‌های مشخص بر اساس نوع داده (`image`, `text`).
-- [ ] **سیم‌ها و اعتبارسنجی اتصالات (`typedConnection`):**
-  - کشیدن سیم میان نودها با اعتبارسنجی سخت‌گیرانه (فقط اتصال سوکت‌های هم‌نوع مجاز است؛ مثلاً خروجی تصویر به ورودی تصویر).
-- [ ] **منوی افزودن نود (`NodeDiscoveryMenu`):**
-  - کلیک راست روی بوم یا دکمه افزودن، منویی از ابزارهای در دسترس را باز کند تا نود روی بوم ساخته شود.
+### 6.2. Visual Graph Canvas (`modules/canvas` & `app/(workspace)/canvas`)
+- [ ] **`CanvasBoard`**: 2D infinite graph board with Pan & Zoom and background grid.
+- [ ] **Dynamic `ToolNode`**: Schema-rendered node bodies with colored sockets by data type.
+- [ ] **Wire Connections (`typedConnection`):** Strict socket validation (`image` to `image`, `mask` to `mask`).
+- [ ] **`NodeDiscoveryMenu`**: Right-click menu or toolbar to spawn new nodes onto the board.
 
 ---
 
-## مایلستون ۷: ماژول‌های تکمیلی (Assets, Gallery & Billing)
-> **هدف:** تکمیل جریان چرخه کاربر در ذخیره فایل‌ها، کاوش نمونه‌ها و مدیریت اکانت.
+## Milestone 7: Supporting Feature Modules (Assets, Gallery & Billing)
+> **Goal:** Complete the full creative lifecycle: asset archiving, community templates, and token purchasing.
 
-- [ ] **آرشیو و کتابخانه دارایی‌ها (`src/modules/assets/` & `/assets`):**
-  - گرید واکنش‌گرای فایل‌های تولیدشده.
-  - فیلتر بر اساس نوع محتوا (تصاویر، ویدیوها، ابزار تولیدکننده).
-  - مودال پیش‌نمایش بزرگ‌نما، دکمه دانلود، و دکمه «ارسال به کانواس» یا «ارسال به چت».
-- [ ] **گالری عمومی و الگوها (`src/modules/gallery/` & `/gallery`):**
-  - نمایش نمونه‌های خلق‌شده همراه با پرامپت‌ها و تنظیمات استفاده‌شده.
-  - دکمه «کپی در استودیو» (Remix) که تنظیمات را مستقیماً در چت یا کانواس باز می‌کند.
-- [ ] **مدیریت پلن و اعتبارات (`src/modules/billing/` & `/settings/billing`):**
-  - کارت‌های تعرفه، بسته خرید توکن‌های اضافی، و تاریخچه مصرف شبیه‌سازی‌شده.
-  - دکمه شبیه‌سازی اتمام توکن برای تست رفتار کل برنامه.
+- [ ] **Asset Library (`modules/assets` & `/assets`):**
+  - Responsive media grid with image/video filters.
+  - Preview modal, download action, and "Send to Canvas" / "Send to Chat" actions.
+- [ ] **Public Showcase & Gallery (`modules/gallery` & `/gallery`):**
+  - Community prompt inspirations with "Remix in Studio" action.
+- [ ] **Billing & Tokens (`modules/billing` & `/settings/billing`):**
+  - Tier cards, token top-up packs, usage history.
+  - Simulated token exhaustion toggle for end-to-end testing.
 
 ---
 
-## 🎯 مایلستون ۸: گیت طلایی آمادگی اتصال (INTEGRATION-READY GATE)
-> **نقطه عطف استراتژیک:** در این مرحله، **فرانت‌اند بدون حضور بک‌اند کاملاً زنده، مستقل، تعاملی و قابل استفاده است.** کاربر می‌تواند وارد برنامه شود، ابزارها را اجرا کند، فرآیند تولید را ببیند، خروجی‌ها را در گالری ذخیره کند و با هر دو سطح چت و کانواس کار کند.
+## 🎯 Milestone 8: INTEGRATION-READY GATE (Strategic Delivery Gate)
+> **Strategic Checkpoint:** The frontend studio is **100% interactive, clickable, testable, and completely usable without a live backend.** Creators can log in, run tools, watch progress bars, save outputs to assets, and toggle language.
 
-### چک‌لیست تایید نهایی کلاینت قبل از شروع اتصال به سرور:
-- [ ] **تست جامع تجربه کاربری (End-to-End Usability):**
-  - کاربر بدون هیچ خطای کنسولی بتواند سناریوی تولید تصویر در چت را از ابتدا تا انتها طی کند.
-  - کاربر بتواند دو نود را در کانواس بسازد، به هم وصل کند و خروجی را مشاهده نماید.
-- [ ] **ممیزی واکنش‌گرایی کامل (Responsive Audit):**
-  - چیدمان در تمام سایزهای موبایل، تبلت و دسکتاپ بدون افقی شدن اسکرول صفحه یا شکستن چیدمان کار کند.
-- [ ] **تست کامل دوزبانه (i18n & RTL Compliance):**
-  - سوئیچ میان فارسی و انگلیسی بدون ریفرش صفحه و با جابجایی روان تمام اجزای چپ‌به‌راست و راست‌به‌چپ انجام گیرد.
-- [ ] **اعتبارسنجی قانون عدم نشت (Zero-Leakage Audit):**
-  - جستجوی کامل سورس‌کد: هیچ کدی در `src/app/`، `src/modules/` و `src/shared/` از `mock/` ایمپورت نکرده باشد.
-- [ ] **تولید مستند تحویل به تیم بک‌اند (Backend Contract Handover):**
-  - تهیه مشخصات دقیق ورودی/خروجی توابعی که در `src/sdk/` قرار دارند تا مهندسین بک‌اند دقیقاً بدانند سرور باید چه پاسخ‌هایی ارائه دهد.
+### Integration-Ready Verification Checklist:
+- [ ] **End-to-End Functional Usability:**
+  - Zero console errors during complete generation flows in Chat.
+  - Zero errors when creating, wiring, and executing nodes in Canvas.
+- [ ] **Responsive Audit:**
+  - Verified across Mobile, Tablet, Desktop, and Wide screens without horizontal overflow.
+- [ ] **Bilingual & RTL Audit:**
+  - Flawless runtime switching between Persian and English without page reload or visual breaks.
+- [ ] **Zero-Leakage Compliance Audit:**
+  - Source search: Zero imports from `mock/` across `src/app/`, `src/modules/`, and `src/shared/`.
+- [ ] **Backend Contract Handover:**
+  - Precise API specification for all functions exposed in `src/sdk/types.ts` handed to backend engineers.
 
 ---
 
-## مایلستون ۹: سوئیچ تک‌نقطه‌ای و اتصال به سرور واقعی (Live Backend Integration)
-> **هدف:** اتصال نهایی فرانت‌اند کامل‌شده به بک‌اند واقعی بدون دست زدن به کدهای رابط کاربری.
+## Milestone 9: Single-Switch Live Backend Integration
+> **Goal:** Connect the finalized frontend to the real backend without modifying a single UI component.
 
-- [ ] ایجاد پیاده‌سازی واقعی کلاینت در `src/sdk/live/live-adapter.ts` با استفاده از `fetch` تایپ‌شده یا کدهای اتوماتیک OpenAPI/tRPC.
-- [ ] تنظیم مدیریت هدرهای JWT احراز هویت در کلاینت واقعی.
-- [ ] اتصال وب‌سوکت واقعی به `jobStore` جهت دریافت ایونت‌های زنده سرور.
-- [ ] تغییر متغیر محیطی در `.env`:
+- [ ] Implement live network calls in `src/sdk/live/live-adapter.ts` using typed Fetch or generated OpenAPI/tRPC clients.
+- [ ] Connect real WebSocket / SSE streams to `jobStore`.
+- [ ] Toggle environment variable in `.env`:
   ```bash
   NEXT_PUBLIC_API_MODE="live"
   NEXT_PUBLIC_API_BASE_URL="https://api.lemmo.ai"
   ```
-- [ ] تست اتصال بدون تغییر حتی یک کامپوننت یا صفحه در فرانت‌اند!
+- [ ] Validate end-to-end live execution with zero frontend component modifications!

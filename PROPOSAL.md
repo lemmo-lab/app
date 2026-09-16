@@ -1,126 +1,136 @@
-# پروپوزال جامع توسعه محیط کاربری استودیو خلاقیت (Lemmo Workspace App)
+# Lemmo Workspace Studio Proposal: Product Vision & System Architecture
 
-> **سند پیشنهادی معماری و چشم‌انداز فنی و تجاری برنامه کاربردی لیمو**  
-> **نسخه:** ۱.۰.۰ — شهریور ۱۴۰۵ (سپتامبر ۲۰۲۶)  
-> **دامنه پروژه:** هسته نرم‌افزار کاربردی (`/app`) — جدا از پروژه لندینگ و مستندات  
-
----
-
-## ۱. مقدمه اجرایی (Executive Summary)
-
-پروژه **`app`**، هسته مرکزی و محصول اصلی اکوسیستم **Lemmo** است. بر خلاف پروژه `landing` که ویترین بازاریابی و جذب کاربر است و پروژه `docs` که مخزن دانش مهندسی به شمار می‌رود، `app` همان **استودیوی خلاقیت و فضای کار تعاملی (Workspace)** است که کاربران و طراحان ساعت‌ها در آن به خلق دارایی‌های بصری، ویدیویی و متنی با استفاده از هوش مصنوعی می‌پردازند.
-
-رسالت بنیادین این اپلیکیشن:
-> **گذار از چت‌بات‌های تک‌بعدی سنتی به سمت یک استودیوی بصری هیبریدی و چندوجهی.**  
-> کاربر نباید میان ابزارهای مختلف تولید تصویر، ادیت ویدیو، حذف پس‌زمینه و پرامپت‌نویسی متنی سردرگم شود؛ بلکه تمامی این زنجیره در دو رابط مکمل (چت محاوره‌ای + کانواس بی‌پایان گرافی) با یک موتور ابزار متمرکز در اختیار او قرار می‌گیرد.
+> **Architectural, Technical, and Product Proposal for the Core Application (`/app`)**  
+> **Version:** 1.0.0 — September 2026  
+> **Scope:** Core Studio Workspace Application — Decoupled from Landing and Docs repositories  
 
 ---
 
-## ۲. درک عمیق از دوگانگی سطوح تعاملی (The Dual-Surface Paradigm)
+## 1. Executive Summary
 
-نوآوری ساختاری Lemmo Workspace در این اصل نهفته است: **یک مغز متفکر، دو سطح نمایش.**
+The **`app`** project is the vital operational core of the **Lemmo** creative ecosystem. Unlike `landing` (the public-facing marketing window) or `docs` (the single source of technical truth), `app` is the actual **creative studio and generative AI workspace** where creators, designers, and teams interactively produce visual, video, and multimedia assets.
+
+The core mission of the application:
+> **Transitioning from conventional, single-prompt conversational bots into a unified, multimodal visual creative studio.**  
+> Users should never be fragmented across disjointed tools for image generation, inpainting, background removal, or upscaling. Instead, the entire generative lifecycle is orchestrated across two complementary surfaces (linear chat + infinite visual graph canvas), powered by a single, centralized tool engine.
+
+---
+
+## 2. The Dual-Surface Paradigm
+
+The foundational architectural innovation of the Lemmo Workspace lies in the principle: **One Brain, Two Surfaces.**
 
 ```mermaid
 flowchart TD
-    User["کاربر خلاق (Creator / Designer)"]
+    User["Creator / Designer"]
     
-    subgraph Surfaces["سطوح نمایش موازی (Surfaces)"]
-        Chat["سطح ۱: محیط گفتگومحور (Chat Surface)
-        - تعامل خطی و مکالمه
-        - پرامپت‌نویسی سریع
-        - اجرای آنی دستورات (/remove-bg)
-        - فرم‌های درون‌متنی"]
+    subgraph Surfaces["Dual Parallel Interaction Surfaces"]
+        Chat["Surface 1: Conversational Chat Studio
+        - Linear thread interaction
+        - Rapid prompt authoring
+        - Immediate command execution (/remove-bg)
+        - Dynamic inline parameter forms"]
         
-        Canvas["سطح ۲: بوم دوبُعدی نودبیس (Canvas Surface)
-        - تعامل غیرخطی و بی‌پایان
-        - اتصال بصری ابزارها (Chaining)
-        - پایپ‌لاین‌های پیچیده گرافیکی
-        - سوکت‌های اعتبارسنجی‌شده"]
+        Canvas["Surface 2: Node-Based Visual Graph Canvas
+        - Non-linear, 2D infinite workspace
+        - Visual tool chaining & pipelines
+        - Complex multi-step generative workflows
+        - Type-validated input/output sockets"]
     end
     
-    User -->|نیاز به ایده و اجرای سریع| Chat
-    User -->|نیاز به ترکیب و گردش‌کار پیچیده| Canvas
+    User -->|Immediate execution & quick edits| Chat
+    User -->|Complex multi-step generative pipelines| Canvas
     
-    Chat --> Engine["هسته مرکزی ابزارها (Tool Engine)
-    - رجیستری واحد مانیفست‌ها
-    - رندرر اسکیما (Schema Renderer)
-    - مدیر بلادرنگ پردازش‌ها (Job Manager)"]
+    Chat --> Engine["Central Tool Engine (modules/tool-engine)
+    - Unified Manifest Registry
+    - Dynamic Schema Renderer
+    - Global Async Job Manager"]
     Canvas --> Engine
     
-    Engine --> SDK["درگاه یکپارچه شبکه (@/sdk)"]
-    SDK --> Backend["سرویس‌های ابری و مدل‌های مولد (AI Pipelines)"]
+    Engine --> SDK["Central SDK Gateway (@/sdk)"]
+    SDK --> Backend["Cloud AI Pipelines & Models"]
 ```
 
-### ۱. سطح چت (Chat Surface)
-- برای طراحانی است که می‌خواهند بدون درگیر شدن با نودها، سریعاً با دستورات متنی نظیر `/upscale` یا `/remove-bg` روی یک عکس تغییرات اعمال کنند.
-- پارسر کامند، فرم‌های ورودی را به طور خودکار از روی مانیفست ابزار می‌سازد و درون حباب‌های چت قرار می‌دهد.
+### 1. Chat Surface (`/chat`)
+- Designed for creators seeking rapid, conversational edits without configuring node graphs.
+- Direct slash-commands (e.g. `/flux`, `/upscale`, `/remove-bg`) dynamically expand into inline parameter forms directly inside chat bubbles.
 
-### ۲. سطح کانواس (Canvas Surface)
-- برای گردش‌کارهای حرفه‌ای (مشابه ComfyUI و پلتفرم‌های ساخت پایپ‌لاین هوش مصنوعی) که خروجی یک ابزار (مانند Text-to-Image) باید به ورودی ابزار دیگر (مانند Inpainting یا Upscaler) متصل شود.
-- نودها به صورت خودکار از همان مانیفست ابزار ساخته شده و سوکت‌های ورودی و خروجی تایپ‌شده دارند (`image` فقط به `image` و `text` فقط به `text` وصل می‌شود).
+### 2. Canvas Surface (`/canvas`)
+- Tailored for advanced, multi-stage pipelines (inspired by ComfyUI and Figma), where outputs of one model (e.g., text-to-image) feed into another (e.g., inpainting or 4x upscaler).
+- Interactive nodes are dynamically generated from tool schemas, enforcing strictly typed socket connections (`image` connects strictly to `image`, `mask` to `mask`).
 
 ---
 
-## ۳. معماری فنی و مهندسی لایه‌بندی‌شده (Technical Architecture)
+## 3. Layered Technical Architecture
 
-پروژه بر پایه **Next.js (App Router)** با ساختار ماژولار و تفکیک سخت‌گیرانه دامنه‌ها پیاده‌سازی می‌شود. جهت وابستگی در این پروژه همیشه یک‌طرفه و تغییرناپذیر است:
+The studio is constructed on **Next.js (App Router)** adhering to a strict, non-negotiable unidirectional dependency hierarchy:
 $$\text{app} \longrightarrow \text{modules} \longrightarrow \text{tool-engine} \longrightarrow \text{sdk} \longrightarrow \text{backend}$$
 
 ```
 src/
-├── app/                                  # فقط لایه روتینگ و لایوت (Next.js App Router)
-│   ├── (workspace)/                      # پوسته اصلی استودیو (نیاز به لاگین)
-│   │   ├── layout.tsx                    # سایدبار تعاملی، نوار هدر و پایش سراسری Job
-│   │   ├── chat/[[...threadId]]/         # استودیوی چت خطی
-│   │   ├── canvas/[[...boardId]]/        # بوم نامحدود دوبُعدی
-│   │   ├── gallery/                      # ویترین عمومی و الگوهای پرامپت
-│   │   ├── assets/                       # خروجی‌ها و فایل‌های شخصی کاربر
-│   │   └── settings/billing/             # مدیریت پلن و خرید بسته‌های توکن
-│   └── (auth)/                           # صفحات ورود و ثبت‌نام
+├── app/                                  # Route and layout layer only (Next.js App Router)
+│   ├── (workspace)/                      # Authenticated workspace studio shell
+│   │   ├── layout.tsx                    # Shared studio shell: sidebar, topbar, active job tracker
+│   │   ├── chat/[[...threadId]]/         # Linear conversational studio
+│   │   ├── canvas/[[...boardId]]/        # Infinite 2D node-graph canvas
+│   │   ├── gallery/                      # Community showcase & prompt templates
+│   │   ├── assets/                       # User asset library & output archive
+│   │   └── settings/billing/             # Token balance, plan tiers & credit packs
+│   └── (auth)/                           # Authentication routes (login, register)
 │
-├── modules/                              # منطق دامنه (Domain Logic) — کاملاً ماژولار و تست‌پذیر
-│   ├── tool-engine/                      # هسته پلاگین ابزارها (منبع حقیقت چت و کانواس)
-│   │   ├── registry/                     # ثبت، جستجو و کش Manifestها
-│   │   ├── schema-renderer/              # نگاشت خودکار نوع داده‌ها به کامپوننت‌های فرم و نود
-│   │   ├── job-manager/                  # وضعیت بلادرنگ پردازش‌های هوش مصنوعی (Job Store)
-│   │   └── plugin-loader/                # بستر آینده برای پلاگین‌های کدنویسی‌شده ثالث
-│   ├── chat/                             # ماژول مستقل چت (کامپوننت‌ها، پارسر کامند، هوک‌ها)
-│   ├── canvas/                           # ماژول مستقل کانواس (بورد گراف، نودها، قوانین اتصالات)
-│   ├── gallery/                          # ماژول کاوش در دارایی‌های عمومی
-│   ├── assets/                           # ماژول گالری فایل‌ها با گوش دادن به خروجی ابزارها
-│   └── billing/                          # ماژول محاسبه توکن و نمایش بسته‌ها
+├── modules/                              # Domain logic modules — independent & isolated
+│   ├── tool-engine/                      # The single source of truth for tools
+│   │   ├── registry/                     # Manifest loader, registry, caching
+│   │   ├── schema-renderer/              # Dynamic UI generation from JSON schemas
+│   │   ├── job-manager/                  # Global async AI job state store (Zustand)
+│   │   └── plugin-loader/                # Foundation for future sandboxed code plugins
+│   ├── chat/                             # Chat domain components, command parser, hooks
+│   ├── canvas/                           # Graph board, tool nodes, socket connection rules
+│   ├── gallery/                          # Template discovery & remix hooks
+│   ├── assets/                           # Asset grid, filtering, job completion listeners
+│   └── billing/                          # Plan cards, token balance & checkout hooks
 │
-├── sdk/                                   # تنها دروازه ارتباط با سرور و APIها
-│   ├── client.ts                          # پیکربندی پایه و تزریق خودکار توکن کاربر
-│   ├── generated/                         # کدهای تایپ‌شده اتوماتیک از OpenAPI/tRPC
-│   ├── tools.ts                           # فراخوانی متدهای پردازشی ابزارها
-│   └── interceptors/                      # رهگیر خطای اتمام توکن (ریدایرکت خودکار به پلن‌ها)
+├── sdk/                                   # Sole network gateway to backend
+│   ├── client.ts                          # Base configuration & token injection
+│   ├── types.ts                           # Shared SdkClient interface contract
+│   ├── mock/                              # Zero-leakage mock adapter & job simulator
+│   ├── live/                              # Live typed HTTP & WebSocket client
+│   └── interceptors/                      # Central token exhaustion redirect interceptor
 │
-├── shared/                                # لایه بدون دامنه (Pure UI & Helpers)
-│   ├── ui/                                # کامپوننت‌های اتمیک دیزاین سیستم (Button, Modal, Input, ...)
-│   ├── hooks/                             # هوک‌های کمکی (useMediaQuery, useDebounce, ...)
-│   └── types/                             # تایپ‌های عمومی پروژه
+├── shared/                                # Domain-agnostic reusable primitives
+│   ├── ui/                                # Button, Input, Slider, Modal, Tooltip
+│   ├── hooks/                             # useDirection, useMediaQuery, useDebounce
+│   └── types/                             # Common global TypeScript definitions
 │
-└── stores/                                # وضعیت‌های کلاینتی سراسری (سایدبار، تم و ترجیحات کاربر)
+└── stores/                                # Global client UI state (sidebar, theme)
 ```
 
 ---
 
-## ۴. سه ستون کلیدی در حل چالش‌های محصولی
+## 4. In-Code Language & Comment Standards (Mandatory)
 
-### ستون اول: سیستم ابزار مانیفست‌محور (Schema-Driven Tool System)
-- **چالش:** هوش مصنوعی روزانه پیشرفت می‌کند؛ هر هفته ابزارهای جدیدی (مانند تبدیل عکس به مدل سه‌بعدی یا مدل‌های تبدیل صوت به تصویر) به پلتفرم اضافه می‌شوند. اگر برای هر ابزار نیاز به طراحی صفحه، فرم و دیپلوی فرانت‌اند باشد، مقیاس‌پذیری از بین می‌رود.
-- **راه‌حل لیمو:** هر ابزار یک فایل مانیفست JSON است. افزودن ابزار جدید = ارسال یک مانیفست از سمت سرور به رجیستری فرانت‌اند. فرم‌های ورودی در چت و گره‌های تعاملی در کانواس بدون هیچ تغییر کدی در فرانت‌اند فوراً متولد می‌شوند.
+> 🚨 **MANDATORY ENGINEERING RULE: ENGLISH-ONLY IN CODE, COMMENTS & CAPTIONS**  
+> - **All code comments, function docstrings, JSDoc/TSDoc annotations, component captions, variable names, and commit messages MUST be written strictly in clear, professional English.**
+> - Non-English comments (such as Persian comments) inside `.ts`, `.tsx`, `.js`, `.css`, or code blocks are **strictly forbidden**.
+> - User-facing UI copy supports both Persian and English via the i18n subsystem, but all underlying engineering artifacts, logic documentation, and codebase comments remain 100% English.
+
+---
+
+## 5. Core Architectural Pillars
+
+### Pillar 1: Schema-Driven Tool Engine
+- **Challenge:** Generative AI models evolve weekly. Requiring frontend deployments and hardcoded forms for every new model destroys velocity.
+- **Solution:** Every AI capability is defined as a standard JSON Tool Manifest. Adding an AI tool requires registering a JSON manifest with zero frontend component code changes. The `schema-renderer` dynamically renders form controls in Chat and node controls in Canvas.
 
 ```json
 {
   "id": "flux-image-gen",
   "command": "/flux",
-  "displayName": "تولید تصویر با Flux",
+  "displayName": "Flux Image Generator",
   "surfaces": ["chat", "canvas"],
   "renderer": "schema",
   "inputs": [
-    { "name": "prompt", "type": "string", "label": "توصیف متنی", "required": true },
+    { "name": "prompt", "type": "string", "label": "Prompt", "required": true },
     { "name": "aspect_ratio", "type": "select", "options": ["1:1", "16:9", "9:16"], "default": "1:1" },
     { "name": "steps", "type": "slider", "min": 20, "max": 50, "default": 28 }
   ],
@@ -131,58 +141,14 @@ src/
 }
 ```
 
-### ستون دوم: چرخه پردازش ناهمگام هوش مصنوعی (Global AI Job Manager)
-- **چالش:** مدل‌های هوش مصنوعی زایشی به دلیل پیچیدگی پردازشی، خروجی بلادرنگ میلی‌ثانیه‌ای ندارند؛ تولید یک تصویر ممکن است ۵ ثانیه و تولید یک ویدیو ۲ دقیقه زمان ببرد.
-- **راه‌حل لیمو:**
-  1. درخواست اجرای ابزار فوراً یک `jobId` بازمی‌گرداند.
-  2. وضعیت درخواست وارد چرخه $\text{Pending} \rightarrow \text{Processing} \rightarrow \text{Done} \mid \text{Error}$ در استور متمرکز Zustand می‌شود.
-  3. اتصال WebSocket / SSE وضعیت را ثانیه‌به‌ثانیه در کل برنامه مخابره می‌کند: نوار پیشرفت در هدر بالا می‌درخشد، در کانواس لودینگ روی همان نود نمایش می‌یابد، و در چت وضعیت درصد پردازش درج می‌شود.
-  4. به محض اتمام پردازش، نتیجه به طور خودکار به آرشیو `assets/` افزوده می‌شود بدون آنکه بخش‌های برنامه به یکدیگر وابسته باشند.
+### Pillar 2: Global Asynchronous AI Job Manager
+- **Challenge:** Generative models take seconds or minutes to generate high-fidelity assets.
+- **Solution:**
+  1. Triggering a tool immediately yields a `jobId`.
+  2. The job enters the lifecycle: $\text{Pending} \longrightarrow \text{Processing} \longrightarrow \text{Done} \mid \text{Error}$.
+  3. Real-time updates (WebSocket/SSE) sync across all surfaces: the global topbar displays progress, the canvas node shows live processing state, and chat bubbles show completion percentage.
+  4. On completion, the output automatically appears in the user's `assets/` library with zero coupling between Canvas, Chat, and Assets.
 
-### ستون سوم: تفکیک سیستم مالی و مصرف توکن (SDK Token Interceptor)
-- **چالش:** هیچ کامپوننت فرانت‌اندی یا دکمه‌ای نباید منطق پیچیده اعتبارسنجی مالی یا قوانین پرداخت را در خود جای دهد.
-- **راه‌حل لیمو:** لایه `@/sdk` خطای `INSUFFICIENT_TOKENS` را در لایه رهگیر کلاینت دریافت کرده و رویداد هدایت کاربر به `/settings/billing` را فعال می‌کند. این ایزوله‌سازی باعث حفظ پاکیزگی معماری می‌شود.
-
----
-
-## ۵. نقشه راه و فازبندی پیاده‌سازی (Execution Roadmap)
-
-```mermaid
-flowchart LR
-    Phase1["فاز ۱: هسته و زیرساخت
-    - راه‌اندازی Next.js App Router
-    - لایوت Workspace و سایدبار
-    - یکپارچه‌سازی دیزاین توکن‌ها"]
-    
-    Phase2["فاز ۲: لایه SDK و Job Manager
-    - کلاینت ایزوله API
-    - وب‌سوکت وضعیت پردازش‌ها
-    - رهگیر خطای توکن"]
-    
-    Phase3["فاز ۳: موتور ابزارها (Tool Engine)
-    - ریجستری مانیفست‌ها
-    - رندرر خودکار فیلدها
-    - اعتبارسنجی داده‌ها"]
-    
-    Phase4["فاز ۴: سطوح کاربری (Surfaces)
-    - پیاده‌سازی چت و کامندها
-    - پیاده‌سازی بوم گراف کانواس
-    - صفحات Assets و Billing"]
-    
-    Phase1 --> Phase2 --> Phase3 --> Phase4
-```
-
-| فاز | تمرکز کلیدی | خروجی ملموس |
-| :--- | :--- | :--- |
-| **۱. پی‌ریزی و شل استودیو** | پیکربندی Next.js، احراز هویت و لایوت‌های اختصاصی | رابط کاربری کلی فضای کار با قابلیت جابجایی بین چت و کانواس |
-| **۲. ارتباطات و پایش وضعیت** | ساخت پکیج `@/sdk` و پایپ‌لاین اتصال بلادرنگ WebSocket/SSE | ارسال درخواست‌های شبیه‌سازی‌شده و به‌روزرسانی نوار وضعیت Job |
-| **۳. هسته پلاگین ابزارها** | پیاده‌سازی `tool-engine` و کامپوننت‌های رندرر خودکار فیلدها | نمایش پویا و خودکار فرم‌های ورودی ابزارها صرفاً از روی فایل JSON |
-| **۴. پیاده‌سازی استودیوی چت** | ساخت ماژول چت، پیشنهاددهنده دستورات (`/`) و کامپوننت‌های پیام | امکان اجرای دستورات هوش مصنوعی از طریق مکالمه |
-| **۵. پیاده‌سازی استودیوی کانواس** | ادغام بورد دوبُعدی، نودهای مانیفست‌محور و قانون اتصال سیم‌ها | ایجاد پایپ‌لاین چندمرحله‌ای بصری برای تولید و ویرایش محتوا |
-| **۶. ماژول‌های تکمیلی و تحویل نهایی** | اتصال کتابخانه دارایی‌ها (`assets`) و مدیریت اعتبارات (`billing`) | فضای کاری کامل، یکپارچه، تست‌شده و آماده استفاده کاربران |
-
----
-
-## ۶. جمع‌بندی و نتیجه‌گیری
-
-پروژه `app` یک اپلیکیشن معمولی وب نیست؛ این محصول **موتور محرک و عامل تمایز رقابتی پلتفرم Lemmo** در دنیای ابزارهای هوش مصنوعی است. تفکیک دقیق لایه‌ها، بهره‌گیری از سیستم ابزار داده‌محور (Schema-driven)، پایش ناهمگام وضعیت پردازش‌ها و ارائه دو سطح تعامل چت و کانواس، محصولی را به ارمغان می‌آورد که در برابر هرگونه رشد سریع مدل‌های هوش مصنوعی و نیازهای بصری کاربران کاملاً پایدار، مقیاس‌پذیر و ماندگار است.
+### Pillar 3: Single-Switch Zero-Leakage SDK Gateway
+- **Challenge:** Components should never be tied to specific backend URLs, nor should they know whether data is coming from mock or live servers.
+- **Solution:** Components consume exclusively `import { sdk } from '@/sdk'`. Both the mock adapter and live client implement the identical `SdkClient` contract. Migrating to live backend requires toggling a single environment variable (`NEXT_PUBLIC_API_MODE="live"`) with zero frontend refactoring.

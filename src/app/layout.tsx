@@ -1,6 +1,6 @@
 /**
- * Root Layout — لایوت ریشه برنامه
- * مسئول تنظیم تگ html با dir/lang صحیح بر اساس ترجیح کاربر
+ * Root Layout — Application root layout.
+ * Sets the default html dir/lang to RTL/FA; updated dynamically by DirectionProvider on the client.
  */
 
 import type { Metadata } from 'next';
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // مقدار پیش‌فرض rtl/fa — توسط DirectionProvider در کلاینت به‌روز می‌شود
+    // Default: rtl/fa — updated by DirectionProvider on the client after hydration
     <html lang="fa" dir="rtl" data-theme="default" data-locale="fa" suppressHydrationWarning>
       <body>
         <DirectionProvider>{children}</DirectionProvider>

@@ -1,6 +1,6 @@
 /**
- * Gallery Page — گالری الگوها و نمونه‌های عمومی
- * TODO M7: پیاده‌سازی گرید گالری و دکمه Remix
+ * Gallery Page — Public gallery of generated examples and templates.
+ * TODO M7: Implement gallery grid and Remix button.
  */
 export default function GalleryPage() {
   return (

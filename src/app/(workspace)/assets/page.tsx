@@ -1,6 +1,6 @@
 /**
- * Assets Page — آرشیو و کتابخانه دارایی‌ها
- * TODO M7: پیاده‌سازی گرید دارایی‌ها و مودال پیش‌نمایش
+ * Assets Page — User asset library and archive.
+ * TODO M7: Implement asset grid and preview modal.
  */
 export default function AssetsPage() {
   return (

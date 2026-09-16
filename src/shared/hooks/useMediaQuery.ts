@@ -1,12 +1,12 @@
 /**
- * useMediaQuery — هوک واکنش‌گرایی برای بریک‌پوینت‌های تعریف‌شده در ROADMAP
+ * useMediaQuery — Responsive breakpoint hook for standard Lemmo screen sizes.
  */
 
 'use client';
 
 import { useEffect, useState } from 'react';
 
-/** بریک‌پوینت‌های استاندارد پروژه */
+/** Standard project breakpoints as defined in the ROADMAP */
 export const BREAKPOINTS = {
   mobile: '(max-width: 47.9375rem)',    // < 768px
   tablet: '(min-width: 48rem)',          // >= 768px
@@ -29,7 +29,7 @@ export function useMediaQuery(query: string): boolean {
   return matches;
 }
 
-/** هوک‌های آماده برای بریک‌پوینت‌های رایج */
+/** Convenience hooks for common breakpoints */
 export function useIsMobile() {
   return useMediaQuery(BREAKPOINTS.mobile);
 }

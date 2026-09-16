@@ -1,6 +1,5 @@
 /**
- * Home Page — صفحه اصلی
- * ریدایرکت به استودیو چت به عنوان نقطه ورود پیش‌فرض
+ * Home Page — Redirects to the default studio entry point (/chat).
  */
 
 import { redirect } from 'next/navigation';

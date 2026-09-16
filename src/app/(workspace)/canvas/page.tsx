@@ -1,6 +1,6 @@
 /**
- * Canvas Page — صفحه بوم تعاملی
- * TODO M6: پیاده‌سازی CanvasBoard, ToolNode, typedConnection
+ * Canvas Page — Lemmo interactive canvas surface.
+ * TODO M6: Implement CanvasBoard, ToolNode, typedConnection.
  */
 export default function CanvasPage() {
   return (

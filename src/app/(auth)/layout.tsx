@@ -1,5 +1,5 @@
 /**
- * Auth Layout — لایوت صفحات احراز هویت
+ * Auth Layout — Centered layout for authentication pages.
  */
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

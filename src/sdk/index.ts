@@ -1,15 +1,15 @@
 /**
- * SDK Index — گلوگاه متمرکز داده‌رسانی
+ * SDK Index — Centralized data access bottleneck.
  *
- * تنها فرم مجاز مصرف داده در کل فرانت‌اند:
+ * The ONLY permitted way to consume data anywhere in the frontend:
  *   import { sdk } from '@/sdk';
  *   const result = await sdk.tools.list();
  *
- * سوئیچ تک‌نقطه‌ای بر اساس NEXT_PUBLIC_API_MODE:
- *   - 'mock' (پیش‌فرض توسعه): MockAdapter با داده‌های شبیه‌سازی‌شده
- *   - 'live': LiveAdapter برای اتصال به سرور واقعی (M9)
+ * Single-switch migration via NEXT_PUBLIC_API_MODE:
+ *   - 'mock' (default during development): MockAdapter with simulated data
+ *   - 'live': LiveAdapter connecting to the real backend (M9)
  *
- * هیچ کدی خارج از این فایل نباید از mock/ یا live/ ایمپورت کند.
+ * No code outside this file may import from mock/ or live/.
  */
 
 import type { SdkClient } from './types';
@@ -19,11 +19,11 @@ const isLiveMode =
   typeof process !== 'undefined' &&
   process.env.NEXT_PUBLIC_API_MODE === 'live';
 
-// در M9: import { liveSdkAdapter } from './live/live-adapter';
+// M9: import { liveSdkAdapter } from './live/live-adapter';
 // const sdk: SdkClient = isLiveMode ? liveSdkAdapter : mockSdkAdapter;
 
 export const sdk: SdkClient = isLiveMode
-  ? (mockSdkAdapter as SdkClient) // placeholder تا M9
+  ? (mockSdkAdapter as SdkClient) // placeholder until M9
   : mockSdkAdapter;
 
 export type { SdkClient } from './types';

@@ -1,6 +1,6 @@
 /**
- * useDirection — هوک خواندن جهت‌بندی جاری از استور
- * استفاده در کامپوننت‌هایی که باید به RTL/LTR واکنش نشان دهند
+ * useDirection — Hook for reading the current text direction from the UI store.
+ * Use in components that need to respond to RTL/LTR changes.
  */
 
 'use client';

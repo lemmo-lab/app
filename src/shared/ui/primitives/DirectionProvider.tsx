@@ -1,10 +1,10 @@
 /**
- * DirectionProvider — کامپوننت کلاینت برای مدیریت پویای جهت‌بندی RTL/LTR
+ * DirectionProvider — Client component for dynamic RTL/LTR direction management.
  *
- * این کامپوننت:
- * ۱. زبان ذخیره‌شده در localStorage را هنگام mount می‌خواند
- * ۲. تگ <html> را با dir/lang/data-locale صحیح به‌روز می‌کند
- * ۳. در هر تغییر locale از استور، HTML را واکنش‌گرا به‌روز می‌کند
+ * Responsibilities:
+ * 1. Reads the persisted locale from localStorage on mount.
+ * 2. Syncs the <html> element's dir, lang, and data-locale attributes.
+ * 3. Reacts to any locale change in the UI store and updates the DOM accordingly.
  */
 
 'use client';

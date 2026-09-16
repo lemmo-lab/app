@@ -1,106 +1,109 @@
-# بلوپرینت جامع توسعه فرانت‌اند برنامه کاربردی (Lemmo Workspace App Blueprint)
+# Lemmo Workspace Studio Frontend Blueprint
 
-> **سند نقشه راه اجرایی، استراتژی توسعه Front-First و استانداردهای پیاده‌سازی**  
-> **نسخه:** ۱.۰.۰ — شهریور ۱۴۰۵ (سپتامبر ۲۰۲۶)  
-> **محیط پروژه:** `/home/behroz/Documents/Git/lemu/app`  
-> **رویکرد بنیادین:** توسعه کامل و مستقل کلاینت با داده‌های مصنوعی (Mock-Driven)، اعتبارسنجی هندسی با وایرفریم‌های فیگما، و سپس اتصال به بک‌اند.
+> **Executive Blueprint, Front-First Development Strategy & Engineering Standards**  
+> **Version:** 1.0.0 — September 2026  
+> **Target Project:** `/home/behroz/Documents/Git/lemu/app`  
+> **Core Methodology:** Standalone Front-First development powered by Zero-Leakage Mock data, geometric Figma wireframing with simple shapes, and single-switch live backend migration.
 
 ---
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────────────┐
-│                           چرخه توسعه فرانت‌اند FRONT-FIRST                        │
+│                       FRONT-FIRST STUDIO DEVELOPMENT LIFECYCLE                    │
 ├───────────────────────────────────────────────────────────────────────────────────┤
-│ 1. فونداسیون (Next.js + i18n دوزبانه + توکن‌های برند Lemmo)                         │
+│ 1. Foundations (Next.js App Router + Bilingual RTL/LTR + Lemmo Tokens)            │
 │                                    ▼                                              │
-│ 2. وایرفریمینگ هندسی ساده (Simple Shapes بر مبنای چیدمان فیگما)                    │
+│ 2. Geometric Wireframing (Simple Shapes aligned with Figma Layouts)               │
 │                                    ▼                                              │
-│ 3. پیاده‌سازی کامپوننت‌ها و دیزاین سیستم بر بستر وایرفریم‌ها                         │
+│ 3. Design System & Studio Shell Assembly (Sidebar, Header, Surface Switcher)      │
 │                                    ▼                                              │
-│ 4. راه‌اندازی هسته Schema-Driven برای رندر پویای ابزارها                             │
+│ 4. Schema-Driven Tool Rendering Engine (Manifests -> Dynamic Controls)           │
 │                                    ▼                                              │
-│ 5. شبیه‌سازی کامل چرخه حیات داده‌ها و Jobها با لایه Mock SDK                        │
+│ 5. Full Simulation of AI Job Lifecycles via Zero-Leakage Mock SDK                 │
 │                                    ▼                                              │
-│ 6. تست جامع تجربه کاربری، رسپانسیو و دسترسی‌پذیری                                  │
+│ 6. End-to-End Usability, Responsiveness & Accessibility Testing                   │
 │                                    ▼                                              │
-│ 7. سوئیچ نهایی: اتصال کلاینت تایپ‌شده SDK به اندپوینت‌های واقعی بک‌اند               │
+│ 7. Integration-Ready Handover: Single-switch connection to live backend           │
 └───────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ۱. فونداسیون فنی و پیکربندی اولیه (Project Initialization)
+## 1. Technical Foundations & Initialization
 
-### ۱.۱. استک تکنولوژی و هم‌نسخه‌سازی
-- **فریم‌ورک:** **Next.js (App Router)** هم‌نسخه با لایه UI و استاندارد روز (`React 19.3.0` و `React-DOM 19.3.0`).
-- **تایپ‌سیفتی:** TypeScript در بالاترین سطح سخت‌گیری (`strict: true`).
-- **مدیریت استیت:**
-  - **کلاینت و وضعیت لحظه‌ای ابزارها:** `Zustand` (استورهای سبک و تفکیک‌شده: `uiStore`، `jobStore`).
-  - **کش داده‌ها و وضعیت‌های شبیه‌سازی‌شده سرور:** `@tanstack/react-query`.
-- **آیکونوگرافی:** بسته رسمی **`synthline/react`** (تنها کتابخانه مجاز، ضخامت خط ثابت `strokeWidth={1.5}`، رنگ بر پایه `currentColor`).
+### 1.1. Core Tech Stack
+- **Framework:** **Next.js (App Router)** matching UI standard (`React 19.3.0` & `React-DOM 19.3.0`).
+- **Language:** TypeScript with strict enforcement (`strict: true`).
+- **State Management:**
+  - **Client & Real-time State:** `Zustand` (isolated stores: `uiStore`, `jobStore`).
+  - **Server Data Caching:** `@tanstack/react-query`.
+- **Iconography:** Exclusive official **`synthline/react`** library (uniform `strokeWidth={1.5}`, dynamic `currentColor`).
 
-### ۱.۲. پشتیبانی دوزبانه (Bilingual i18n & RTL/LTR Engine)
-سیستم از همان روز اول به صورت دو زبانه کامل طراحی می‌شود:
-- **فارسی (پیش‌فرض منطقه‌ای):** جهت‌بندی راست‌به‌چپ (`dir="rtl"`).
-- **انگلیسی:** جهت‌بندی چپ‌به‌راست (`dir="ltr"`).
-- **لایوت هوشمند جهت‌دار:** استفاده از کلاس‌های مدرن منطقی CSS (نظیر `margin-inline-start`, `padding-inline-end`, `inset-inline-start`) به جای مقادیر سخت‌کد شده چپ/راست تا تمامی صفحات، سایدبارها و نودهای کانواس بدون تغییر در CSS با تغییر جهت ورق بخورند.
+### 1.2. In-Code Language & Comment Standards (Strict Policy)
+> 🚨 **MANDATORY CODING RULE: ENGLISH-ONLY IN CODE, COMMENTS & CAPTIONS**  
+> - **All in-code comments, JSDoc/TSDoc type annotations, docstrings, variable names, and commit messages MUST be written strictly in clear, professional English.**
+> - Non-English comments (e.g. Persian script) inside `.ts`, `.tsx`, `.js`, `.css`, or code blocks are **strictly banned**.
+> - While the user-facing UI supports Persian via i18n, the underlying code implementation, architectural rationale, and engineering comments must remain 100% English.
 
-### ۱.۳. هویت برند و تایپوگرافی دیزاین سیستم Lemmo
-تمام استایل‌ها مقید به توکن‌های رسمی هستند:
-- **پالت رنگی:** استفاده انحصاری از متغیرهای `--lemmo-*` (مانند `--lemmo-surface-primary`، `--lemmo-interactive-primary`، `--lemmo-text-primary` و رنگ‌های وضعیت `--lemmo-status-*`).
-- **فونت‌های اختصاصی:**
-  - **فارسی:** عناوین با فونت نمایشی **Morabba** و متون بدنه با فونت **IRANSansX** (با بازه وزنی `100 1000`).
-  - **انگلیسی:** عناوین اصلی با **Oddval** (وزن 600 SemiBold) و متون بدنه و اعداد با **Satoshi** (متغیر 300–900).
-- **نشان بصری:** ادغام نشان ترایاد ۳ نقطه‌ای برند Lemmo در هدر استودیو و لودینگ‌ها.
+### 1.3. Bilingual i18n & Logical CSS Directionality
+- **Bilingual Support:** Persian (FA) and English (EN).
+- **Logical CSS Properties:** Modern logical CSS declarations (e.g., `margin-inline-start`, `padding-inline-end`, `inset-inline-start`) are enforced across all components, enabling seamless RTL/LTR layout mirroring without maintaining parallel stylesheets.
+- Root layout dynamically reflects language and direction: `<html lang="fa" dir="rtl" data-theme="default">`.
+
+### 1.4. Design Tokens & Official Dark Theme
+All visual styles strictly consume the `@lemmo-lab/tokens` package:
+- **Default Dark Theme:** Primary canvas `#131517`, elevated cards `#1c1e20` / `#23262a`, primary interactive accent `#d1fe17` (WCAG AAA compliant 14.02:1).
+- **Typography:**
+  - Persian: **Morabba** for display titles; **IRANSansX** (variable `100 1000`) for body.
+  - English: **Oddval 600** for high-impact headings; **Satoshi Variable** (300–900) for body and numerals.
 
 ---
 
-## ۲. استراتژی توسعه کلاینت با داده‌های مصنوعی (Zero-Leakage Mock Strategy)
+## 2. Zero-Leakage Mock Strategy
 
-> **اصل محوری:** تا زمانی که فرانت‌اند ۱۰۰٪ کامل نشده و تجربه کاربری در تعامل با تمام ابزارها تایید نگرفته است، هیچ وابستگی‌ای به بک‌اند وجود نخواهد داشت.
+> **Core Principle:** The frontend is engineered and tested to 100% completion without any dependency on a live backend.
 
-### ۲.۱. قانون طلایی عدم نشت داده‌های ساختگی (Zero-Leakage Architectural Rule)
-- **ممنوعیت مطلق نفوذ Mock به فرانت‌اند:** هیچ صفحه، کامپوننت، هوک یا ماژولی در لایه‌های `app/`، `modules/` یا `shared/` نباید بداند که داده‌ها ساختگی هستند یا واقعی.
-- **ایمپورت انحصاری از یک گلوگاه:** تمامی بخش‌های فرانت‌اند منحصراً توابع تایپ‌شده را از `@/sdk` ایمپورت می‌کنند:
+### 2.1. The Zero-Leakage Architectural Rule
+- **Absolute Mock Isolation:** No component, hook, or page in `src/app/`, `src/modules/`, or `src/shared/` may ever import from a `mock` directory or have awareness that data is simulated.
+- **Sole Import Bottleneck:** All data operations are invoked strictly via `@/sdk`:
   ```typescript
-  // تنها فرم مجاز مصرف داده در کل فرانت‌اند:
+  // The only permitted data consumption pattern across the frontend:
   import { sdk } from '@/sdk';
   
-  // فراخوانی متدها بدون دانش از محل تامین داده:
+  // Clean invocation without knowledge of whether it's mock or live:
   const result = await sdk.tools.generateImage(payload);
   const thread = await sdk.chat.getThread(threadId);
   ```
-- هیچ کدی خارج از پوشه `src/sdk/` اجازه ندارد از مسیرهای حاوی واژه `mock` ایمپورت کند.
 
 ```mermaid
 flowchart TD
-    subgraph ClientCode["کدهای رابط کاربری و صفحات (UI & Modules)"]
-        Chat["صفحه چت (Chat Window)"]
-        Canvas["صفحه کانواس (Canvas Board)"]
-        Assets["گالری دارایی‌ها (Asset Grid)"]
+    subgraph ClientCode["Frontend Components & Modules (src/app, src/modules)"]
+        Chat["Chat Window"]
+        Canvas["Canvas Board"]
+        Assets["Asset Library"]
     end
     
-    subgraph SingleBottleneck["تنها گلوگاه ورود داده: src/sdk/index.ts"]
-        TypeContract["قرارداد تایپ مشترک: interface SdkClient"]
-        Switch{"NEXT_PUBLIC_API_MODE === 'live' ?"}
+    subgraph SingleBottleneck["Sole Bottleneck Gateway: src/sdk/index.ts"]
+        TypeContract["Shared Interface: interface SdkClient"]
+        Switch{"process.env.NEXT_PUBLIC_API_MODE === 'live'"}
     end
     
-    subgraph Implementations["پیاده‌سازی‌های درون گلوگاه"]
-        MockAdapter["MockAdapter (تولید دیتای شبیه‌سازی‌شده + تایمر Job)"]
-        LiveAdapter["LiveAdapter (اتصال واقعی Fetch / WebSocket به سرور)"]
+    subgraph Implementations["SDK Internal Implementations"]
+        MockAdapter["MockAdapter (Simulated latency + AI Job Simulator)"]
+        LiveAdapter["LiveAdapter (Real Fetch / WebSocket HTTP Client)"]
     end
     
-    Chat -->|فقط فراخوانی توابع تایپ‌شده| TypeContract
-    Canvas -->|فقط فراخوانی توابع تایپ‌شده| TypeContract
-    Assets -->|فقط فراخوانی توابع تایپ‌شده| TypeContract
+    Chat -->|import { sdk } from '@/sdk'| TypeContract
+    Canvas -->|import { sdk } from '@/sdk'| TypeContract
+    Assets -->|import { sdk } from '@/sdk'| TypeContract
     
     TypeContract --> Switch
-    Switch -->|خیر (حالت پیش‌فرض توسعه)| MockAdapter
-    Switch -->|بله (زمان اتصال نهایی)| LiveAdapter
+    Switch -->|false (Default Development)| MockAdapter
+    Switch -->|true (Production Integration)| LiveAdapter
 ```
 
-### ۲.۲. مکانیزم کوچ تک‌نقطه‌ای و کم‌هزینه (Single-Switch Migration)
-گلوگاه `src/sdk/index.ts` با پیاده‌سازی اینترفیس مشترک `SdkClient`، وظیفه انتخاب آداپتور را به عهده دارد:
+### 2.2. Single-Switch Migration Mechanism
+The bottleneck file `src/sdk/index.ts` enforces the interface contract:
 
 ```typescript
 // src/sdk/index.ts
@@ -108,45 +111,44 @@ import type { SdkClient } from './types';
 import { mockSdkAdapter } from './mock/mock-adapter';
 import { liveHttpSdkAdapter } from './live/live-adapter';
 
-// سوئیچ تک‌نقطه‌ای بر اساس متغیر محیطی:
+// Single environment switch:
 const isLiveMode = process.env.NEXT_PUBLIC_API_MODE === 'live';
 
 export const sdk: SdkClient = isLiveMode ? liveHttpSdkAdapter : mockSdkAdapter;
 ```
 
-**مزیت انقلابی این رویکرد:**  
-کوچ کردن از فاز توسعه فرانت‌اند (با دیتای مصنوعی) به سرور واقعی بک‌اند، **تنها با تغییر یک متغیر در فایل `.env` (`NEXT_PUBLIC_API_MODE="live"`)** در کمتر از چند ثانیه انجام می‌شود، بدون آنکه حتی یک کاراکتر از کدهای کامپوننت‌ها، فرم‌های اسکیما یا صفحات بازنویسی شود.
+**Architectural Benefit:**  
+Migrating from local mock development to the live production server requires **changing a single environment variable (`NEXT_PUBLIC_API_MODE="live"`)**, with zero lines of component, hook, or schema code needing alteration.
 
-### ۲.۳. قابلیت‌های شبیه‌ساز Mock SDK (`src/sdk/mock/`):
-1. **شبیه‌سازی تاخیر شبکه (Simulated Latency):** اعمال تاخیرهای حساب‌شده (۳۰۰ تا ۸۰۰ میلی‌ثانیه) جهت اعتبارسنجی دقیق وضعیت‌های `isPending` و نمایش اسکلت‌های لودینگ.
-2. **شبیه‌ساز صف پردازش‌های هوش مصنوعی (AI Job Simulator):**
-   - فراخوانی متد ابزار فوراً یک `jobId` بازمی‌گرداند.
-   - تایمر هوشمند کلاینت با فواصل زمانی وضعیت کار را به‌روز می‌کند:
-     $$0\% \text{ (Pending)} \longrightarrow 45\% \text{ (Processing)} \longrightarrow 100\% \text{ (Done)}$$
-   - در وضعیت ۱۰۰٪، تصویر خروجی شبیه‌سازی‌شده به لیست دارایی‌های کلاینت تزریق می‌گردد.
-3. **شبیه‌سازی سناریوهای مرزی و خطاها:**
-   - شبیه‌سازی خطای کمبود اعتبار (`INSUFFICIENT_TOKENS`) برای بررسی انتقال خودکار به صفحه `/settings/billing`.
-   - شبیه‌سازی خطای اعتبارسنجی ورودی کاربر برای تست پیام‌های خطای فرم.
+### 2.3. Mock SDK Simulation Capabilities (`src/sdk/mock/`):
+1. **Network Latency Simulation:** Configurable latency (300ms to 800ms) to thoroughly test skeleton loading states.
+2. **Asynchronous AI Job Simulator:**
+   - Model execution returns an immediate `jobId`.
+   - A background timer advances the simulated job lifecycle:
+     $$\text{Pending } (0\%) \longrightarrow \text{Processing } (45\%) \longrightarrow \text{Done } (100\%)$$
+   - Upon completion, a sample high-resolution output is added to the user's asset repository.
+3. **Edge Case & Error Handling:**
+   - Simulated `INSUFFICIENT_TOKENS` error triggers automatic redirection to `/settings/billing`.
+   - Field validation error responses test form error state presentations.
 
 ---
 
-## ۳. فاز وایرفریمینگ هندسی ساده (Simple Shape Wireframing — Figma Alignment)
+## 3. Geometric Wireframing Phase (Simple Shapes — Figma Aligned)
 
-پیش از نوشتن کدهای جزئیات استایل یا رندر کامپوننت‌های تزئینی، تمامی صفحات ابتدا با **اشکال هندسی خام (Wireframe Shapes)** متناظر با چیدمان فیگما ساخته می‌شوند.
+Prior to writing rich visual styles or finalized CSS decorations, all layouts are built as **simple geometric wireframes (simple shapes)** strictly matching the Figma auto-layout grids.
 
-### ۳.۱. اهداف وایرفریمینگ ساده با کد:
-- اعتبارسنجی تعادل بصری (Visual Hierarchy) و فاصله‌گذاری‌ها (Spacing Scale).
-- اطمینان از عملکرد درست چیدمان در تمامی بریک‌پوینت‌ها:
-  - موبایل: `20rem` (۳۲۰ پیکسل)
-  - تبلت: `48rem` (۷۶۸ پیکسل)
-  - دسکتاپ: `80rem` (۱۲۸۰ پیکسل)
-  - مانیتور عریض: `120rem` (۱۹۲۰ پیکسل)
-- تست کانتینر کوئری‌ها روی پانل‌های متغیر (مانند عرض باز/بسته سایدبار و جعبه ابزار).
+### 3.1. Goals of Simple Shape Wireframing:
+- Validate visual hierarchy, container queries, and spacing scales.
+- Verify layout integrity across all 4 target breakpoints:
+  - Mobile: `20rem` (320px)
+  - Tablet: `48rem` (768px)
+  - Desktop: `80rem` (1280px)
+  - Wide: `120rem` (1920px)
 
-### ۳.۲. پالت بصری وایرفریم‌ها:
-- جعبه‌های خاکستری مینیمال با حاشیه‌های نقطه‌چین (`border: 1px dashed var(--lemmo-border-default)`).
-- بلوک‌های اسکلتی خاکستری خنثی با نسبت‌های ابعاد دقیق (`aspect-ratio: 16/9` برای پیش‌نمایش تصویر، مستطیل‌های باریک برای خطوط متن).
-- دکمه‌ها و نگهدارنده‌ها به صورت قرص‌های هندسی (Pill Shapes) بدون آیکون‌ها و جلوه‌های گرافیکی نهایی.
+### 3.2. Visual Language of Wireframes:
+- Minimal gray containers with dashed borders (`border: 1px dashed var(--lemmo-border-default)`).
+- Neutral skeleton boxes with fixed aspect ratios (`aspect-ratio: 16/9` for media placeholders).
+- Pill shapes for action buttons without final icons or glow effects.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
@@ -167,142 +169,99 @@ export const sdk: SdkClient = isLiveMode ? liveHttpSdkAdapter : mockSdkAdapter;
 
 ---
 
-## ۴. توسعه کامپوننت‌ها و جایگزینی وایرفریم‌ها (Component Assembly)
+## 4. Component Assembly & Progressive Replacement
 
-پس از تایید پایداری ساختار هندسی وایرفریم‌ها، توسعه کامپوننت‌های واقعی در سه سطح انجام می‌پذیرد:
+Once geometric wireframe layouts are validated, they are progressively swapped with finalized components across three distinct layers:
 
-### سطح ۱: پریمیتیوهای دیزاین سیستم (`src/shared/ui/`)
-- پیاده‌سازی کامپوننت‌های مستقل از دامنه: `Button`, `Input`, `Textarea`, `Slider`, `Select`, `Modal`, `Tooltip`, `Badge`.
-- استانداردهای اجباری: وراثت از تگ‌های نیتیو، پشتیبانی الزامی از `forwardRef`، استفاده از الگوی `asChild` (Radix Pattern) برای ساختار چندریختی (Polymorphic).
+### Layer 1: Design System Primitives (`src/shared/ui/primitives/`)
+- Domain-agnostic components: `Button`, `Input`, `Textarea`, `Slider`, `Select`, `Modal`, `Tooltip`, `Badge`.
+- Native attribute inheritance, mandatory `forwardRef`, and `asChild` Radix polymorphic pattern.
 
-### سطح ۲: کامپوننت‌های ترکیبی پوسته استودیو (`src/app/(workspace)/components/`)
-- **AppSidebar:** سایدبار ناوبری شناور با قابلیت جمع‌شدن به حالت مینی‌ریل (Mini-rail) در صفحات نمایش کوچک‌تر از `48rem`.
-- **StudioHeader:** نوار وضعیت بالا شامل کلید تغییر زبان (FA/EN)، ترایاد برند لیمو، نمایش زنده موجودی توکن، و کامپوننت نشانگر وضعیت پردازش‌های فعال (`ActiveJobIndicator`).
-- **SurfaceSwitcher:** سوئیچ سریع میان نمای چت متنی (`/chat`) و بوم دوبُعدی کانواس (`/canvas`).
+### Layer 2: Studio Shell Composites (`src/app/(workspace)/components/`)
+- **`AppSidebar`**: Collapsible floating navigation rail with mini-rail mode for screens `< 48rem`.
+- **`StudioHeader`**: Workspace status bar displaying brand triad, language switcher, live token balance, and `ActiveJobIndicator`.
+- **`SurfaceSwitcher`**: Seamless switcher between linear Chat (`/chat`) and 2D Canvas (`/canvas`).
 
-### سطح ۳: کامپوننت‌های دامنه (`src/modules/`)
-- **ماژول چت (`modules/chat`):** پنجره پیام‌ها، حباب‌های دوطرفه، نوار ورودی پرامپت با قابلیت باز شدن منوی شناور دستورات با کاراکتر اسلش (`CommandAutocomplete`).
-- **ماژول کانواس (`modules/canvas`):** سطح تعاملی گرافی با قابلیت Pan & Zoom، نودهای ابزار با پورت‌های ورودی و خروجی تایپ‌شده، اعتبارسنجی بصری خطوط اتصال (Wires).
-- **ماژول دارایی‌ها (`modules/assets`):** گرید واکنش‌گرای نمایش خروجی‌ها همراه با فیلترهای نوع فایل (تصویر/ویدیو) و کارت‌های پیش‌نمایش.
-
----
-
-## ۵. هسته رندر خودکار مانیفست‌محور (Schema-Driven Rendering Engine)
-
-تمامی صفحات یا فرم‌هایی که با تغییر ابزار تغییر شکل می‌دهند (مانند پنجره تنظیمات هر مدل هوش مصنوعی در چت یا بدنه نودها در کانواس) **کدنویسی استاتیک نخواهند شد**، بلکه توسط مانیفست‌های JSON شبیه‌سازی‌شده رندر می‌گردند.
-
-### ۵.۱. معماری `schema-renderer`:
-در پوشه `src/modules/tool-engine/schema-renderer/`:
-- **`FieldRenderer.tsx`:** کامپوننت مرکزی که نوع فیلد را می‌خواند و به کنترلر مناسب نگاشت می‌کند.
-- **کامپوننت‌های فیلد ورودی:**
-  - `TextField`: ورودی پرامپت متنی.
-  - `ImageUploadField`: بارگذاری یا انتخاب تصویر از گالری دارایی‌ها.
-  - `SliderField`: کنترل گام‌های پردازشی (Steps) یا مقیاس راهنمایی (CFG Scale).
-  - `SelectField`: انتخاب نسبت تصویر (`1:1`, `16:9`, `9:16`) یا سبک‌های هنری.
-  - `ToggleField`: فعال/غیرفعال‌سازی گزینه‌های باینری.
-
-### ۵.۲. بسته مانیفست‌های آزمایشی آماده (Mock Tool Manifests)
-مجموعه‌ای غنی از ابزارهای هوش مصنوعی برای اعتبارسنجی کامل موتور در فاز Mock پیاده‌سازی می‌شوند:
-1. **`flux-dev` (تولید تصویر متنی):** تست فیلدهای متنی، اسلایدرها و انتخاب‌گر ابعاد.
-2. **`remove-background` (حذف پس‌زمینه):** تست فیلد ورودی تکی تصویر با خروجی تصویر بدون بک‌گراند.
-3. **`upscale-ultra` (افزایش رزولوشن ۴ برابری):** تست اتصال تصویر ورودی و ضریب مقیاس.
-4. **`face-swap` (تعویض چهره):** تست فرم چند ورودی (تصویر هدف + تصویر منبع).
+### Layer 3: Domain Modules (`src/modules/`)
+- **Chat (`modules/chat`)**: Thread window, dual-sided message bubbles, slash-command popover (`CommandAutocomplete`).
+- **Canvas (`modules/canvas`)**: Interactive graph board with Pan & Zoom, schema-rendered tool nodes, typed socket validation (`image` connects strictly to `image`).
+- **Assets (`modules/assets`)**: Responsive media grid with file filtering and output viewer modal.
 
 ---
 
-## ۶. ساختار دقیق دایرکتوری‌های پروژه (`/app`)
+## 5. Schema-Driven Tool Rendering Engine
+
+All dynamic surfaces with variable inputs (AI model parameters in chat, tool nodes in canvas) are **rendered entirely via JSON Tool Manifests** through `modules/tool-engine/schema-renderer`:
+
+- **`FieldRenderer.tsx`**: Dynamic field mapper inspecting manifest types.
+- **Form Controls:**
+  - `TextField`: Text prompts and system instructions.
+  - `ImageUploadField`: Drag-and-drop image upload or selection from local assets.
+  - `SliderField`: Numerical range controls (Steps, CFG Scale, Denoising strength).
+  - `SelectField`: Aspect ratio selectors (`1:1`, `16:9`, `9:16`) and style presets.
+  - `ToggleField`: Boolean switches for advanced settings.
+
+### Standard Mock Manifests:
+1. `flux-dev`: Text-to-image with multi-field prompt, aspect ratio, and step slider.
+2. `remove-background`: Single image input with transparent PNG output.
+3. `upscale-ultra`: Image input with 2x/4x scale factor selection.
+4. `face-swap`: Dual-image input (target image + source face) with type validation.
+
+---
+
+## 6. Directory Structure (`/app`)
 
 ```
 app/
 ├── public/
-│   ├── fonts/                            # فونت‌های محلی (Satoshi, Oddval, Morabba, IRANSansX)
-│   └── mock-assets/                      # نمونه تصاویر تست برای خروجی‌های شبیه‌سازی‌شده
+│   ├── fonts/                            # Local WOFF2 fonts (Satoshi, Oddval, Morabba, IRANSansX)
+│   └── mock-assets/                      # Sample images & videos for simulated AI outputs
 │
 ├── src/
-│   ├── app/                              # روت‌های Next.js App Router
-│   │   ├── (workspace)/                  # گروه روت اصلی محیط کار
-│   │   │   ├── layout.tsx                # لایوت شل استودیو (سایدبار + هدر + نوار پایش)
+│   ├── app/                              # Next.js App Router layer
+│   │   ├── (workspace)/                  # Authenticated studio shell
+│   │   │   ├── layout.tsx                # Studio layout: sidebar, topbar, active job tracker
 │   │   │   ├── chat/
-│   │   │   │   ├── page.tsx              # شروع چت جدید
-│   │   │   │   └── [threadId]/page.tsx   # ادامه یک گفتگوی ذخیره‌شده
+│   │   │   │   ├── page.tsx              # Default new conversation
+│   │   │   │   └── [threadId]/page.tsx   # Existing thread
 │   │   │   ├── canvas/
-│   │   │   │   ├── page.tsx              # بورد پیش‌فرض
-│   │   │   │   └── [boardId]/page.tsx    # بورد گراف مشخص
-│   │   │   ├── gallery/page.tsx          # گالری الگوها و کارهای عمومی
-│   │   │   ├── assets/page.tsx           # فایل‌ها و خروجی‌های کاربر
+│   │   │   │   ├── page.tsx              # Default board
+│   │   │   │   └── [boardId]/page.tsx    # Targeted board
+│   │   │   ├── gallery/page.tsx          # Community templates & prompts
+│   │   │   ├── assets/page.tsx           # User generated media archive
 │   │   │   └── settings/
-│   │   │       └── billing/page.tsx      # نمایش پلن، خرید توکن و گزارش مصرف
+│   │   │       └── billing/page.tsx      # Token balance, plan tiers, usage logs
 │   │   ├── (auth)/
 │   │   │   ├── login/page.tsx
 │   │   │   └── layout.tsx
-│   │   ├── layout.tsx                    # لایوت ریشه با تگ html و تنظیم جهت dir (rtl/ltr)
-│   │   └── globals.css                   # توکن‌های استایل و قوانین تایپوگرافی
+│   │   ├── layout.tsx                    # Root HTML layout with dir & theme injection
+│   │   └── globals.css                   # Token imports & typographic definitions
 │   │
-│   ├── modules/                          # لایه منطق دامنه
-│   │   ├── tool-engine/                  # مغز متفکر ابزارها
-│   │   │   ├── registry/                 # رجیستری و لودر مانیفست‌ها
-│   │   │   ├── schema-renderer/          # تولید پویای UI از اسکیما
-│   │   │   └── job-manager/              # استور سراسری Zustand برای پایش کارها
-│   │   ├── chat/                         # اجزای اختصاصی محیط چت
-│   │   ├── canvas/                       # اجزای گراف، نودها و اتصالات
-│   │   ├── assets/                       # منطق مدیریت و فیلتر دارایی‌ها
-│   │   └── billing/                      # منطق پلن‌ها و تراکنش‌های توکن
+│   ├── modules/                          # Domain logic layer
+│   │   ├── tool-engine/                  # Tool engine core (registry, schema-renderer, job-manager)
+│   │   ├── chat/                         # Chat components, command parser, hooks
+│   │   ├── canvas/                       # Canvas graph board, tool nodes, connection rules
+│   │   ├── assets/                       # Asset grid, filter logic, media previews
+│   │   └── billing/                      # Billing cards, token purchase hooks
 │   │
-│   ├── sdk/                              # درگاه شبکه (Mocked First)
-│   │   ├── client.ts                     # کلاینت واحد SDK
-│   │   ├── mock/                         # داده‌های ساختگی و شبیه‌سازها
-│   │   │   ├── mock-tools.ts             # لیست مانیفست‌های آزمایشی
-│   │   │   ├── mock-jobs.ts              # شبیه‌ساز چرخه زمانی پردازش
-│   │   │   └── mock-user.ts              # پروفایل، اعتبار و دارایی‌های تست
-│   │   └── interceptors/                 # رهگیر خطای توکن
+│   ├── sdk/                              # Single network gateway (Mock-first)
+│   │   ├── client.ts                     # SDK entry point
+│   │   ├── types.ts                      # Shared SdkClient interface
+│   │   ├── mock/                         # Zero-leakage mock adapter & job simulator
+│   │   ├── live/                         # Live backend HTTP/WS client (activated later)
+│   │   └── interceptors/                 # Token exhaustion interceptor
 │   │
-│   ├── shared/                           # لایه عمومی، اشتراکی و بدون دانش دامنه
-│   │   ├── ui/                           # اتم‌ها و مولکول‌های دیزاین سیستم
+│   ├── shared/                           # Domain-agnostic reusable primitives
+│   │   ├── ui/
 │   │   │   ├── primitives/               # Button, Input, Slider, Modal, Badge
-│   │   │   └── wireframes/               # شیپ‌های هندسی ساده اولیه (Wireframe Primitives)
+│   │   │   └── wireframes/               # Initial simple geometric shape primitives
 │   │   ├── hooks/                        # useDirection, useMediaQuery, useDebounce
-│   │   └── lib/                          # توابع خالص کمکی
+│   │   └── lib/                          # Pure utilities
 │   │
-│   └── stores/                           # استورهای کلاینت سراسری (uiStore, themeStore)
+│   └── stores/                           # Global UI state (uiStore, themeStore)
 │
 ├── package.json
 ├── tsconfig.json
 ├── next.config.ts
 └── README.md
 ```
-
----
-
-## ۷. گام‌های فازبندی‌شده عملیاتی (Actionable Execution Plan)
-
-### فاز اول: داربست زیرساخت، برندینگ و زبان (Setup & Foundations)
-- [ ] راه‌اندازی پروژه با اسکلت Next.js App Router و React 19.
-- [ ] ادغام متغیرهای CSS توکن‌های رنگی و بصری Lemmo (`--lemmo-*`).
-- [ ] راه‌اندازی فایل‌های فونت ۴گانه و کانفیگ فونت‌های محلی در `next/font`.
-- [ ] پیاده‌سازی سیستم سوئیچ زبان با مدیریت اتوماتیک تگ `dir="rtl"` / `dir="ltr"` و چیدمان منطقی.
-
-### فاز دوم: شبیه‌ساز Mock SDK و استورهای وضعیت (Mock Data Engine)
-- [ ] ایجاد درگاه `@/sdk` همراه با `mock-adapter`.
-- [ ] پیاده‌سازی استور سراسری `jobStore` با شبیه‌سازی تاخیر و پیشرفت درصدی کارهای در حال پردازش.
-- [ ] ایجاد داده‌های مصنوعی مانیفست برای حداقل ۴ ابزار متنوع.
-
-### فاز سوم: وایرفریمینگ هندسی ساده (Simple Shape Wireframing)
-- [ ] طراحی کامپوننت‌های پایه وایرفریم هندسی در `shared/ui/wireframes/` (جعبه‌های متناسب، حاشیه‌های خط‌چین، بلوک‌های اسکلتی).
-- [ ] پیاده‌سازی ساختار لایوت سراسری Workspace با شیپ‌های ساده مطابق فیگما.
-- [ ] پیاده‌سازی وایرفریم چت، کانواس و صفحات گالری با اشکال خام و بررسی در رزولوشن‌های موبایل و دسکتاپ.
-
-### فاز چهارم: جایگزینی کامپوننت‌های واقعی (Component Development)
-- [ ] توسعه کامپوننت‌های دیزاین سیستم در `shared/ui/primitives/`.
-- [ ] استقرار پوسته نهایی استودیو (سایدبار بازشونده، هدر برند لیمو، نوار زنده کارها).
-- [ ] ساخت کامپوننت‌های اختصاصی چت و بوم دوبُعدی کانواس.
-
-### فاز پنجم: رندرر پویا از اسکیما (Schema-Driven Rendering)
-- [ ] توسعه ماژول `schema-renderer` برای تبدیل فیلدهای مانیفست به کنترلرهای فرم.
-- [ ] تست اجرای ابزارها در چت و تولید نودهای مانیفست‌محور در کانواس با داده‌های Mock.
-- [ ] اتصال کامل رویدادها به `jobStore` و تایید چرخه عمر کامل یک ابزار از کلیک تا نمایش نتیجه در آرشیو دارایی‌ها.
-
-### فاز ششم: تست نهایی فرانت‌اند و آمادگی اتصال به بک‌اند (Frontend Readiness Gate)
-- [ ] اجرای ممیزی کامل ریسپانسیو روی تمامی صفحات.
-- [ ] تست سوئیچ زبان میان فارسی و انگلیسی بدون هیچ‌گونه به‌هم‌ریختگی ظاهری.
-- [ ] بررسی مسیرهای هدایت کاربر در مواجهه با اتمام توکن و خطاهای فرم.
-- [ ] تعویض ساده آداپتور Mock به کلاینت واقعی شبکه جهت شروع اتصال به بک‌اند.

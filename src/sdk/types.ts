@@ -1,8 +1,8 @@
 /**
- * SDK Types — قراردادهای تایپ مشترک
+ * SDK Types — Shared type contracts for the data access layer.
  *
- * این اینترفیس‌ها قرارداد بین لایه UI و لایه داده را تعریف می‌کنند.
- * هیچ کدام از این تایپ‌ها نباید به پیاده‌سازی mock یا live وابسته باشند.
+ * These interfaces define the contract between the UI layer and the data layer.
+ * None of these types should depend on mock or live implementation details.
  */
 
 // ================================================================== //
@@ -15,8 +15,8 @@ export interface Job {
   id: string;
   toolId: string;
   status: JobStatus;
-  progress: number; // 0 تا 100
-  createdAt: number; // timestamp
+  progress: number; // 0 to 100
+  createdAt: number; // unix timestamp
   completedAt?: number;
   resultAssetId?: string;
   errorCode?: string;
@@ -37,7 +37,7 @@ export interface Asset {
   createdAt: number;
   toolId?: string;
   jobId?: string;
-  /** نسبت ابعاد مثل '16:9', '1:1' */
+  /** Aspect ratio string, e.g. '16:9', '1:1' */
   aspectRatio?: string;
   width?: number;
   height?: number;
@@ -68,12 +68,12 @@ export interface ToolField {
   placeholder?: string;
   placeholderFa?: string;
   required?: boolean;
-  /** برای slider */
+  /** For slider fields */
   min?: number;
   max?: number;
   step?: number;
   defaultValue?: string | number | boolean;
-  /** برای select */
+  /** For select fields */
   options?: FieldOption[];
 }
 
@@ -89,7 +89,7 @@ export interface ToolManifest {
   category: string;
   inputFields: ToolField[];
   outputType: OutputType;
-  /** تعداد توکن مصرفی تقریبی */
+  /** Approximate token cost per execution */
   estimatedTokenCost: number;
 }
 
@@ -105,7 +105,7 @@ export interface Message {
   content: string;
   createdAt: number;
   attachments?: Asset[];
-  /** شغل مرتبط با این پیام */
+  /** Associated job ID if this message triggered a tool execution */
   jobId?: string;
 }
 
@@ -135,7 +135,7 @@ export interface BillingInfo {
 }
 
 // ================================================================== //
-// SDK CLIENT INTERFACE — قرارداد مشترک                               //
+// SDK CLIENT INTERFACE — shared contract                              //
 // ================================================================== //
 
 export interface SdkClient {

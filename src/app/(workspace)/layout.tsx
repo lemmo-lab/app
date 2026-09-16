@@ -1,9 +1,9 @@
 /**
- * Workspace Layout — لایوت پوسته اصلی استودیو
- * شامل سایدبار + هدر + ناحیه محتوای اصلی
+ * Workspace Layout — Studio shell layout.
+ * Contains sidebar + header + main content area.
  *
- * توجه: در M1 این یک stub ساده است.
- * پیاده‌سازی کامل (AppSidebar, StudioHeader, SurfaceSwitcher) در M3 انجام می‌شود.
+ * Note: This is a stub for M1. Full implementation (AppSidebar, StudioHeader,
+ * SurfaceSwitcher) is scheduled for M3.
  */
 
 import type { Metadata } from 'next';

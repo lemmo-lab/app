@@ -1,6 +1,6 @@
 /**
- * Billing Page — مدیریت پلن و اعتبارات توکن
- * TODO M7: پیاده‌سازی کارت‌های تعرفه و تاریخچه مصرف
+ * Billing Page — Plan management and token credit overview.
+ * TODO M7: Implement plan cards and consumption history.
  */
 export default function BillingPage() {
   return (

@@ -1,6 +1,6 @@
 /**
- * Login Page — صفحه ورود به حساب کاربری
- * TODO: پیاده‌سازی فرم ورود
+ * Login Page — User authentication entry point.
+ * TODO: Implement login form.
  */
 export default function LoginPage() {
   return (

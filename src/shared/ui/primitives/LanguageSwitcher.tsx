@@ -1,13 +1,12 @@
 /**
- * LanguageSwitcher — کلید تعویض زبان فارسی/انگلیسی
+ * LanguageSwitcher — FA/EN locale toggle button.
  *
- * این کامپوننت در StudioHeader (M3) جاسازی می‌شود.
- * در M1 به عنوان یک primitive مستقل پیاده‌سازی می‌شود.
+ * Calls toggleLocale() from the uiStore, which updates the html dir/lang
+ * attributes in-place — no page refresh required.
  *
- * استانداردها:
- * - آیکون: synthline/react با strokeWidth={1.5}
- * - رنگ: currentColor (ارث‌بری از تم)
- * - بدون re-render کامل صفحه — فقط از-روزنه‌ی‌store
+ * Standards:
+ * - Icons: synthline/react with strokeWidth={1.5}
+ * - Color: currentColor (inherits from theme)
  */
 
 'use client';
@@ -20,8 +19,8 @@ export function LanguageSwitcher() {
   return (
     <button
       onClick={toggleLocale}
-      aria-label={locale === 'fa' ? 'Switch to English' : 'تغییر به فارسی'}
-      title={locale === 'fa' ? 'Switch to English' : 'تغییر به فارسی'}
+      aria-label={locale === 'fa' ? 'Switch to English' : 'Switch to Persian'}
+      title={locale === 'fa' ? 'Switch to English' : 'Switch to Persian'}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -50,7 +49,7 @@ export function LanguageSwitcher() {
           'var(--lemmo-border-default, #2a2d30)';
       }}
     >
-      {/* نمایش وضعیت فعلی */}
+      {/* Globe icon placeholder — replace with <IconGlobe> from synthline in M3 */}
       <span
         style={{
           width: '1.25rem',
@@ -63,6 +62,7 @@ export function LanguageSwitcher() {
       >
         🌐
       </span>
+      {/* Show the target locale label, not the current one */}
       <span>{locale === 'fa' ? 'EN' : 'FA'}</span>
     </button>
   );

@@ -1,24 +1,22 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // تنظیم متغیرهای محیطی عمومی
+  // Expose the API mode to the client bundle
   env: {
     NEXT_PUBLIC_API_MODE: process.env.NEXT_PUBLIC_API_MODE ?? 'mock',
   },
 
-  // بهینه‌سازی تصاویر
+  // Image optimization settings
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
-      // در M9: آدرس سرور واقعی اضافه می‌شود
+      // M9: add the real API origin here
     ],
   },
 
-  // ممنوعیت import از mock/ در خارج از sdk/
-  // در M8 (Zero-Leakage Audit) با eslint rule تأیید می‌شود
-  experimental: {
-    // تنظیمات آزمایشی آینده
-  },
+  // Note: Zero-Leakage audit (no mock/ imports outside sdk/) is enforced
+  // via ESLint rules added in M8.
+  experimental: {},
 };
 
 export default nextConfig;

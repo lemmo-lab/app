@@ -1,9 +1,9 @@
 /**
- * Mock Data — داده‌های مصنوعی پایه‌ای
+ * Mock Data — Base seed data for the mock SDK adapter.
  *
- * در M4 این فایل به mock-tools.ts, mock-jobs.ts, mock-user.ts تقسیم می‌شود
- * و شبیه‌ساز کامل Job Simulator پیاده‌سازی می‌شود.
- * در M1 فقط stub‌های پایه‌ای کافی است.
+ * In M4 this file will be split into mock-tools.ts, mock-jobs.ts, mock-user.ts
+ * and a full Job Simulator with timers will be implemented.
+ * For M1, only minimal stubs are required.
  */
 
 import type {
@@ -22,7 +22,7 @@ import type {
 
 export const MOCK_USER: UserProfile = {
   id: 'mock-user-001',
-  name: 'کاربر آزمایشی لیمو',
+  name: 'Lemmo Demo User',
   email: 'demo@lemmo.ai',
   avatarUrl: undefined,
 };
@@ -34,7 +34,7 @@ export const MOCK_BILLING: BillingInfo = {
 };
 
 // ================================================================== //
-// TOOLS — مانیفست‌های آزمایشی ۴ ابزار (TODO M4: پیاده‌سازی کامل)   //
+// TOOLS — 4 test manifests (TODO M4: full implementation)            //
 // ================================================================== //
 
 export const MOCK_TOOLS: ToolManifest[] = [
@@ -42,7 +42,7 @@ export const MOCK_TOOLS: ToolManifest[] = [
     id: 'flux-dev',
     name: 'Flux Dev',
     nameFa: 'فلوکس — تولید تصویر',
-    description: 'Generate high-quality images from text prompts using Flux model',
+    description: 'Generate high-quality images from text prompts using the Flux model',
     descriptionFa: 'تولید تصویر با کیفیت بالا از متن با مدل Flux',
     category: 'image-generation',
     outputType: 'image',
@@ -74,9 +74,9 @@ export const MOCK_TOOLS: ToolManifest[] = [
         labelFa: 'نسبت ابعاد',
         defaultValue: '1:1',
         options: [
-          { label: '1:1 (مربع)', value: '1:1' },
-          { label: '16:9 (افقی)', value: '16:9' },
-          { label: '9:16 (عمودی)', value: '9:16' },
+          { label: '1:1 (Square)', value: '1:1' },
+          { label: '16:9 (Landscape)', value: '16:9' },
+          { label: '9:16 (Portrait)', value: '9:16' },
           { label: '4:3', value: '4:3' },
           { label: '3:2', value: '3:2' },
         ],
@@ -179,7 +179,7 @@ export const MOCK_JOBS: Map<string, Job> = new Map();
 export const MOCK_THREADS: Thread[] = [
   {
     id: 'thread-001',
-    title: 'گفتگوی آزمایشی',
+    title: 'Demo Thread',
     messages: [] as Message[],
     createdAt: Date.now() - 3600_000,
     updatedAt: Date.now(),

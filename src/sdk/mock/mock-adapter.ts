@@ -1,8 +1,8 @@
 /**
- * Mock SDK Adapter — آداپتور داده‌های مصنوعی
+ * Mock SDK Adapter — Simulated data adapter implementing SdkClient.
  *
- * شبیه‌سازی تاخیر شبکه (300-800ms) و پیاده‌سازی توابع SdkClient.
- * در M4 شبیه‌ساز کامل Job Simulator با تایمر واقعی اضافه می‌شود.
+ * Simulates network latency (300–800ms) for realistic loading state testing.
+ * In M4, a full Job Simulator with real timer-based progress will be added.
  */
 
 import type { SdkClient, Job, Message, Thread } from '../types';
@@ -15,13 +15,13 @@ import {
   MOCK_USER,
 } from './mock-data';
 
-/** شبیه‌سازی تاخیر شبکه */
+/** Simulate network latency with a random delay between ms and ms+500 */
 function delay(ms: number = 300): Promise<void> {
-  const randomDelay = ms + Math.random() * 500; // 300 تا 800ms
+  const randomDelay = ms + Math.random() * 500; // 300 to 800ms
   return new Promise((resolve) => setTimeout(resolve, randomDelay));
 }
 
-/** تولید ID تصادفی */
+/** Generate a random ID with an optional prefix */
 function generateId(prefix: string = 'mock'): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
@@ -40,7 +40,7 @@ export const mockSdkAdapter: SdkClient = {
       await delay(400);
       const jobId = generateId('job');
 
-      // ایجاد شغل جدید
+      // Create a new job in the pending state
       const job: Job = {
         id: jobId,
         toolId,
@@ -50,8 +50,8 @@ export const mockSdkAdapter: SdkClient = {
       };
       MOCK_JOBS.set(jobId, job);
 
-      // TODO M4: شبیه‌ساز کامل چرخه Job با تایمر
-      // Pending → Processing (45%) → Done (100%)
+      // TODO M4: Full Job Simulator with real timer-based progress cycle:
+      // Pending (0%) → Processing (45%) → Done (100%)
       setTimeout(() => {
         const j = MOCK_JOBS.get(jobId);
         if (j) MOCK_JOBS.set(jobId, { ...j, status: 'processing', progress: 45 });
@@ -63,7 +63,7 @@ export const mockSdkAdapter: SdkClient = {
         }
       }, 4000);
 
-      void inputs; // suppress unused warning
+      void inputs; // suppress unused-variable warning
       return { jobId };
     },
   },
@@ -92,8 +92,8 @@ export const mockSdkAdapter: SdkClient = {
     sendMessage: async (threadId, content) => {
       await delay(300);
 
-      const thread = threadId
-        ? MOCK_THREADS.find((t) => t.id === threadId) ?? MOCK_THREADS[0]
+      const thread: Thread = threadId
+        ? (MOCK_THREADS.find((t) => t.id === threadId) ?? MOCK_THREADS[0])
         : MOCK_THREADS[0];
 
       const userMessage: Message = {
@@ -106,12 +106,12 @@ export const mockSdkAdapter: SdkClient = {
       thread.messages.push(userMessage);
       thread.updatedAt = Date.now();
 
-      // پیام ساختگی از هوش مصنوعی
+      // Simulate an assistant reply after a short delay
       setTimeout(() => {
         const assistantMessage: Message = {
           id: generateId('msg'),
           role: 'assistant',
-          content: `(Mock) پیام شما دریافت شد: "${content.slice(0, 50)}..."`,
+          content: `(Mock) Received: "${content.slice(0, 50)}..."`,
           createdAt: Date.now(),
         };
         thread.messages.push(assistantMessage);
