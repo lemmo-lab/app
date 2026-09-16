@@ -1,0 +1,12 @@
+{
+  "/(auth)/login/page": "/login",
+  "/(workspace)/assets/page": "/assets",
+  "/(workspace)/canvas/page": "/canvas",
+  "/(workspace)/chat/page": "/chat",
+  "/(workspace)/gallery/page": "/gallery",
+  "/(workspace)/settings/billing/page": "/settings/billing",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/"
+}

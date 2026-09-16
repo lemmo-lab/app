@@ -1,0 +1,193 @@
+/**
+ * globals.css — استایل‌های پایه‌ای Lemmo Studio
+ * توکن‌های دیزاین سیستم + تایپوگرافی + ریست
+ */
+
+/* توکن‌های دیزاین سیستم Lemmo — نسخه محلی */
+@import "../styles/lemmo-tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================================================================== */
+/* FONT DECLARATIONS                                                    */
+/* ================================================================== */
+
+/* IRANSansX — فونت بدنه فارسی (Variable Weight 100–1000) */
+@font-face {
+  font-family: 'IRANSansX';
+  src: url('/fonts/iransans/IRANSansXV.woff2') format('woff2');
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Morabba — فونت نمایشی/عناوین فارسی */
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/morabba/Morabba-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/morabba/Morabba-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/morabba/Morabba-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/morabba/Morabba-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Oddval — فونت نمایشی انگلیسی (فقط SemiBold 600) */
+@font-face {
+  font-family: 'Oddval';
+  src: url('/fonts/oddval/Oddval-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Satoshi — فونت بدنه انگلیسی (Variable Weight 300–900) */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi/Satoshi-Variable.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi/Satoshi-VariableItalic.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ================================================================== */
+/* BASE LAYER                                                           */
+/* ================================================================== */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    /* تم پیش‌فرض دارک */
+    background-color: var(--lemmo-canvas-bg, #131517);
+    color: var(--lemmo-text-primary, #f0f0f0);
+
+    /* فونت پیش‌فرض بر اساس زبان — از CSS Logical Properties استفاده می‌کنیم */
+    font-family: var(--lemmo-font-sans-fa, IRANSansX, Tahoma, sans-serif);
+    font-size: 16px;
+    line-height: 1.6;
+
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+
+    /* تنظیمات پیش‌فرض متن */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* در حالت LTR، فونت انگلیسی اعمال می‌شود */
+  html[dir='ltr'] {
+    font-family: var(--lemmo-font-sans, Satoshi, system-ui, sans-serif);
+  }
+
+  body {
+    min-height: 100dvh;
+    /* استفاده از CSS Logical Properties برای سازگاری RTL/LTR */
+    padding-inline: 0;
+    margin-inline: 0;
+  }
+
+  /* Headings — فارسی */
+  html[dir='rtl'] h1,
+  html[dir='rtl'] h2,
+  html[dir='rtl'] h3,
+  html[dir='rtl'] h4,
+  html[dir='rtl'] h5,
+  html[dir='rtl'] h6 {
+    font-family: var(--lemmo-font-display-fa, Morabba, Tahoma, sans-serif);
+  }
+
+  /* Headings — انگلیسی */
+  html[dir='ltr'] h1,
+  html[dir='ltr'] h2,
+  html[dir='ltr'] h3,
+  html[dir='ltr'] h4,
+  html[dir='ltr'] h5,
+  html[dir='ltr'] h6 {
+    font-family: var(--lemmo-font-display, Oddval, Satoshi, system-ui, sans-serif);
+  }
+
+  /* Focus Ring استاندارد */
+  :focus-visible {
+    outline: 2px solid var(--lemmo-interactive-primary, #d1fe17);
+    outline-offset: 2px;
+    border-radius: var(--lemmo-radius-100, 0.25rem);
+  }
+
+  /* Scrollbar کمرنگ */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--lemmo-border-default, #2a2d30);
+    border-radius: var(--lemmo-radius-full, 9999px);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--lemmo-border-strong, #404448);
+  }
+}
+
+/* ================================================================== */
+/* CSS LOGICAL PROPERTIES — کلاس‌های کمکی                              */
+/* ================================================================== */
+
+@layer utilities {
+  /* استفاده از margin-inline به جای margin-left/right */
+  .ms-auto { margin-inline-start: auto; }
+  .me-auto { margin-inline-end: auto; }
+
+  /* ایجاد سطح پس‌زمینه اصلی استودیو */
+  .surface-canvas {
+    background-color: var(--lemmo-canvas-bg, #131517);
+  }
+  .surface-panel {
+    background-color: var(--lemmo-surface-primary, #1a1d20);
+  }
+  .surface-elevated {
+    background-color: var(--lemmo-surface-secondary, #22262a);
+  }
+
+  /* رنگ تأکیدی لیمو */
+  .text-lemmo { color: var(--lemmo-interactive-primary, #d1fe17); }
+  .bg-lemmo { background-color: var(--lemmo-interactive-primary, #d1fe17); }
+  .border-lemmo { border-color: var(--lemmo-interactive-primary, #d1fe17); }
+}

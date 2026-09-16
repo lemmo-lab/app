@@ -1,0 +1,95 @@
+/**
+ * @lemmo-lab/tokens (v2) - MIDNIGHT Theme Preset
+ * Single Source of Truth for Lemmo Design System
+ * Governed strictly by AGENTS.md rules. DO NOT EDIT DIRECTLY.
+ */
+
+[data-theme='midnight'],
+:root[data-theme='midnight'],
+.theme-midnight {
+  /* Colors & Roles */
+  --lemmo-page-background: #000000;
+  --lemmo-page-foreground: #ffffff;
+  --lemmo-surface-primary-background: #0c0c0c;
+  --lemmo-surface-primary-foreground: #ffffff;
+  --lemmo-surface-secondary-background: #161616;
+  --lemmo-surface-secondary-foreground: #999999;
+  --lemmo-surface-tertiary-background: #040404;
+  --lemmo-surface-tertiary-foreground: #ffffff;
+  --lemmo-surface-elevated-background: #1e1e1e;
+  --lemmo-surface-elevated-foreground: #ffffff;
+  --lemmo-surface-glass-background: rgba(0, 0, 0, 0.92);
+  --lemmo-surface-glass-foreground: #ffffff;
+  --lemmo-surface-brand-background: #d1fe17;
+  --lemmo-surface-brand-foreground: #000000;
+  --lemmo-text-primary: #ffffff;
+  --lemmo-text-secondary: #999999;
+  --lemmo-text-muted: #666666;
+  --lemmo-text-faint: #444444;
+  --lemmo-text-on-brand: #000000;
+  --lemmo-text-reverted: #000000;
+  --lemmo-text-danger: #ff5462;
+  --lemmo-text-warning: #dfab01;
+  --lemmo-text-success: #4ee466;
+  --lemmo-text-info: #5b91fe;
+  --lemmo-border-default: rgba(255, 255, 255, 0.2);
+  --lemmo-border-subtle: rgba(255, 255, 255, 0.08);
+  --lemmo-border-mid: rgba(255, 255, 255, 0.12);
+  --lemmo-border-danger: #fa0019;
+  --lemmo-border-warning: #dfab01;
+  --lemmo-border-success: #2eb844;
+  --lemmo-border-info: #0256fe;
+  --lemmo-interactive-primary-background: #d1fe17;
+  --lemmo-interactive-primary-foreground: #000000;
+  --lemmo-interactive-primary-hover: #c4ee0b;
+  --lemmo-interactive-secondary-background: #0256fe;
+  --lemmo-interactive-secondary-foreground: #ffffff;
+  --lemmo-interactive-secondary-hover: #245ef1;
+  --lemmo-status-danger-background: #5c000f;
+  --lemmo-status-danger-foreground: #ff5462;
+  --lemmo-status-danger-border: #fa0019;
+  --lemmo-status-danger-glow: #ff1f2e;
+  --lemmo-status-warning-background: #523f00;
+  --lemmo-status-warning-foreground: #ffef33;
+  --lemmo-status-warning-border: #dfab01;
+  --lemmo-status-warning-glow: #fff05a;
+  --lemmo-status-success-background: #0d4a17;
+  --lemmo-status-success-foreground: #4ee466;
+  --lemmo-status-success-border: #2eb844;
+  --lemmo-status-success-glow: #00e62e;
+  --lemmo-status-info-background: #000d26;
+  --lemmo-status-info-foreground: #5b91fe;
+  --lemmo-status-info-border: #0256fe;
+  --lemmo-status-info-glow: #3cd8ff;
+
+  /* Radius Base */
+  --lemmo-radius-base: .5rem;
+
+  /* Per-Theme Gradients */
+  --lemmo-gradient-surface-featured: linear-gradient(225deg, rgba(209, 254, 23, 0.16) 0%, rgba(209, 254, 23, 0.08) 28%, rgba(209, 254, 23, 0) 62%), #1e1e1e;
+  --lemmo-gradient-surface-pink-haze: radial-gradient(145% 54% at 100% 0%, rgba(255, 0, 91, 0.32) 0%, rgba(255, 0, 91, 0.15) 42%, rgba(255, 0, 91, 0) 78%), #1e1e1e;
+  --lemmo-gradient-surface-olive: linear-gradient(180deg, #1F2022 0%, #222420 55%, #272A20 100%);
+  --lemmo-gradient-surface-ocean: linear-gradient(180deg, #121D23 0%, #152026 45%, #1D282E 75%, #273238 100%);
+  --lemmo-gradient-surface-steel: linear-gradient(180deg, #1F2024 0%, #232428 40%, #343539 75%, #48494D 100%);
+  --lemmo-gradient-surface-base: linear-gradient(180deg, #0c0c0c 0%, #000000 100%);
+  --lemmo-gradient-surface-soft: radial-gradient(58% 220% at 3% 42%, rgba(255, 255, 255, 0.095) 0%, rgba(255, 255, 255, 0.035) 42%, rgba(255, 255, 255, 0.012) 100%), linear-gradient(180deg, #0c0c0c 0%, #000000 100%);
+  --lemmo-gradient-surface-lime-wash: radial-gradient(56.49% 230.73% at 2.37% 40.91%, rgba(187, 251, 12, 0.07) 0%, rgba(12, 251, 32, 0.01) 100%), radial-gradient(41.8% 183.68% at 10.4% 53.71%, rgba(197, 197, 197, 0.08) 0%, rgba(197, 197, 197, 0.01) 100%), linear-gradient(180deg, #0c0c0c 0%, #000000 100%);
+  --lemmo-gradient-surface-pink-wash: radial-gradient(56.49% 230.73% at 2.37% 40.91%, rgba(237, 21, 114, 0.10) 0%, rgba(237, 21, 114, 0.01) 100%), linear-gradient(180deg, #0c0c0c 0%, #000000 100%);
+  --lemmo-gradient-surface-blue-wash: radial-gradient(56.49% 230.73% at 2.37% 40.91%, rgba(21, 68, 237, 0.10) 0%, rgba(21, 68, 237, 0.01) 100%), linear-gradient(180deg, #0c0c0c 0%, #000000 100%);
+  --lemmo-gradient-surface-steel-flat: linear-gradient(180deg, rgba(110, 145, 188, 0.02) 0%, rgba(110, 145, 188, 0.20) 100%), #0c0c0c;
+  --lemmo-gradient-surface-plain: linear-gradient(180deg, #0c0c0c 0%, #000000 100%);
+  --lemmo-gradient-rim-vertical: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.09) 18%, rgba(255, 255, 255, 0.03) 38%, rgba(255, 255, 255, 0) 72%);
+  --lemmo-gradient-rim-diagonal: linear-gradient(225deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.10) 18%, rgba(255, 255, 255, 0.04) 42%, rgba(255, 255, 255, 0) 76%);
+  --lemmo-gradient-border-pink: radial-gradient(86.59% 115.91% at 50% 45.45%, #fb398c 0%, #ed1572 100%);
+  --lemmo-gradient-border-blue: radial-gradient(86.59% 115.91% at 50% 45.45%, #245ef1 0%, #1544ed 100%);
+  --lemmo-gradient-pill-lime: radial-gradient(ellipse 55% 95% at 73% 50%, rgba(117, 239, 29, 0.6) 0%, rgba(194, 237, 21, 0) 100%), radial-gradient(ellipse 25% 42% at 85% 37%, rgba(255, 255, 255, 0.6) 0%, rgba(209, 254, 23, 0) 100%), radial-gradient(ellipse 33% 70% at 12% 76%, rgba(200, 239, 29, 0.6) 0%, rgba(194, 237, 21, 0) 100%), linear-gradient(90deg, #d1fe17 0%, #d1fe17 100%);
+  --lemmo-gradient-pill-blue: radial-gradient(ellipse 75% 300% at 73% 50%, #1d63ef 0%, #5150d0 45%, rgba(237, 21, 114, 0) 100%), radial-gradient(ellipse 30% 120% at 85% 37%, rgba(255, 255, 255, 0.6) 0%, rgba(209, 254, 23, 0) 100%), #0256fe;
+  --lemmo-gradient-pill-ultraviolet: radial-gradient(ellipse 55% 95% at 73% 50%, rgba(29, 99, 239, 0.6) 0%, rgba(81, 80, 208, 0.45) 25%, rgba(133, 60, 176, 0.3) 50%, rgba(237, 21, 114, 0) 100%), radial-gradient(ellipse 25% 42% at 85% 37%, rgba(255, 255, 255, 0.6) 0%, rgba(209, 254, 23, 0) 100%), radial-gradient(ellipse 33% 70% at 12% 76%, rgba(29, 99, 239, 0.6) 0%, rgba(133, 60, 176, 0.3) 50%, rgba(237, 21, 114, 0) 100%), linear-gradient(90deg, #0256fe 0%, #0256fe 100%);
+  --lemmo-gradient-pill-pink: radial-gradient(ellipse 55% 95% at 73% 50%, rgba(239, 29, 186, 0.6) 0%, rgba(237, 21, 114, 0) 100%), radial-gradient(ellipse 25% 42% at 85% 37%, rgba(255, 255, 255, 0.6) 0%, rgba(209, 254, 23, 0) 100%), radial-gradient(ellipse 33% 70% at 12% 76%, rgba(176, 29, 239, 0.6) 0%, rgba(206, 25, 176, 0.3) 50%, rgba(237, 21, 114, 0) 100%), linear-gradient(90deg, #ff005b 0%, #ff005b 100%);
+  --lemmo-gradient-offer-base: radial-gradient(120% 90% at 50% 0%, #55142c 0%, #35101d 38%, #1e0c14 70%, #140a0f 100%);
+  --lemmo-gradient-offer-flash: linear-gradient(0deg, rgba(255, 0, 91, 0.32) 0%, rgba(255, 0, 91, 0.016) 100%), linear-gradient(90deg, #040404 0%, #040404 100%);
+  --lemmo-gradient-offer-dots: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, rgba(209, 254, 23, 0) 0);
+  --lemmo-gradient-offer-combo: linear-gradient(135deg, #ff005b 0%, #d1004e 40%, #8b006a 100%);
+  --lemmo-gradient-table-cyan: radial-gradient(211% 211% at 50.16% 100%, rgba(60, 140, 255, 0.20) 0%, rgba(60, 216, 255, 0.20) 100%), rgba(255, 255, 255, 0.08);
+  --lemmo-gradient-overlay-darken: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+}

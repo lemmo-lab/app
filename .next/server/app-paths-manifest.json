@@ -1,0 +1,12 @@
+{
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/(workspace)/assets/page": "app/(workspace)/assets/page.js",
+  "/(workspace)/canvas/page": "app/(workspace)/canvas/page.js",
+  "/(workspace)/chat/page": "app/(workspace)/chat/page.js",
+  "/(workspace)/gallery/page": "app/(workspace)/gallery/page.js",
+  "/(workspace)/settings/billing/page": "app/(workspace)/settings/billing/page.js",
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js"
+}

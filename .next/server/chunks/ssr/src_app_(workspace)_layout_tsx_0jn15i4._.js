@@ -1,0 +1,3 @@
+module.exports=[4383,a=>{"use strict";var b=a.i(25276);a.s(["default",0,function({children:a}){return(0,b.jsx)("div",{style:{display:"flex",minHeight:"100dvh",background:"var(--lemmo-canvas-bg, #131517)"},children:(0,b.jsx)("main",{style:{flex:1,overflow:"auto"},children:a})})},"metadata",0,{title:{template:"%s | Lemmo Studio",default:"Lemmo Studio"}}])},31977,function(a){a.n(a.i(4383))}];
+
+//# sourceMappingURL=src_app_%28workspace%29_layout_tsx_0jn15i4._.js.map
