@@ -1,4 +1,7 @@
 {
+  "/(workspace)/app/assets/[filename]/page": "app/(workspace)/app/assets/[filename]/page.js",
+  "/(workspace)/app/assets/empty-state/page": "app/(workspace)/app/assets/empty-state/page.js",
+  "/(workspace)/app/assets/page": "app/(workspace)/app/assets/page.js",
   "/(workspace)/app/feed/[filename]/page": "app/(workspace)/app/feed/[filename]/page.js",
   "/(workspace)/app/page": "app/(workspace)/app/page.js",
   "/(workspace)/chat/page": "app/(workspace)/chat/page.js",

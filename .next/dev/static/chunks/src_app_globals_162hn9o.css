@@ -300,6 +300,10 @@
   unicode-bidi: isolate;
 }
 
+.collapse {
+  visibility: collapse;
+}
+
 .visible {
   visibility: visible;
 }

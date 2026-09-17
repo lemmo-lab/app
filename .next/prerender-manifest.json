@@ -5,7 +5,7 @@
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 5392,
+      "htmlSize": 5462,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -33,7 +33,7 @@
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 9010,
+      "htmlSize": 9080,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -62,7 +62,7 @@
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 8229,
+      "htmlSize": 8299,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -90,7 +90,7 @@
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 12581,
+      "htmlSize": 12651,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -114,11 +114,67 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/app/assets": {
+      "routeType": "page",
+      "response": "complete",
+      "compute": "static",
+      "htmlSize": 14210,
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/app/assets",
+      "dataRoute": "/app/assets.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/app/assets/empty-state": {
+      "routeType": "page",
+      "response": "complete",
+      "compute": "static",
+      "htmlSize": 12851,
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/app/assets/empty-state",
+      "dataRoute": "/app/assets/empty-state.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/assets": {
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 8563,
+      "htmlSize": 8633,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -146,7 +202,7 @@
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 8577,
+      "htmlSize": 8647,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -174,7 +230,7 @@
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 8569,
+      "htmlSize": 8639,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -234,7 +290,7 @@
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 8567,
+      "htmlSize": 8637,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -262,7 +318,7 @@
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 8526,
+      "htmlSize": 8596,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -290,7 +346,7 @@
       "routeType": "page",
       "response": "complete",
       "compute": "static",
-      "htmlSize": 9093,
+      "htmlSize": 9163,
       "experimentalBypassFor": [
         {
           "type": "header",

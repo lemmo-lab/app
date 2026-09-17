@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single-image Details Wireframe</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0A0A0A;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Single-image */
+        .single-image {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            background: #0A0A0A;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            overflow: hidden;
+        }
+
+        /* main */
+        .main {
+            position: absolute;
+            width: 1920px;
+            height: 1080px;
+            left: 0px;
+            top: 0px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            padding: 0px;
+        }
+
+        /* body */
+        .body {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 48px;
+            gap: 48px;
+            width: 1920px;
+            height: 1080px;
+            background: #0A0A0A;
+            flex: none;
+            order: 0;
+            flex-grow: 1;
+        }
+
+        /* content */
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 0px;
+            width: 1744px;
+            height: 984px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 1;
+        }
+
+        /* details-content */
+        .details-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 24px 16px;
+            gap: 16px;
+            width: 450px;
+            height: 984px;
+            background: #383838;
+            border-radius: 12px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        /* promp */
+        .promp {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0px;
+            width: 418px;
+            height: 880px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 1;
+        }
+
+        /* primary-section */
+        .primary-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0px 0px 16px;
+            gap: 16px;
+            width: 418px;
+            height: 256px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        /* top_section */
+        .top_section {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0px;
+            gap: 151px;
+            width: 418px;
+            height: 18px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .quick-action {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 8px;
+            width: 70px;
+            height: 18px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .copy-button, .share-button, .delete-button {
+            width: 18px;
+            height: 18px;
+            background: #D9D9D9;
+            border-radius: 4px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .top_section .lable {
+            width: 89px;
+            height: 14px;
+            background: #D9D9D9;
+            border-radius: 99px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        /* promp_card */
+        .promp_card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 16px;
+            gap: 10px;
+            width: 418px;
+            height: 206px;
+            background: #272525;
+            border-radius: 16px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        .promp_card .text {
+            width: 386px;
+            height: 12px;
+            background: #484848;
+            border-radius: 99px;
+            flex: none;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .promp_card .text.short {
+            width: 92px;
+            align-self: flex-start;
+        }
+
+        /* result_section */
+        .result_section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 8px 0px 16px;
+            gap: 8px;
+            width: 418px;
+            height: 48px;
+            flex: none;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .result_section .lable-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0px;
+            gap: 181px;
+            width: 418px;
+            height: 24px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .result_section .value {
+            width: 40px;
+            height: 12px;
+            background: #D9D9D9;
+            border-radius: 99px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .result_section .sub-lable {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 8px;
+            width: 110px;
+            height: 24px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        .created-date, .dimensions, .tools-name {
+            width: 78px;
+            height: 12px;
+            background: #D9D9D9;
+            border-radius: 99px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .date-icon, .dimensions-icon, .tools-icon {
+            width: 24px;
+            height: 24px;
+            background: #D9D9D9;
+            border-radius: 8px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        .tag-model {
+            width: 71px;
+            height: 24px;
+            background: #D9D9D9;
+            border-radius: 4px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        /* action_base */
+        .action_base {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 9px;
+            width: 418px;
+            height: 40px;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .regreat-button {
+            width: 418px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 999px;
+            flex: none;
+            order: 0;
+            flex-grow: 1;
+        }
+
+        /* content-area */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 100px 100px 0px;
+            gap: 10px;
+            width: 1294px;
+            height: 984px;
+            background: #111111;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 1;
+        }
+
+        .pic-fill {
+            width: 756px;
+            height: 884px;
+            background: #D9D9D9;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        /* close-button */
+        .close-button {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 32px;
+            height: 32px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        .close-icon {
+            width: 32px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 6px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="single-image">
+        <div class="main">
+            <div class="body">
+                <div class="content">
+                    
+                    <!-- Details Content Panel -->
+                    <div class="details-content">
+                        <div class="promp">
+                            
+                            <!-- Primary Section (Top buttons & Prompt Card) -->
+                            <div class="primary-section">
+                                <div class="top_section">
+                                    <div class="quick-action">
+                                        <div class="copy-button"></div>
+                                        <div class="share-button"></div>
+                                        <div class="delete-button"></div>
+                                    </div>
+                                    <div class="lable"></div>
+                                </div>
+
+                                <div class="promp_card">
+                                    <div class="text"></div>
+                                    <div class="text"></div>
+                                    <div class="text"></div>
+                                    <div class="text"></div>
+                                    <div class="text"></div>
+                                    <div class="text"></div>
+                                    <div class="text"></div>
+                                    <div class="text short"></div>
+                                </div>
+                            </div>
+
+                            <!-- Result Section 1: Created Date -->
+                            <div class="result_section">
+                                <div class="lable-row">
+                                    <div class="value"></div>
+                                    <div class="sub-lable">
+                                        <div class="created-date"></div>
+                                        <div class="date-icon"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Result Section 2: Dimensions -->
+                            <div class="result_section">
+                                <div class="lable-row">
+                                    <div class="value"></div>
+                                    <div class="sub-lable">
+                                        <div class="dimensions"></div>
+                                        <div class="dimensions-icon"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Result Section 3: Model/Tools -->
+                            <div class="result_section">
+                                <div class="lable-row">
+                                    <div class="tag-model"></div>
+                                    <div class="sub-lable">
+                                        <div class="tools-name"></div>
+                                        <div class="tools-icon"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Action Base Button -->
+                        <div class="action_base">
+                            <div class="regreat-button"></div>
+                        </div>
+                    </div>
+
+                    <!-- Main Image Preview Area -->
+                    <div class="content-area">
+                        <div class="pic-fill"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
