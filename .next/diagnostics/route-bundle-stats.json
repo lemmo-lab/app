@@ -13,6 +13,32 @@
     ]
   },
   {
+    "route": "/app/tools",
+    "firstLoadUncompressedJsBytes": 494807,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/2nvvl0metrn8s.js",
+      ".next/static/chunks/44t6sw7lcw_nk.js",
+      ".next/static/chunks/2pxnng6-tv133.js",
+      ".next/static/chunks/32bx2q8y0hmsr.js",
+      ".next/static/chunks/0sg19bisjozp9.js",
+      ".next/static/chunks/3w4ij94izyai2.js",
+      ".next/static/chunks/turbopack-1o-w9be8smj4a.js"
+    ]
+  },
+  {
+    "route": "/tools",
+    "firstLoadUncompressedJsBytes": 494807,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/2nvvl0metrn8s.js",
+      ".next/static/chunks/44t6sw7lcw_nk.js",
+      ".next/static/chunks/2pxnng6-tv133.js",
+      ".next/static/chunks/32bx2q8y0hmsr.js",
+      ".next/static/chunks/0sg19bisjozp9.js",
+      ".next/static/chunks/3w4ij94izyai2.js",
+      ".next/static/chunks/turbopack-1o-w9be8smj4a.js"
+    ]
+  },
+  {
     "route": "/app/agent",
     "firstLoadUncompressedJsBytes": 488945,
     "firstLoadChunkPaths": [

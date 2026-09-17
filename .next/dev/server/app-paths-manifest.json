@@ -6,6 +6,8 @@
   "/(workspace)/app/assets/page": "app/(workspace)/app/assets/page.js",
   "/(workspace)/app/feed/[filename]/page": "app/(workspace)/app/feed/[filename]/page.js",
   "/(workspace)/app/page": "app/(workspace)/app/page.js",
+  "/(workspace)/app/tools/page": "app/(workspace)/app/tools/page.js",
+  "/(workspace)/canvas/page": "app/(workspace)/canvas/page.js",
   "/(workspace)/chat/page": "app/(workspace)/chat/page.js",
   "/page": "app/page.js"
 }

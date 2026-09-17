@@ -97,6 +97,12 @@
       "namedRegex": "^/app/assets/empty\\-state(?:/)?$"
     },
     {
+      "page": "/app/tools",
+      "regex": "^/app/tools(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/app/tools(?:/)?$"
+    },
+    {
       "page": "/assets",
       "regex": "^/assets(?:/)?$",
       "routeKeys": {},
@@ -137,6 +143,12 @@
       "regex": "^/settings/billing(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/settings/billing(?:/)?$"
+    },
+    {
+      "page": "/tools",
+      "regex": "^/tools(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/tools(?:/)?$"
     }
   ],
   "dataRoutes": [],

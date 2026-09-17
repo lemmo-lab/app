@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools Index Wireframe</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0A0A0A;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Tools-index Root */
+        .tools-index {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            background: #0A0A0A;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        /* Side Navigation Bar */
+        .side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            width: 72px;
+            height: 1080px;
+            background: #131517;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+        }
+
+        .side .button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            gap: 10px;
+            width: 56px;
+            height: 56px;
+            background: #171717;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .side .icon-box-large {
+            width: 40px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 4px;
+        }
+
+        .primary-cats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 16px 0;
+            width: 56px;
+            height: 272px;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            gap: 10px;
+            width: 56px;
+            height: 60px;
+            background: #171717;
+            border-radius: 8px;
+        }
+
+        .nav-btn.active {
+            background: #453D3D;
+        }
+
+        .nav-btn .icon {
+            width: 20px;
+            height: 20px;
+            background: #D9D9D9;
+            border-radius: 4px;
+        }
+
+        .nav-btn .label-line {
+            width: 40px;
+            height: 14px;
+            background: #D9D9D9;
+            border-radius: 99px;
+        }
+
+        .tools-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            width: 56px;
+            height: 60px;
+            margin-top: 8px;
+        }
+
+        .footer-sidebar {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding: 16px 0;
+            width: 56px;
+            flex-grow: 1;
+            gap: 8px;
+        }
+
+        /* Main Content Wrapper */
+        .main-body {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: flex-start;
+            width: 1848px;
+            height: 1080px;
+            background: #0A0A0A;
+            order: 0;
+        }
+
+        /* Canvas */
+        .canvas {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 1502px;
+            height: 1080px;
+            align-self: stretch;
+            flex-grow: 1;
+        }
+
+        /* Tools Side Panel */
+        .tools-side {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            width: 346px;
+            height: 1080px;
+            background: #1D1D1D;
+            align-self: stretch;
+        }
+
+        .canvas-name-config {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 0 8px;
+            gap: 10px;
+            width: 346px;
+            height: 64px;
+        }
+
+        .config-pill {
+            width: 107px;
+            height: 16px;
+            background: #D9D9D9;
+            border-radius: 999px;
+        }
+
+        .items-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0 0 24px;
+            width: 346px;
+        }
+
+        .action_tools {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 8px 16px;
+            gap: 16px;
+            width: 286px;
+            height: 98px;
+        }
+
+        .search-box {
+            width: 254px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 8px;
+        }
+
+        .tag-dropdown {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 9px;
+            width: 151px;
+            height: 26px;
+        }
+
+        .tag-item {
+            width: 71px;
+            height: 26px;
+            background: #D9D9D9;
+            border-radius: 4px;
+        }
+
+        .tutorials-tools {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 8px 16px;
+            width: 346px;
+            height: 153px;
+        }
+
+        .tutorial-banner {
+            width: 314px;
+            height: 137px;
+            background: #D9D9D9;
+            border-radius: 12px;
+        }
+
+        .tools-recents {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 8px;
+            gap: 16px;
+            width: 346px;
+            height: 168px;
+        }
+
+        .section-label {
+            width: 43px;
+            height: 12px;
+            background: #5B5B5B;
+            border-radius: 99px;
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            width: 330px;
+        }
+
+        .tools-card {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 8px;
+            gap: 9px;
+            width: 330px;
+            height: 58px;
+            background: #4B4B4B;
+            border-radius: 12px;
+        }
+
+        .tools-card.transparent {
+            background: transparent;
+        }
+
+        .tools-card .details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 8px;
+            width: 263px;
+            height: 38px;
+            flex-grow: 1;
+        }
+
+        .name-tools {
+            width: 89px;
+            height: 12px;
+            background: #D9D9D9;
+            border-radius: 99px;
+        }
+
+        .name-tools.wide {
+            width: 92px;
+        }
+
+        .meta-tools {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            width: 263px;
+            height: 18px;
+        }
+
+        .meta-rect-1 {
+            width: 39px;
+            height: 18px;
+            background: #3F3F3F;
+            border-radius: 99px;
+        }
+
+        .meta-line {
+            width: 12px;
+            height: 0;
+            border: 1px solid #3F3F3F;
+            transform: rotate(90deg);
+        }
+
+        .meta-rect-2 {
+            width: 18px;
+            height: 18px;
+            background: #3F3F3F;
+            border-radius: 2px;
+        }
+
+        .card-thumb {
+            width: 42px;
+            height: 42px;
+            background: #D9D9D9;
+            border-radius: 8px;
+        }
+
+        .tools-all {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 8px;
+            gap: 16px;
+            width: 346px;
+            flex-grow: 1;
+        }
+
+        /* Floating Preview Popup Card (`tools` absolute positioned) */
+        .tools-preview-popup {
+            position: absolute;
+            left: -360px;
+            top: calc(50% - 430px / 2);
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 30px;
+            width: 345px;
+            height: 430px;
+            z-index: 2;
+        }
+
+        .tools-preview-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 16px;
+            width: 345px;
+            height: 430px;
+            background: #303030;
+            border-radius: 18px;
+        }
+
+        .preview-head {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 24px;
+            width: 313px;
+            height: 224px;
+        }
+
+        .file-cover {
+            width: 313px;
+            height: 182px;
+            background: #FFFFFF;
+            border-radius: 18px;
+        }
+
+        .preview-title {
+            width: 288px;
+            height: 18px;
+            background: #D9D9D9;
+            border-radius: 999px;
+        }
+
+        .preview-owner {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 12px 0 24px;
+            gap: 8px;
+            width: 313px;
+            height: 68px;
+        }
+
+        .owner-name {
+            width: 96px;
+            height: 14px;
+            background: #D9D9D9;
+            border-radius: 999px;
+        }
+
+        .owner-avatar {
+            width: 32px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 99px;
+        }
+
+        .preview-description {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0 0 24px;
+            gap: 8px;
+            width: 313px;
+            height: 76px;
+        }
+
+        .desc-line {
+            width: 313px;
+            height: 12px;
+            background: #D9D9D9;
+            border-radius: 999px;
+        }
+
+        .desc-line.short {
+            width: 204px;
+        }
+
+        .preview-footer {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 0 12px;
+            gap: 22px;
+            width: 313px;
+            height: 30px;
+        }
+
+        .footer-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 4px;
+            width: 120px;
+            height: 18px;
+        }
+
+        .footer-text {
+            width: 98px;
+            height: 12px;
+            background: #D9D9D9;
+            border-radius: 99px;
+        }
+
+        .footer-icon {
+            width: 18px;
+            height: 18px;
+            background: #D9D9D9;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tools-index">
+        <!-- Main Content Area -->
+        <div class="main-body">
+            <!-- Canvas -->
+            <div class="canvas"></div>
+
+            <!-- Tools Side Panel -->
+            <div class="tools-side">
+                
+                <!-- Absolute Floating Preview Card -->
+                <div class="tools-preview-popup">
+                    <div class="tools-preview-card">
+                        <div class="preview-head">
+                            <div class="file-cover"></div>
+                            <div class="preview-title"></div>
+                        </div>
+                        <div class="preview-owner">
+                            <div class="owner-name"></div>
+                            <div class="owner-avatar"></div>
+                        </div>
+                        <div class="preview-description">
+                            <div class="desc-line"></div>
+                            <div class="desc-line"></div>
+                            <div class="desc-line short"></div>
+                        </div>
+                        <div class="preview-footer">
+                            <div class="footer-item">
+                                <div class="footer-text"></div>
+                                <div class="footer-icon"></div>
+                            </div>
+                            <div class="footer-item">
+                                <div class="footer-text"></div>
+                                <div class="footer-icon"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canvas Name & Config Header -->
+                <div class="canvas-name-config">
+                    <div class="config-pill"></div>
+                </div>
+
+                <!-- Items Section -->
+                <div class="items-container">
+                    <div class="action_tools">
+                        <div class="search-box"></div>
+                        <div class="tag-dropdown">
+                            <div class="tag-item"></div>
+                            <div class="tag-item"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="tutorials-tools">
+                        <div class="tutorial-banner"></div>
+                    </div>
+                </div>
+
+                <!-- Recents Section -->
+                <div class="tools-recents">
+                    <div class="section-label"></div>
+                    <div class="list">
+                        <div class="tools-card">
+                            <div class="details">
+                                <div class="name-tools"></div>
+                                <div class="meta-tools">
+                                    <div class="meta-rect-1"></div>
+                                    <div class="meta-line"></div>
+                                    <div class="meta-rect-2"></div>
+                                </div>
+                            </div>
+                            <div class="card-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Tools Section -->
+                <div class="tools-all">
+                    <div class="section-label"></div>
+                    <div class="list">
+                        <div class="tools-card transparent">
+                            <div class="details">
+                                <div class="name-tools wide"></div>
+                                <div class="meta-tools">
+                                    <div class="meta-rect-1"></div>
+                                    <div class="meta-line"></div>
+                                    <div class="meta-rect-2"></div>
+                                </div>
+                            </div>
+                            <div class="card-thumb"></div>
+                        </div>
+                        <div class="tools-card transparent">
+                            <div class="details">
+                                <div class="name-tools wide"></div>
+                                <div class="meta-tools">
+                                    <div class="meta-rect-1"></div>
+                                    <div class="meta-line"></div>
+                                    <div class="meta-rect-2"></div>
+                                </div>
+                            </div>
+                            <div class="card-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Sidebar Navigation (Left/Right depending on row layout) -->
+        <div class="side">
+            <div class="button">
+                <div class="icon-box-large"></div>
+            </div>
+            
+            <div class="primary-cats">
+                <div class="nav-btn active">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+                <div class="nav-btn">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+                <div class="nav-btn">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+                <div class="nav-btn">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+            </div>
+
+            <div class="tools-section">
+                <div class="nav-btn">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+            </div>
+
+            <div class="footer-sidebar">
+                <div class="nav-btn">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+                <div class="button">
+                    <div class="icon-box-large"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
