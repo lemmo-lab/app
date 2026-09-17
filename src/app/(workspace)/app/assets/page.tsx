@@ -29,14 +29,14 @@ export default function AssetsPage() {
         {/* Page Header */}
         <div className="page-header">
           <div className="action_section">
+            <div className="tabs">
+              <div className="tab-item active" />
+              <div className="tab-item" />
+              <div className="tab-item" />
+              <div className="tab-item" />
+            </div>
             <div className="action">
               <div className="search" />
-            </div>
-            <div className="tabs">
-              <div className="tab-item" />
-              <div className="tab-item" />
-              <div className="tab-item" />
-              <div className="tab-item active" />
             </div>
           </div>
 
@@ -53,8 +53,8 @@ export default function AssetsPage() {
         <section className="assets-group">
           <div className="group-action-section">
             <div className="label-group">
-              <div className="plus-icon" />
               <div className="date-badge" />
+              <div className="plus-icon" />
             </div>
           </div>
           <div className="cards-grid">
@@ -78,8 +78,8 @@ export default function AssetsPage() {
         <section className="assets-group">
           <div className="group-action-section">
             <div className="label-group">
-              <div className="plus-icon" />
               <div className="date-badge" />
+              <div className="plus-icon" />
             </div>
           </div>
           <div className="cards-grid">
@@ -185,7 +185,7 @@ export default function AssetsPage() {
         .filter {
           display: flex;
           flex-direction: row;
-          justify-content: flex-end;
+          justify-content: flex-start;
           align-items: center;
           gap: 8px;
           width: 100%;
@@ -219,7 +219,7 @@ export default function AssetsPage() {
         .group-action-section {
           display: flex;
           flex-direction: row;
-          justify-content: flex-end;
+          justify-content: flex-start;
           width: 100%;
           height: 18px;
         }
@@ -249,7 +249,7 @@ export default function AssetsPage() {
         .cards-grid {
           display: flex;
           flex-direction: row;
-          justify-content: flex-end;
+          justify-content: flex-start;
           align-items: center;
           gap: 8px;
           width: 100%;
@@ -281,7 +281,7 @@ export default function AssetsPage() {
 
         .card-icon-container {
           position: absolute;
-          left: 16px;
+          inset-inline-start: 16px;
           bottom: 16px;
           width: 18px;
           height: 18px;

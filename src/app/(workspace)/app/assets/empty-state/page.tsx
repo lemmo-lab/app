@@ -22,14 +22,14 @@ export default function AssetsEmptyStatePage() {
         {/* Page Header */}
         <div className="page-header">
           <div className="action_section">
+            <div className="tabs">
+              <div className="tab-item active" />
+              <div className="tab-item" />
+              <div className="tab-item" />
+              <div className="tab-item" />
+            </div>
             <div className="action">
               <div className="search" />
-            </div>
-            <div className="tabs">
-              <div className="tab-item" />
-              <div className="tab-item" />
-              <div className="tab-item" />
-              <div className="tab-item active" />
             </div>
           </div>
 
@@ -143,7 +143,7 @@ export default function AssetsEmptyStatePage() {
         .filter {
           display: flex;
           flex-direction: row;
-          justify-content: flex-end;
+          justify-content: flex-start;
           align-items: center;
           gap: 8px;
           width: 100%;

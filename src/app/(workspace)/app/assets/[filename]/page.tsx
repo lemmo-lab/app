@@ -34,12 +34,12 @@ export default function AssetSinglePage() {
               {/* Primary Section */}
               <div className="primary-section">
                 <div className="top_section">
+                  <div className="label" />
                   <div className="quick-action">
                     <div className="copy-button" title="Copy" />
                     <div className="share-button" title="Share" />
                     <div className="delete-button" title="Delete" />
                   </div>
-                  <div className="label" />
                 </div>
 
                 <div className="promp_card">
@@ -57,33 +57,33 @@ export default function AssetSinglePage() {
               {/* Result Section 1: Created Date */}
               <div className="result_section">
                 <div className="lable-row">
-                  <div className="value" />
                   <div className="sub-lable">
-                    <div className="created-date" />
                     <div className="date-icon" />
+                    <div className="created-date" />
                   </div>
+                  <div className="value" />
                 </div>
               </div>
 
               {/* Result Section 2: Dimensions */}
               <div className="result_section">
                 <div className="lable-row">
-                  <div className="value" />
                   <div className="sub-lable">
-                    <div className="dimensions" />
                     <div className="dimensions-icon" />
+                    <div className="dimensions" />
                   </div>
+                  <div className="value" />
                 </div>
               </div>
 
               {/* Result Section 3: Model / Tool */}
               <div className="result_section">
                 <div className="lable-row">
-                  <div className="tag-model" />
                   <div className="sub-lable">
-                    <div className="tools-name" />
                     <div className="tools-icon" />
+                    <div className="tools-name" />
                   </div>
+                  <div className="tag-model" />
                 </div>
               </div>
             </div>
@@ -312,7 +312,7 @@ export default function AssetSinglePage() {
           padding: 2rem;
         }
 
-        .close-button {
+        :global(.close-button) {
           position: absolute;
           top: 1.5rem;
           inset-inline-end: 1.5rem;
