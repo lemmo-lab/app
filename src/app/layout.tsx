@@ -23,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Default: rtl/fa — updated by DirectionProvider on the client after hydration
-    <html lang="fa" dir="rtl" data-theme="default" data-locale="fa" suppressHydrationWarning>
+    // Default: en / ltr
+    <html lang="en" dir="ltr" data-theme="default" data-locale="en" suppressHydrationWarning>
       <body>
         <DirectionProvider>{children}</DirectionProvider>
       </body>

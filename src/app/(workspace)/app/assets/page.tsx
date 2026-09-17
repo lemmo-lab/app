@@ -100,49 +100,6 @@ export default function AssetsPage() {
         </section>
       </main>
 
-      {/* ===== SIDEBAR ===== */}
-      <nav className="side">
-        <div className="button">
-          <div className="icon"><div className="rect-8" /></div>
-        </div>
-
-        <div className="primary-cats">
-          <div className="nav-button">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </div>
-          <div className="nav-button">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </div>
-          <div className="nav-button">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </div>
-          <div className="nav-button active">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </div>
-        </div>
-
-        <div className="tools-section">
-          <div className="nav-button">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </div>
-        </div>
-
-        <div className="footer-sidebar">
-          <div className="nav-button">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </div>
-          <div className="button">
-            <div className="icon"><div className="rect-8" /></div>
-          </div>
-        </div>
-      </nav>
-
       {/* Scoped CSS faithful to assets.html */}
       <style jsx>{`
         .assets-app {
@@ -339,103 +296,6 @@ export default function AssetsPage() {
           border-radius: 4px;
         }
 
-        /* ===== SIDEBAR ===== */
-        .side {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 8px;
-          width: 72px;
-          min-height: 100dvh;
-          background: #131517;
-          flex-shrink: 0;
-          position: sticky;
-          top: 0;
-          border-inline-start: 1px solid rgba(255, 255, 255, 0.08);
-          z-index: 20;
-        }
-
-        .side .button {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 8px;
-          width: 56px;
-          height: 56px;
-          background: #171717;
-          border-radius: 8px;
-          margin-bottom: 8px;
-        }
-
-        .rect-8 {
-          width: 40px;
-          height: 40px;
-          background: #d9d9d9;
-          border-radius: 4px;
-        }
-
-        .primary-cats {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 16px 0;
-          width: 56px;
-          gap: 8px;
-        }
-
-        .nav-button {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 8px;
-          gap: 8px;
-          width: 56px;
-          height: 60px;
-          background: #171717;
-          border-radius: 8px;
-          cursor: pointer;
-        }
-
-        .nav-button.active {
-          background: #453d3d;
-        }
-
-        .rect-8-small {
-          width: 20px;
-          height: 20px;
-          background: #d9d9d9;
-          border-radius: 4px;
-        }
-
-        .rect-9-indicator {
-          width: 40px;
-          height: 10px;
-          background: #d9d9d9;
-          border-radius: 99px;
-        }
-
-        .tools-section {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          width: 56px;
-          margin-top: 8px;
-        }
-
-        .footer-sidebar {
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-          align-items: center;
-          padding: 16px 0;
-          width: 56px;
-          flex: 1 0 0;
-          gap: 8px;
-          margin-top: auto;
-        }
-
         /* ===== RESPONSIVENESS ===== */
         @media (max-width: 1024px) {
           .body {
@@ -450,34 +310,6 @@ export default function AssetsPage() {
         }
 
         @media (max-width: 768px) {
-          .assets-app {
-            flex-direction: column;
-          }
-          .side {
-            width: 100%;
-            min-height: auto;
-            height: 64px;
-            flex-direction: row;
-            position: fixed;
-            bottom: 0;
-            top: auto;
-            padding: 0 1rem;
-            justify-content: space-between;
-            border-inline-start: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-          }
-          .primary-cats {
-            flex-direction: row;
-            padding: 0;
-            width: auto;
-          }
-          .nav-button {
-            width: 48px;
-            height: 48px;
-          }
-          .tools-section, .footer-sidebar {
-            display: none;
-          }
           .body {
             padding: 1rem 1rem 5rem 1rem;
           }

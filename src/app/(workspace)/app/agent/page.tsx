@@ -176,60 +176,6 @@ export default function AgentEmptyStatePage() {
         </div>
       </main>
 
-      {/* ===== SIDEBAR (72px rail) ===== */}
-      <nav className="side">
-        <div className="button">
-          <Link href="/app" className="icon" title="Home">
-            <div className="rect-8" />
-          </Link>
-        </div>
-
-        <div className="primary-cats">
-          {/* Feed / Home */}
-          <Link href="/app" className="nav-button" title="Feed">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </Link>
-
-          {/* Agent (Active) */}
-          <Link href="/app/agent" className="nav-button active" title="Agent">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </Link>
-
-          {/* Assets */}
-          <Link href="/app/assets" className="nav-button" title="Assets">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </Link>
-
-          {/* Canvas */}
-          <Link href="/canvas" className="nav-button" title="Canvas">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </Link>
-        </div>
-
-        <div className="tools-section">
-          <Link href="/chat" className="nav-button" title="Chat">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </Link>
-        </div>
-
-        <div className="footer-sidebar">
-          <Link href="/gallery" className="nav-button" title="Gallery">
-            <div className="icon-small"><div className="rect-8-small" /></div>
-            <div className="rect-9-indicator" />
-          </Link>
-          <div className="button">
-            <Link href="/settings/billing" className="icon" title="Settings">
-              <div className="rect-8" />
-            </Link>
-          </div>
-        </div>
-      </nav>
-
       {/* ===== STYLES ===== */}
       <style jsx>{`
         .agent-container {
@@ -238,8 +184,8 @@ export default function AgentEmptyStatePage() {
           min-height: 100dvh;
           background: #0A0A0A;
           display: flex;
-          flex-direction: row;
-          align-items: flex-start;
+          flex-direction: column;
+          align-items: stretch;
           overflow-x: hidden;
           direction: ltr;
         }
@@ -636,128 +582,8 @@ export default function AgentEmptyStatePage() {
           border-radius: 999px;
         }
 
-        /* ===== SIDEBAR RAIL ===== */
-        .side {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 8px;
-          width: 72px;
-          min-width: 72px;
-          height: 100dvh;
-          background: #131517;
-          position: sticky;
-          top: 0;
-          box-sizing: border-box;
-          z-index: 40;
-        }
-
-        .side .button {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 8px;
-          width: 56px;
-          height: 56px;
-          background: #171717;
-          border-radius: 8px;
-          margin-bottom: 8px;
-          box-sizing: border-box;
-        }
-
-        :global(.side .button .icon) {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          height: 40px;
-          text-decoration: none;
-        }
-
-        .side .button .rect-8 {
-          width: 40px;
-          height: 40px;
-          background: #D9D9D9;
-          border-radius: 4px;
-        }
-
-        .primary-cats {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 16px 0;
-          gap: 8px;
-          width: 56px;
-        }
-
-        :global(.nav-button) {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 8px;
-          gap: 6px;
-          width: 56px;
-          height: 60px;
-          background: #171717;
-          border-radius: 8px;
-          text-decoration: none;
-          box-sizing: border-box;
-          transition: background 0.15s ease;
-        }
-
-        :global(.nav-button.active) {
-          background: #453D3D;
-        }
-
-        :global(.nav-button .icon-small) {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 20px;
-          height: 20px;
-        }
-
-        .rect-8-small {
-          width: 20px;
-          height: 20px;
-          background: #D9D9D9;
-          border-radius: 4px;
-        }
-
-        .rect-9-indicator {
-          width: 40px;
-          height: 14px;
-          background: #D9D9D9;
-          border-radius: 99px;
-        }
-
-        .tools-section {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 0;
-          width: 56px;
-          margin-top: 8px;
-        }
-
-        .footer-sidebar {
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-          align-items: center;
-          padding: 16px 0;
-          width: 56px;
-          flex-grow: 1;
-          gap: 8px;
-        }
-
         /* ===== RESPONSIVE BREAKPOINTS ===== */
         @media (max-width: 900px) {
-          .agent-container {
-            flex-direction: column;
-          }
-
           .main-content {
             max-width: 100%;
             padding: 16px 12px 100px 12px;
@@ -771,62 +597,6 @@ export default function AgentEmptyStatePage() {
             right: 0;
             bottom: 74px;
             padding: 0 16px;
-          }
-
-          .side {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            height: 64px;
-            flex-direction: row;
-            justify-content: space-between;
-            padding: 4px 16px;
-            z-index: 50;
-            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.7);
-          }
-
-          .side .button {
-            margin-bottom: 0;
-            width: 44px;
-            height: 44px;
-            padding: 2px;
-          }
-
-          .side .button .rect-8 {
-            width: 36px;
-            height: 36px;
-          }
-
-          .primary-cats {
-            flex-direction: row;
-            padding: 0;
-            width: auto;
-            gap: 8px;
-          }
-
-          .nav-button {
-            width: 48px;
-            height: 48px;
-            padding: 4px;
-            margin-bottom: 0;
-          }
-
-          .nav-button .rect-9-indicator {
-            display: none;
-          }
-
-          .tools-section {
-            display: none;
-          }
-
-          .footer-sidebar {
-            flex-direction: row;
-            padding: 0;
-            width: auto;
-            flex-grow: 0;
-            gap: 8px;
           }
         }
       `}</style>

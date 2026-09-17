@@ -109,8 +109,8 @@ export default function AssetSinglePage() {
         .single-asset-app {
           position: relative;
           display: flex;
-          flex-direction: row;
-          align-items: flex-start;
+          flex-direction: column;
+          align-items: stretch;
           width: 100%;
           min-height: 100dvh;
           background: #0a0a0a;

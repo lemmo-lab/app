@@ -21,8 +21,8 @@ interface UiState {
 export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
-      locale: 'fa',
-      dir: 'rtl',
+      locale: 'en',
+      dir: 'ltr',
 
       setLocale: (locale) => {
         set({ locale, dir: locale === 'fa' ? 'rtl' : 'ltr' });

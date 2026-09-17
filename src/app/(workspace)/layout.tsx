@@ -1,12 +1,11 @@
 /**
  * Workspace Layout — Studio shell layout.
- * Contains sidebar + header + main content area.
- *
- * Note: This is a stub for M1. Full implementation (AppSidebar, StudioHeader,
- * SurfaceSwitcher) is scheduled for M3.
+ * Hosts the global StudioSidebar navigation rail and provides a clean container
+ * for all workspace pages.
  */
 
 import type { Metadata } from 'next';
+import StudioSidebar from '@/shared/ui/layout/StudioSidebar';
 
 export const metadata: Metadata = {
   title: {
@@ -21,22 +20,44 @@ export default function WorkspaceLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        minHeight: '100dvh',
-        background: 'var(--lemmo-canvas-bg, #131517)',
-      }}
-    >
-      {/* TODO M3: AppSidebar */}
-      <main
-        style={{
-          flex: 1,
-          overflow: 'auto',
-        }}
-      >
-        {children}
-      </main>
+    <div className="studio-shell">
+      {/* Main Content Area for Pages */}
+      <main className="studio-viewport">{children}</main>
+
+      {/* Unified 72px Navigation Rail & Mobile Bottom Bar */}
+      <StudioSidebar />
+
+      <style>{`
+        .studio-shell {
+          display: flex;
+          flex-direction: row;
+          min-height: 100dvh;
+          width: 100%;
+          background: #0A0A0A;
+          direction: ltr;
+          position: relative;
+          overflow-x: hidden;
+        }
+
+        .studio-viewport {
+          flex: 1;
+          min-width: 0;
+          min-height: 100dvh;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+        }
+
+        @media (max-width: 900px) {
+          .studio-shell {
+            flex-direction: column;
+          }
+
+          .studio-viewport {
+            padding-bottom: 64px;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -68,53 +68,6 @@ export default function AppIndexPage() {
         </section>
       </main>
 
-      {/* ===== SIDEBAR (Navigation Rail) ===== */}
-      <nav className="wireframe-sidebar">
-        {/* Top Logo Button */}
-        <div className="side-logo-btn">
-          <div className="placeholder icon" />
-        </div>
-
-        {/* Primary Categories */}
-        <div className="primary-cats">
-          <div className="side-btn active">
-            <div className="placeholder icon" />
-            <div className="placeholder lbl" />
-          </div>
-          <div className="side-btn">
-            <div className="placeholder icon" />
-            <div className="placeholder lbl" />
-          </div>
-          <div className="side-btn">
-            <div className="placeholder icon" />
-            <div className="placeholder lbl" />
-          </div>
-          <div className="side-btn">
-            <div className="placeholder icon" />
-            <div className="placeholder lbl" />
-          </div>
-        </div>
-
-        {/* Mid Section */}
-        <div className="side-section">
-          <div className="side-btn">
-            <div className="placeholder icon" />
-            <div className="placeholder lbl" />
-          </div>
-        </div>
-
-        {/* Footer Section */}
-        <div className="footer-sidebar">
-          <div className="side-btn no-bg">
-            <div className="placeholder icon" />
-            <div className="placeholder lbl" />
-          </div>
-          <div className="side-logo-btn">
-            <div className="placeholder icon-lg" />
-          </div>
-        </div>
-      </nav>
-
       {/* Styles strictly scoped for this wireframe */}
       <style jsx>{`
         .wireframe-app {
@@ -318,94 +271,6 @@ export default function AppIndexPage() {
           z-index: 20;
         }
 
-        .side-logo-btn {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 8px;
-          width: 56px;
-          height: 56px;
-          background: #171717;
-          border-radius: 8px;
-          margin-bottom: 8px;
-        }
-
-        .side-logo-btn .icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 4px;
-        }
-
-        .primary-cats {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 16px 0;
-          width: 56px;
-          gap: 8px;
-        }
-
-        .side-btn {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 8px;
-          gap: 8px;
-          width: 56px;
-          height: 60px;
-          background: #171717;
-          border-radius: 8px;
-          cursor: pointer;
-        }
-
-        .side-btn.active {
-          background: #453d3d;
-        }
-
-        .side-btn .icon {
-          width: 20px;
-          height: 20px;
-          border-radius: 4px;
-        }
-
-        .side-btn .lbl {
-          width: 40px;
-          height: 10px;
-          border-radius: 99px;
-        }
-
-        .side-section {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          width: 56px;
-          margin-top: 8px;
-        }
-
-        .footer-sidebar {
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-          align-items: center;
-          padding: 16px 0;
-          width: 56px;
-          flex: 1 0 0;
-          gap: 8px;
-          margin-top: auto;
-        }
-
-        .side-btn.no-bg {
-          background: transparent;
-        }
-
-        .icon-lg {
-          width: 40px;
-          height: 40px;
-          border-radius: 4px;
-        }
-
         /* ===== RESPONSIVENESS ===== */
         @media (max-width: 1024px) {
           .wireframe-body {
@@ -438,31 +303,6 @@ export default function AppIndexPage() {
         @media (max-width: 768px) {
           .wireframe-app {
             flex-direction: column;
-          }
-          .wireframe-sidebar {
-            width: 100%;
-            min-height: auto;
-            height: 64px;
-            flex-direction: row;
-            position: fixed;
-            bottom: 0;
-            top: auto;
-            padding: 0 1rem;
-            justify-content: space-between;
-            border-inline-start: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-          }
-          .primary-cats {
-            flex-direction: row;
-            padding: 0;
-            width: auto;
-          }
-          .side-btn {
-            width: 48px;
-            height: 48px;
-          }
-          .side-section, .footer-sidebar {
-            display: none;
           }
           .wireframe-body {
             padding: 1rem 1rem 5rem 1rem;

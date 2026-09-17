@@ -129,61 +129,6 @@ export default function CanvasIndexPage() {
         </section>
       </main>
 
-      {/* ===== SIDEBAR RAIL (72px) ===== */}
-      <nav className="side">
-        <div className="button">
-          <Link href="/app" className="icon" title="Home">
-            <div className="icon-box-large" />
-          </Link>
-        </div>
-
-        <div className="primary-cats">
-          {/* Feed */}
-          <Link href="/app" className="nav-btn" title="Feed">
-            <div className="icon" />
-            <div className="label-line" />
-          </Link>
-
-          {/* Agent */}
-          <Link href="/app/agent" className="nav-btn" title="Agent">
-            <div className="icon" />
-            <div className="label-line" />
-          </Link>
-
-          {/* Assets */}
-          <Link href="/app/assets" className="nav-btn" title="Assets">
-            <div className="icon" />
-            <div className="label-line" />
-          </Link>
-
-          {/* Canvas (Active) */}
-          <Link href="/app/canvas" className="nav-btn active" title="Canvas">
-            <div className="icon" />
-            <div className="label-line" />
-          </Link>
-        </div>
-
-        <div className="tools-section">
-          {/* Tools */}
-          <Link href="/app/tools" className="nav-btn" title="Tools">
-            <div className="icon" />
-            <div className="label-line" />
-          </Link>
-        </div>
-
-        <div className="footer-sidebar">
-          <Link href="/gallery" className="nav-btn" title="Gallery">
-            <div className="icon" />
-            <div className="label-line" />
-          </Link>
-          <div className="button">
-            <Link href="/settings/billing" className="icon" title="Settings">
-              <div className="icon-box-large" />
-            </Link>
-          </div>
-        </div>
-      </nav>
-
       {/* ===== STYLES ===== */}
       <style jsx>{`
         .canvas-index {
@@ -192,8 +137,8 @@ export default function CanvasIndexPage() {
           min-height: 100dvh;
           background: #0A0A0A;
           display: flex;
-          flex-direction: row;
-          align-items: flex-start;
+          flex-direction: column;
+          align-items: stretch;
           overflow-x: hidden;
           direction: ltr;
         }
@@ -452,120 +397,8 @@ export default function CanvasIndexPage() {
           border-radius: 99px;
         }
 
-        /* ===== SIDEBAR RAIL (72px) ===== */
-        .side {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 8px;
-          width: 72px;
-          min-width: 72px;
-          height: 100dvh;
-          background: #131517;
-          position: sticky;
-          top: 0;
-          box-sizing: border-box;
-          z-index: 40;
-        }
-
-        .side .button {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 8px;
-          width: 56px;
-          height: 56px;
-          background: #171717;
-          border-radius: 8px;
-          margin-bottom: 8px;
-          box-sizing: border-box;
-        }
-
-        :global(.side .button .icon) {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          height: 40px;
-          text-decoration: none;
-        }
-
-        .icon-box-large {
-          width: 40px;
-          height: 40px;
-          background: #D9D9D9;
-          border-radius: 4px;
-        }
-
-        .primary-cats {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 16px 0;
-          gap: 8px;
-          width: 56px;
-        }
-
-        :global(.nav-btn) {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 8px;
-          gap: 6px;
-          width: 56px;
-          height: 60px;
-          background: #171717;
-          border-radius: 8px;
-          text-decoration: none;
-          box-sizing: border-box;
-          transition: background 0.15s ease;
-        }
-
-        :global(.nav-btn.active) {
-          background: #453D3D;
-        }
-
-        :global(.nav-btn .icon) {
-          width: 20px;
-          height: 20px;
-          background: #D9D9D9;
-          border-radius: 4px;
-        }
-
-        :global(.nav-btn .label-line) {
-          width: 40px;
-          height: 14px;
-          background: #D9D9D9;
-          border-radius: 99px;
-        }
-
-        .tools-section {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 0;
-          width: 56px;
-          margin-top: 8px;
-        }
-
-        .footer-sidebar {
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-          align-items: center;
-          padding: 16px 0;
-          width: 56px;
-          flex-grow: 1;
-          gap: 8px;
-        }
-
         /* ===== RESPONSIVE BREAKPOINTS ===== */
         @media (max-width: 900px) {
-          .canvas-index {
-            flex-direction: column;
-          }
-
           .main-body {
             max-width: 100%;
             padding: 20px 16px 90px 16px;
@@ -609,62 +442,6 @@ export default function CanvasIndexPage() {
 
           .project-cover {
             height: 130px;
-          }
-
-          .side {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            width: 100%;
-            height: 64px;
-            flex-direction: row;
-            justify-content: space-between;
-            padding: 4px 16px;
-            z-index: 50;
-            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.7);
-          }
-
-          .side .button {
-            margin-bottom: 0;
-            width: 44px;
-            height: 44px;
-            padding: 2px;
-          }
-
-          .icon-box-large {
-            width: 36px;
-            height: 36px;
-          }
-
-          .primary-cats {
-            flex-direction: row;
-            padding: 0;
-            width: auto;
-            gap: 8px;
-          }
-
-          :global(.nav-btn) {
-            width: 48px;
-            height: 48px;
-            padding: 4px;
-            margin-bottom: 0;
-          }
-
-          :global(.nav-btn .label-line) {
-            display: none;
-          }
-
-          .tools-section {
-            display: none;
-          }
-
-          .footer-sidebar {
-            flex-direction: row;
-            padding: 0;
-            width: auto;
-            flex-grow: 0;
-            gap: 8px;
           }
         }
       `}</style>
