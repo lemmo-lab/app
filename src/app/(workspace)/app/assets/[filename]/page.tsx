@@ -352,24 +352,68 @@ export default function AssetSinglePage() {
 
         @media (max-width: 768px) {
           .main-body {
-            padding: 1rem;
+            padding: 12px 16px 80px 16px;
+            width: 100%;
           }
           .content {
-            flex-direction: column-reverse;
+            display: flex;
+            flex-direction: column;
             align-items: stretch;
-            gap: 1.5rem;
-            height: auto;
-          }
-          .content-area {
-            height: 450px;
+            gap: 16px;
+            min-height: auto;
             width: 100%;
+          }
+          /* MOBILE UX REORDER: Hero Asset Preview on Top */
+          .content-area {
+            order: 1;
+            height: auto;
+            width: 100%;
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+          }
+          .close-button {
+            position: relative;
+            top: auto;
+            inset-inline-start: auto;
+            width: 32px;
+            height: 32px;
+            align-self: flex-start;
+            z-index: 10;
           }
           .pic-fill {
-            height: 360px;
-          }
-          .details-content {
             width: 100%;
+            max-width: 100%;
+            height: 360px;
+            border-radius: 8px;
+            align-self: center;
+          }
+          /* Metadata & Details Below Media */
+          .details-content {
+            order: 2;
+            width: 100%;
+            max-width: 100%;
+            padding: 16px;
+            border-radius: 12px;
             height: auto;
+            gap: 14px;
+          }
+          .action_base {
+            position: sticky;
+            bottom: 72px;
+            z-index: 20;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 8px 0;
+            border-radius: 999px;
+            margin-top: 12px;
+          }
+          .regreat-button {
+            height: 44px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
           }
         }
       `}</style>

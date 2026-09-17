@@ -292,36 +292,30 @@ export default function StudioSidebar() {
             width: 100%;
             height: 64px;
             flex-direction: row;
-            justify-content: space-between;
-            padding: 4px 16px;
+            justify-content: space-around;
+            align-items: center;
+            padding: 4px 8px calc(4px + env(safe-area-inset-bottom)) 8px;
             z-index: 90;
             border-inline-end: none;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.75);
+            background: #131517;
           }
 
           .button-home {
-            margin-bottom: 0;
-            width: 44px;
-            height: 44px;
-            padding: 2px;
-          }
-
-          .button-home .rect-8-large {
-            width: 36px;
-            height: 36px;
+            display: none;
           }
 
           .primary-cats {
             flex-direction: row;
             padding: 0;
             width: auto;
-            gap: 8px;
+            gap: 6px;
           }
 
           :global(.nav-btn) {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             padding: 4px;
             margin-bottom: 0;
           }
@@ -331,7 +325,10 @@ export default function StudioSidebar() {
           }
 
           .tools-section {
-            display: none;
+            display: flex;
+            flex-direction: row;
+            margin-top: 0;
+            width: auto;
           }
 
           .footer-sidebar {
@@ -339,18 +336,19 @@ export default function StudioSidebar() {
             padding: 0;
             width: auto;
             flex-grow: 0;
-            gap: 8px;
+            gap: 6px;
           }
 
           .profile-trigger-btn {
             width: 44px;
             height: 44px;
-            padding: 2px;
+            padding: 4px;
           }
 
           .profile-trigger-btn .rect-8-large {
-            width: 36px;
-            height: 36px;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
           }
         }
       `}</style>

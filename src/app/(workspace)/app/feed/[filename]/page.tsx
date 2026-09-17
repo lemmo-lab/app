@@ -373,35 +373,85 @@ export default function SingleImageFeedPage() {
         @media (max-width: 768px) {
           .single-image-app {
             flex-direction: column;
-          }
-          .side {
-            display: none;
+            width: 100%;
           }
           .little-gallery {
             display: none;
           }
           .main-body {
-            padding: 1rem 1rem 3rem 1rem;
+            padding: 12px 16px 80px 16px;
             width: 100%;
           }
           .content {
+            display: flex;
             flex-direction: column;
             align-items: stretch;
-            gap: 1.5rem;
-            height: auto;
-          }
-          .content-area {
-            height: 480px;
+            gap: 16px;
+            min-height: auto;
             width: 100%;
-            border-radius: 8px;
+          }
+          /* MOBILE UX REORDER: Hero Media First, then Metadata/Prompt */
+          .content-area {
+            order: 1;
+            width: 100%;
+            height: auto;
+            border-radius: 14px;
+            background: #111111;
+            position: relative;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+          }
+          .back-button {
+            position: relative;
+            top: auto;
+            inset-inline-start: auto;
+            width: 32px;
+            height: 32px;
+            align-self: flex-start;
+            z-index: 10;
           }
           .rect-17 {
-            max-width: 280px;
+            width: 100%;
+            max-width: 100%;
             height: 380px;
+            border-radius: 8px;
+            align-self: center;
           }
           .details-content {
+            order: 2;
             width: 100%;
+            max-width: 100%;
+            gap: 16px;
+            padding: 0;
+          }
+          .promp_card {
+            padding: 14px;
+            border-radius: 12px;
+          }
+          .tag-container {
+            flex-wrap: wrap;
             height: auto;
+          }
+          .refrances {
+            overflow-x: auto;
+            padding-bottom: 4px;
+          }
+          .action_base {
+            position: sticky;
+            bottom: 72px;
+            z-index: 20;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 8px 0;
+            border-radius: 999px;
+            margin-top: 12px;
+          }
+          .regreat-button {
+            height: 44px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
           }
         }
       `}</style>

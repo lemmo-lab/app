@@ -850,22 +850,26 @@ export default function ToolsIndexPage() {
         /* ===== RESPONSIVE BREAKPOINTS ===== */
         @media (max-width: 1024px) {
           .tools-preview-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            right: auto;
-            inset-inline-start: 50%;
-            inset-inline-end: auto;
-            transform: translate(-50%, -50%);
-            z-index: 60;
-            max-width: 90vw;
+            position: fixed !important;
+            bottom: 0 !important;
+            top: auto !important;
+            left: 0 !important;
+            right: 0 !important;
+            inset-inline-start: 0 !important;
+            inset-inline-end: 0 !important;
+            transform: none !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            z-index: 95;
+            display: flex;
+            justify-content: center;
           }
 
           .preview-backdrop {
             display: block;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             z-index: 55;
             backdrop-filter: blur(4px);
           }
@@ -922,11 +926,75 @@ export default function ToolsIndexPage() {
             display: none;
             width: 100%;
             min-width: 100%;
-            padding-bottom: 90px;
+            padding-bottom: 96px;
           }
 
           .tools-side.mobile-active {
             display: flex;
+          }
+
+          .tag-dropdown {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            width: 100%;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+            gap: 8px;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .tag-dropdown::-webkit-scrollbar {
+            display: none;
+          }
+
+          .tag-item {
+            flex: 0 0 80px;
+          }
+
+          /* NATIVE MOBILE BOTTOM SHEET for Tool Preview */
+          .tools-preview-popup {
+            position: fixed;
+            bottom: 0;
+            top: auto;
+            left: 0;
+            right: 0;
+            inset-inline-start: 0;
+            inset-inline-end: 0;
+            transform: none;
+            width: 100%;
+            max-width: 100%;
+            z-index: 95;
+            display: flex;
+            justify-content: center;
+          }
+
+          .tools-preview-card {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            max-height: 85vh;
+            border-radius: 20px 20px 0 0;
+            padding: 20px 16px calc(24px + env(safe-area-inset-bottom)) 16px;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.85);
+            background: #222222;
+            overflow-y: auto;
+            animation: slideUpMobile 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+
+          @keyframes slideUpMobile {
+            from {
+              transform: translateY(100%);
+            }
+            to {
+              transform: translateY(0);
+            }
+          }
+
+          .use-tool-btn {
+            width: 100%;
+            height: 44px;
+            font-size: 13px;
+            border-radius: 999px;
           }
         }
       `}</style>

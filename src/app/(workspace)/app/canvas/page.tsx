@@ -417,56 +417,102 @@ export default function CanvasIndexPage() {
         @media (max-width: 900px) {
           .main-body {
             max-width: 100%;
-            padding: 20px 16px 90px 16px;
+            padding: 16px 16px 84px 16px;
           }
 
           .cover {
-            padding: 24px;
-            min-height: 280px;
-            gap: 24px;
-            border-radius: 20px;
+            padding: 20px 16px;
+            min-height: 190px;
+            gap: 16px;
+            border-radius: 16px;
+            align-items: stretch;
+            justify-content: center;
           }
 
           .title-subtitle {
+            gap: 10px;
+            width: 100%;
+          }
+
+          .rect-title {
+            width: 180px;
+            height: 22px;
+          }
+
+          .rect-subtitle {
+            width: 100%;
+            max-width: 280px;
+            height: 12px;
+          }
+
+          .button-new {
+            width: 100%;
+            height: 44px;
+            margin-top: 4px;
+          }
+
+          .rect-button {
+            height: 44px;
+          }
+
+          /* MOBILE ACTION HIERARCHY: Search & Filter first, Tabs underneath */
+          .action-section {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
             gap: 12px;
           }
 
-          .action-section {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 16px;
+          .action {
+            order: 1;
+            width: 100%;
+            gap: 10px;
           }
 
-          .action {
-            max-width: 100%;
+          .search-box-wrap {
+            height: 42px;
+          }
+
+          .filter-box {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
           }
 
           .tabs {
+            order: 2;
             overflow-x: auto;
             flex-wrap: nowrap;
+            width: 100%;
             padding-bottom: 4px;
+            scrollbar-width: none;
+            gap: 8px;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .tabs::-webkit-scrollbar {
+            display: none;
           }
 
           .tab-item {
-            flex: none;
+            flex: 0 0 76px;
+            height: 36px;
           }
 
           .projects {
-            gap: 16px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
           }
 
           :global(.project-card) {
-            width: calc(50% - 8px);
+            width: 100%;
           }
 
           .project-cover {
-            height: 140px;
-          }
-        }
-
-        @media (max-width: 520px) {
-          :global(.project-card) {
-            width: 100%;
+            height: 125px;
+            border-radius: 10px;
           }
         }
       `}</style>

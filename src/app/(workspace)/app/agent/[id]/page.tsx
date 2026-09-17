@@ -1200,7 +1200,7 @@ function AgentSingleContentView({ currentId }: { currentId: string }) {
           }
 
           .floating-div {
-            bottom: 12px;
+            bottom: 74px;
             padding: 0 8px;
           }
 

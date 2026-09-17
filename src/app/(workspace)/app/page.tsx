@@ -279,11 +279,9 @@ export default function AppIndexPage() {
             padding: 1.5rem;
           }
           .wireframe-tools-section {
-            flex-wrap: wrap;
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
-          }
-          .tools-card {
-            flex: 1 1 calc(50% - 1rem);
+            padding-bottom: 2.5rem;
           }
           .search-bar {
             width: 100%;
@@ -305,27 +303,86 @@ export default function AppIndexPage() {
         @media (max-width: 768px) {
           .wireframe-app {
             flex-direction: column;
-          }
-          .wireframe-body {
-            padding: 1rem 1rem 5rem 1rem;
-          }
-          .slider-image {
-            height: 240px;
-            border-radius: 18px;
-          }
-          .wireframe-tools-section {
-            flex-direction: column;
-            gap: 1rem;
-          }
-          .tools-card {
             width: 100%;
           }
-          .gallery-grid {
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+          .wireframe-body {
+            padding: 16px 16px 84px 16px;
+          }
+          .wireframe-banner {
+            padding-bottom: 20px;
+            gap: 12px;
+          }
+          .slider-image {
+            height: 190px;
+            border-radius: 16px;
+          }
+          .slider-footer {
+            height: 28px;
+          }
+          .arrow {
+            width: 28px;
+            height: 28px;
+          }
+          /* MOBILE UX: Swipeable horizontal tools carousel instead of massive vertical stack */
+          .wireframe-tools-section {
+            display: flex;
+            flex-direction: row;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 24px;
+            gap: 12px;
+            margin-inline: -16px;
+            padding-inline: 16px;
+            scrollbar-width: none;
+          }
+          .wireframe-tools-section::-webkit-scrollbar {
+            display: none;
+          }
+          :global(.tools-card) {
+            flex: 0 0 150px;
+            width: 150px;
+            scroll-snap-align: start;
             gap: 8px;
           }
-          .gallery-card {
-            height: 280px;
+          .tools-card-img {
+            width: 100%;
+            height: 110px;
+            border-radius: 12px;
+          }
+          .tools-card-label {
+            width: 100px;
+            height: 12px;
+          }
+          /* Gallery on Mobile */
+          .wireframe-gallery {
+            gap: 16px;
+          }
+          .gallery-header {
+            gap: 12px;
+          }
+          .gallery-actions {
+            gap: 10px;
+          }
+          .search-bar {
+            width: 100%;
+            height: 42px;
+          }
+          .tab {
+            width: 160px;
+            height: 36px;
+          }
+          .publish-button {
+            width: 100%;
+            height: 42px;
+          }
+          .gallery-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+          }
+          :global(.gallery-card) {
+            height: 220px;
+            border-radius: 12px;
           }
         }
       `}</style>

@@ -310,10 +310,70 @@ export default function AssetsPage() {
 
         @media (max-width: 768px) {
           .body {
-            padding: 1rem 1rem 5rem 1rem;
+            padding: 16px 16px 84px 16px;
           }
+          .page-header {
+            padding-bottom: 24px;
+            gap: 16px;
+          }
+          /* MOBILE ACTION HIERARCHY: Search full width first, Tabs underneath */
+          .action_section {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+            padding-bottom: 0;
+          }
+          .action {
+            order: 1;
+            width: 100%;
+          }
+          .tabs {
+            order: 2;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            width: 100%;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            gap: 8px;
+          }
+          .tabs::-webkit-scrollbar {
+            display: none;
+          }
+          .tab-item {
+            flex: 0 0 90px;
+            height: 36px;
+          }
+          .filter {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            width: 100%;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+          }
+          .filter::-webkit-scrollbar {
+            display: none;
+          }
+          .filter-rect {
+            flex-shrink: 0;
+          }
+          /* Mobile Asset Cards Grid: 2-column clean square tiles */
           .cards-grid {
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
+          }
+          .content-card {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+          }
+          .rect-63 {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 1 / 1;
           }
         }
       `}</style>
