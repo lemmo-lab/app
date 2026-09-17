@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Single Content Wireframe</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0A0A0A;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* agent-single-content */
+        .agent-single-content {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            background: #0A0A0A;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            overflow: hidden;
+        }
+
+        /* main */
+        .main {
+            position: absolute;
+            width: 1920px;
+            height: 1080px;
+            left: 0px;
+            top: 0px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            padding: 0px;
+        }
+
+        /* body */
+        .body {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 48px;
+            gap: 48px;
+            isolation: isolate;
+            width: 1848px;
+            height: 1080px;
+            background: #0A0A0A;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        /* content */
+        .content {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 0px;
+            gap: 48px;
+            width: 1672px;
+            height: 984px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 1;
+            z-index: 0;
+        }
+
+        /* little-gallery */
+        .little-gallery {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0px;
+            gap: 16px;
+            width: 64px;
+            height: 984px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+            overflow-y: auto;
+        }
+
+        .focus-pic {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 58px;
+            height: 58px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .rect-14 {
+            width: 58px;
+            height: 58px;
+            background: #474747;
+            border-radius: 8px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .rect-14.active {
+            background: #DEDEDE;
+        }
+
+        /* content-area */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            isolation: isolate;
+            width: 1560px;
+            height: 984px;
+            background: #111111;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .rect-17 {
+            width: 449px;
+            height: 754px;
+            background: #D9D9D9;
+            border-radius: 2px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+            z-index: 0;
+            margin: auto;
+        }
+
+        /* zoom */
+        .zoom-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            gap: 8px;
+            position: absolute;
+            width: 180px;
+            height: 32px;
+            left: 16px;
+            top: 16px;
+            z-index: 1;
+        }
+
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 8px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .zoom-bar {
+            width: 100px;
+            height: 16px;
+            background: #D9D9D9;
+            border-radius: 8px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        /* nav-menu */
+        .nav-menu {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0px;
+            gap: 14px;
+            position: absolute;
+            width: 556px;
+            height: 40px;
+            left: calc(50% - 556px/2);
+            top: 16px;
+            z-index: 2;
+        }
+
+        .nav-item-btn {
+            width: 100px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 8px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        /* back-button */
+        .back-button {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 32px;
+            height: 32px;
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            z-index: 1;
+        }
+
+        .rect-11 {
+            width: 32px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 6px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        /* div (Floating Input Bar) */
+        .floating-div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            position: absolute;
+            width: 1848px;
+            height: 135px;
+            left: 0px;
+            bottom: 50px;
+            z-index: 2;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 16px;
+            gap: 16px;
+            width: 896px;
+            height: 135px;
+            background: #353434;
+            border-radius: 24px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .input_refrance {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 8px;
+            width: 864px;
+            height: 55px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .input-ref-item {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 55px;
+            height: 55px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .remove-icon {
+            width: 18px;
+            height: 18px;
+            background: #D9D9D9;
+            border-radius: 6px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .action-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 16px;
+            width: 864px;
+            height: 32px;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .primary-action {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 32px;
+            height: 32px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .plus {
+            width: 32px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 4px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .text_area {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0px;
+            width: 768px;
+            height: 32px;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 1;
+        }
+
+        .rectangle-18 {
+            width: 184px;
+            height: 14px;
+            background: #525252;
+            border-radius: 999px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .send-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0px;
+            gap: 16px;
+            width: 32px;
+            height: 32px;
+            flex: none;
+            order: 2;
+            flex-grow: 0;
+        }
+
+        .send {
+            width: 32px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 4px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        /* side (Sidebar) */
+        .side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            width: 72px;
+            height: 1080px;
+            background: #131517;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .side .button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            gap: 10px;
+            width: 56px;
+            height: 56px;
+            background: #171717;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .side .button .icon {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .side .button .rect-8 {
+            width: 40px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 4px;
+        }
+
+        .primary-cats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 16px 0px;
+            width: 56px;
+            height: 272px;
+        }
+
+        .nav-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            gap: 10px;
+            width: 56px;
+            height: 60px;
+            background: #171717;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .nav-button.active {
+            background: #453D3D;
+        }
+
+        .nav-button .icon-small {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-button .rect-8-small {
+            width: 20px;
+            height: 20px;
+            background: #D9D9D9;
+            border-radius: 4px;
+        }
+
+        .nav-button .rect-9-indicator {
+            width: 40px;
+            height: 14px;
+            background: #D9D9D9;
+            border-radius: 99px;
+        }
+
+        .tools-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0px;
+            width: 56px;
+            height: 60px;
+        }
+
+        .footer-sidebar {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding: 16px 0px;
+            width: 56px;
+            height: 676px;
+            flex-grow: 1;
+        }
+
+        .footer-sidebar .nav-button {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="agent-single-content">
+        <div class="main">
+            <!-- body -->
+            <div class="body">
+                <div class="content">
+                    
+                    <!-- little-gallery -->
+                    <div class="little-gallery">
+                        <div class="focus-pic"><div class="rect-14 active"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                        <div class="focus-pic"><div class="rect-14"></div></div>
+                    </div>
+
+                    <!-- content-area -->
+                    <div class="content-area">
+                        
+                        <!-- Zoom Control -->
+                        <div class="zoom-container">
+                            <div class="zoom-btn"></div>
+                            <div class="zoom-bar"></div>
+                            <div class="zoom-btn"></div>
+                        </div>
+
+                        <!-- Navigation Menu (Markup, Comment, Remove BG, etc.) -->
+                        <div class="nav-menu">
+                            <div class="nav-item-btn"></div>
+                            <div class="nav-item-btn"></div>
+                            <div class="nav-item-btn"></div>
+                            <div class="nav-item-btn"></div>
+                            <div class="nav-item-btn"></div>
+                        </div>
+
+                        <!-- Main Picture Frame -->
+                        <div class="rect-17"></div>
+
+                        <!-- Floating Input Area -->
+                        <div class="floating-div">
+                            <div class="input-box">
+                                <div class="input_refrance">
+                                    <div class="input-ref-item"><div class="remove-icon"></div></div>
+                                    <div class="input-ref-item"><div class="remove-icon"></div></div>
+                                </div>
+                                <div class="action-row">
+                                    <div class="primary-action"><div class="plus"></div></div>
+                                    <div class="text_area">
+                                        <div class="rectangle-18"></div>
+                                    </div>
+                                    <div class="send-container">
+                                        <div class="send"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- side (Sidebar) -->
+        <div class="side">
+            <div class="button">
+                <div class="icon"><div class="rect-8"></div></div>
+            </div>
+            
+            <div class="primary-cats">
+                <div class="nav-button active">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+            </div>
+
+            <div class="tools-section">
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+            </div>
+
+            <div class="footer-sidebar">
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+                <div class="button">
+                    <div class="icon"><div class="rect-8"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

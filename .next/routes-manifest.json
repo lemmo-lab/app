@@ -23,6 +23,14 @@
   },
   "dynamicRoutes": [
     {
+      "page": "/app/agent/[id]",
+      "regex": "^/app/agent/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/app/agent/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/app/assets/[filename]",
       "regex": "^/app/assets/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -63,6 +71,18 @@
       "regex": "^/app(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/app(?:/)?$"
+    },
+    {
+      "page": "/app/agent",
+      "regex": "^/app/agent(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/app/agent(?:/)?$"
+    },
+    {
+      "page": "/app/agent/empty-state",
+      "regex": "^/app/agent/empty\\-state(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/app/agent/empty\\-state(?:/)?$"
     },
     {
       "page": "/app/assets",

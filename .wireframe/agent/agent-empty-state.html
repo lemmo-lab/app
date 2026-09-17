@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent-empty Interactive Wireframe</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0A0A0A;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Agent-empty Container */
+        .agent-empty {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            background: #0A0A0A;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            overflow: hidden;
+        }
+
+        /* main */
+        .main {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            padding: 0px;
+            position: absolute;
+            width: 1920px;
+            height: 1080px;
+            left: 0px;
+            top: 0px;
+        }
+
+        /* body */
+        .body {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 48px;
+            gap: 48px;
+            width: 1848px;
+            height: 1080px;
+            background: #0A0A0A;
+            flex: none;
+            order: 0;
+            flex-grow: 1;
+        }
+
+        /* content */
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0px;
+            gap: 48px;
+            isolation: isolate;
+            width: 1752px;
+            height: 984px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 1;
+        }
+
+        /* base-area */
+        .base-area {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 1752px;
+            height: 984px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 1;
+            z-index: 0;
+            position: relative;
+        }
+
+        /* empty-state */
+        .empty-state {
+            width: 705px;
+            height: 294px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+            position: relative;
+        }
+
+        /* style-select */
+        .style-select {
+            position: absolute;
+            width: 705.39px;
+            height: 302.04px;
+            left: 0px;
+            top: -4.02px;
+        }
+
+        .select-style {
+            position: absolute;
+            width: 210px;
+            height: 260px;
+            border-radius: 16px;
+        }
+
+        .select-style:nth-child(1) {
+            left: 0px;
+            top: calc(50% - 260px/2 - 21.02px);
+            background: #D9D9D9;
+            transform: rotate(-13.58deg);
+        }
+
+        .select-style:nth-child(2) {
+            right: 9px;
+            top: calc(50% - 260px/2 + 1px);
+            background: #ADADAD;
+            transform: rotate(-2.1deg);
+        }
+
+        .select-style:nth-child(3) {
+            left: 154.95px;
+            top: calc(50% - 260px/2 - 8.49px);
+            background: #BAB1B1;
+            transform: rotate(2.53deg);
+        }
+
+        .select-style:nth-child(4) {
+            left: 308px;
+            top: calc(50% - 260px/2 - 17px);
+            background: #9C9C9C;
+            transform: rotate(9.88deg);
+        }
+
+        /* div (Bottom input container) */
+        .div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            position: absolute;
+            width: 1752px;
+            height: 174px;
+            left: 0px;
+            bottom: 0px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+            z-index: 1;
+        }
+
+        /* input */
+        .input {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 16px;
+            width: 896px;
+            height: 174px;
+            background: #353434;
+            border-radius: 24px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        /* input_refrance */
+        .input_refrance {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 8px;
+            width: 864px;
+            height: 55px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .input-item {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 55px;
+            height: 55px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .remove-icon {
+            width: 18px;
+            height: 18px;
+            background: #D9D9D9;
+            border-radius: 6px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        /* text_area */
+        .text_area {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0px;
+            width: 864px;
+            height: 55px;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .rectangle-18 {
+            width: 184px;
+            height: 14px;
+            background: #525252;
+            border-radius: 999px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        /* action */
+        .action {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 864px;
+            height: 32px;
+            flex: none;
+            order: 2;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .primary-action {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 32px;
+            height: 32px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .plus {
+            width: 32px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 4px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .send+config {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0px;
+            gap: 16px;
+            width: 235px;
+            height: 32px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        .select-model+frame {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            isolation: isolate;
+            width: 187px;
+            height: 32px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+            cursor: pointer;
+        }
+
+        .rectangle-11 {
+            width: 187px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 6px;
+            flex: none;
+            order: 0;
+            flex-grow: 1;
+            z-index: 0;
+        }
+
+        .send {
+            width: 32px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 4px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+            cursor: pointer;
+        }
+
+        /* confog-menu (Interactive Modal/Menu) */
+        .confog-menu {
+            display: none; /* Hidden by default, toggled via JS */
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 16px;
+            position: absolute;
+            width: 360px;
+            height: 300px;
+            left: calc(50% - 360px/2 + 0.5px);
+            bottom: 43px;
+            background: #4D4B4B;
+            border-radius: 18px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+            z-index: 1;
+        }
+
+        .confog-menu.active {
+            display: flex;
+        }
+
+        /* type-content */
+        .type-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px 0px 8px;
+            gap: 8px;
+            width: 328px;
+            height: 48px;
+        }
+
+        .type-btn {
+            width: 160px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #0A0A0A;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .type-btn.image {
+            background: #D9D9D9;
+        }
+
+        .type-btn.video {
+            background: #494444;
+            color: #D9D9D9;
+        }
+
+        .type-btn.active {
+            background: #D9D9D9;
+            color: #0A0A0A;
+        }
+
+        /* frame-choice */
+        .frame-choice {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 8px 0px;
+            gap: 16px;
+            width: 328px;
+            height: 68px;
+        }
+
+        .frame {
+            width: 52px;
+            height: 52px;
+            background: #D9D9D9;
+            border-radius: 16px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .frame.active {
+            opacity: 1;
+            border: 2px solid #FFFFFF;
+        }
+
+        /* model-dropdown */
+        .model-dropdown {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 8px 0px;
+            gap: 8px;
+            width: 328px;
+            height: 56px;
+        }
+
+        .dropdown {
+            width: 325px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        /* number-result */
+        .number-result {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 8px 0px;
+            gap: 16px;
+            width: 328px;
+            height: 68px;
+        }
+
+        .frame-num {
+            width: 70px;
+            height: 52px;
+            background: #D9D9D9;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333333;
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        .frame-num.active {
+            opacity: 1;
+            background: #FFFFFF;
+            border: 2px solid #333333;
+        }
+
+        /* creadit */
+        .creadit {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 0px;
+            gap: 10px;
+            width: 328px;
+            height: 28px;
+        }
+
+        .creadit-usage {
+            width: 170px;
+            height: 12px;
+            background: #D9D9D9;
+            border-radius: 999px;
+        }
+
+        /* side (Sidebar) */
+        .side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            width: 72px;
+            height: 1080px;
+            background: #131517;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .side .button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            gap: 10px;
+            width: 56px;
+            height: 56px;
+            background: #171717;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .side .button .icon {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .side .button .rect-8 {
+            width: 40px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 4px;
+        }
+
+        .primary-cats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 16px 0px;
+            width: 56px;
+            height: 272px;
+        }
+
+        .nav-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            gap: 10px;
+            width: 56px;
+            height: 60px;
+            background: #171717;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .nav-button.active {
+            background: #453D3D;
+        }
+
+        .nav-button .icon-small {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-button .rect-8-small {
+            width: 20px;
+            height: 20px;
+            background: #D9D9D9;
+            border-radius: 4px;
+        }
+
+        .nav-button .rect-9-indicator {
+            width: 40px;
+            height: 14px;
+            background: #D9D9D9;
+            border-radius: 99px;
+        }
+
+        .tools-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0px;
+            width: 56px;
+            height: 60px;
+        }
+
+        .footer-sidebar {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding: 16px 0px;
+            width: 56px;
+            height: 676px;
+            flex-grow: 1;
+        }
+
+        .footer-sidebar .nav-button {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="agent-empty">
+        <div class="main">
+            <!-- body -->
+            <div class="body">
+                <div class="content">
+                    <div class="base-area">
+                        <!-- empty-state -->
+                        <div class="empty-state">
+                            <div class="style-select">
+                                <div class="select-style"></div>
+                                <div class="select-style"></div>
+                                <div class="select-style"></div>
+                                <div class="select-style"></div>
+                            </div>
+                        </div>
+
+                        <!-- div (input section) -->
+                        <div class="div">
+                            <div class="input">
+                                <div class="input_refrance">
+                                    <div class="input-item"><div class="remove-icon"></div></div>
+                                    <div class="input-item"><div class="remove-icon"></div></div>
+                                </div>
+                                <div class="text_area">
+                                    <div class="rectangle-18"></div>
+                                </div>
+                                <div class="action">
+                                    <div class="primary-action"><div class="plus"></div></div>
+                                    <div class="send+config">
+                                        <!-- Interactive Menu Trigger -->
+                                        <div class="select-model+frame" id="menuToggle">
+                                            <div class="rectangle-11"></div>
+                                        </div>
+                                        <div class="send" id="sendBtn"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- confog-menu (Interactive configuration menu) -->
+                            <div class="confog-menu" id="configMenu">
+                                <div class="type-content">
+                                    <div class="type-btn image active" onclick="switchType(this)">Image</div>
+                                    <div class="type-btn video" onclick="switchType(this)">Video</div>
+                                </div>
+                                <div class="frame-choice">
+                                    <div class="frame active" onclick="selectItem(this, '.frame-choice .frame')"></div>
+                                    <div class="frame" onclick="selectItem(this, '.frame-choice .frame')"></div>
+                                    <div class="frame" onclick="selectItem(this, '.frame-choice .frame')"></div>
+                                    <div class="frame" onclick="selectItem(this, '.frame-choice .frame')"></div>
+                                    <div class="frame" onclick="selectItem(this, '.frame-choice .frame')"></div>
+                                </div>
+                                <div class="model-dropdown">
+                                    <div class="dropdown"></div>
+                                </div>
+                                <div class="number-result">
+                                    <div class="frame-num active" onclick="selectItem(this, '.number-result .frame-num')">1</div>
+                                    <div class="frame-num" onclick="selectItem(this, '.number-result .frame-num')">2</div>
+                                    <div class="frame-num" onclick="selectItem(this, '.number-result .frame-num')">3</div>
+                                    <div class="frame-num" onclick="selectItem(this, '.number-result .frame-num')">4</div>
+                                </div>
+                                <div class="creadit">
+                                    <div class="creadit-usage"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- side (Sidebar) -->
+        <div class="side">
+            <div class="button">
+                <div class="icon"><div class="rect-8"></div></div>
+            </div>
+            
+            <div class="primary-cats">
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+                <div class="nav-button active">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+            </div>
+
+            <div class="tools-section">
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+            </div>
+
+            <div class="footer-sidebar">
+                <div class="nav-button">
+                    <div class="icon-small"><div class="rect-8-small"></div></div>
+                    <div class="rect-9-indicator"></div>
+                </div>
+                <div class="button">
+                    <div class="icon"><div class="rect-8"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle Config Menu visibility
+        const menuToggle = document.getElementById('menuToggle');
+        const configMenu = document.getElementById('configMenu');
+
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            configMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!configMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                configMenu.classList.remove('active');
+            }
+        });
+
+        // Interactive selection handlers for menu options
+        function switchType(element) {
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function selectItem(element, selector) {
+            document.querySelectorAll(selector).forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>

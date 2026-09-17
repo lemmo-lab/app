@@ -1,5 +1,8 @@
 {
   "/(auth)/login/page": "/login",
+  "/(workspace)/app/agent/[id]/page": "/app/agent/[id]",
+  "/(workspace)/app/agent/empty-state/page": "/app/agent/empty-state",
+  "/(workspace)/app/agent/page": "/app/agent",
   "/(workspace)/app/assets/[filename]/page": "/app/assets/[filename]",
   "/(workspace)/app/assets/empty-state/page": "/app/assets/empty-state",
   "/(workspace)/app/assets/page": "/app/assets",
