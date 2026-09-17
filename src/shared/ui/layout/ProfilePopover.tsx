@@ -107,9 +107,9 @@ export default function ProfilePopover({ isOpen, onClose }: ProfilePopoverProps)
           padding: 12px;
           position: absolute;
           width: 265px;
-          inset-inline-start: 76px;
+          inset-inline-start: calc(100% + 8px);
           inset-inline-end: auto;
-          bottom: 12px;
+          bottom: 0px;
           background: #2A2A2A;
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 14px;

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lemmo Studio — Interactive Sidebar Wireframe</title>
+    <style>
+        /* ================= Reset & Base Styles ================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: #0b0c0e;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            color: #ededed;
+        }
+
+        /* ================= Lemmo Design System Tokens (Wireframe) ================= */
+        :root {
+            --lemmo-canvas: #131517;
+            --lemmo-surface-subtle: #171717;
+            --lemmo-surface-hover: #222529;
+            --lemmo-surface-active: #453D3D;
+            --lemmo-border: rgba(255, 255, 255, 0.08);
+            --lemmo-placeholder-primary: #D9D9D9;
+            --lemmo-placeholder-secondary: #525252;
+            --lemmo-accent-lime: #d1fe17;
+
+            /* Spacing 4px Ladder */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+
+            /* Standard Radii */
+            --radius-xs: 4px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-full: 9999px;
+
+            /* Standard Sidebar Widths */
+            --sidebar-width-expanded: 256px;
+            --sidebar-width-collapsed: 72px;
+        }
+
+        /* ================= Main Studio Sidebar ================= */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: var(--space-2);
+            position: relative;
+            height: 100vh;
+            background: var(--lemmo-canvas);
+            border-inline-end: 1px solid var(--lemmo-border);
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+            overflow-y: auto;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        /* State: Expanded (256px — 8px grid compliant) */
+        .sidebar.expanded {
+            width: var(--sidebar-width-expanded);
+        }
+
+        /* State: Collapsed Mini-Rail (72px — 56px inner content + 16px padding) */
+        .sidebar.collapsed {
+            width: var(--sidebar-width-collapsed);
+        }
+
+        /* ================= Header Section ================= */
+        .header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: 48px;
+            flex-shrink: 0;
+            margin-bottom: var(--space-2);
+            position: relative;
+        }
+
+        /* Brand & Logo Area */
+        .app-brand {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: var(--space-3);
+            height: 48px;
+            padding: 0 var(--space-2);
+            background: var(--lemmo-surface-subtle);
+            border-radius: var(--radius-md);
+            flex: 1;
+            min-width: 0;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .app-brand:hover {
+            background: var(--lemmo-surface-hover);
+        }
+
+        /* Logo Mark — Standard 32px x 32px (Fixed: was too small at 20px) */
+        .brand-logo-box {
+            width: 32px;
+            height: 32px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-logo-mark {
+            width: 18px;
+            height: 18px;
+            background: #171717;
+            border-radius: 3px;
+        }
+
+        /* Brand Title Pill */
+        .brand-title-pill {
+            height: 14px;
+            width: 76px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: var(--radius-full);
+            flex-shrink: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        /* Toggle Button (Collapse / Expand Action) */
+        .action-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--lemmo-surface-subtle);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-inline-start: var(--space-1);
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+
+        .action-toggle:hover {
+            background: var(--lemmo-surface-hover);
+        }
+
+        .action-toggle:active {
+            transform: scale(0.94);
+        }
+
+        .toggle-icon {
+            width: 18px;
+            height: 18px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Minimal wireframe chevron/arrow */
+        .toggle-icon::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-top: 2px solid var(--lemmo-placeholder-primary);
+            border-inline-start: 2px solid var(--lemmo-placeholder-primary);
+            transform: rotate(-45deg); /* LTR collapse arrow pointing start/left */
+            transition: transform 0.25s ease;
+        }
+
+        [dir="rtl"] .toggle-icon::before {
+            transform: rotate(135deg); /* RTL collapse arrow */
+        }
+
+        /* When collapsed, toggle arrow flips to expand */
+        .sidebar.collapsed .toggle-icon::before {
+            transform: rotate(135deg);
+        }
+
+        [dir="rtl"] .sidebar.collapsed .toggle-icon::before {
+            transform: rotate(-45deg);
+        }
+
+        /* ================= Nav Buttons & Common Elements ================= */
+        .button {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0 var(--space-3);
+            gap: var(--space-3);
+            width: 100%;
+            height: 40px; /* Snapped to 40px touch standard (was 36px) */
+            background: var(--lemmo-surface-subtle);
+            border-radius: var(--radius-md);
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .button:hover {
+            background: var(--lemmo-surface-hover);
+        }
+
+        /* Active Navigation Item */
+        .button.active {
+            background: var(--lemmo-surface-active);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .button.active::before {
+            content: '';
+            position: absolute;
+            inset-inline-start: 0;
+            top: 8px;
+            bottom: 8px;
+            width: 3px;
+            background: var(--lemmo-accent-lime);
+            border-start-end-radius: var(--radius-xs);
+            border-end-end-radius: var(--radius-xs);
+        }
+
+        /* Nav Icon — Standard 20px x 20px */
+        .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .rect-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: var(--radius-xs);
+        }
+
+        /* Text Label Pill Placeholders */
+        .lbl-pill {
+            width: 100%;
+            height: 12px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: var(--radius-full);
+            transition: opacity 0.2s ease;
+            max-width: 120px;
+        }
+
+        /* ================= Primary Categories Section ================= */
+        .primary-cats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: var(--space-3) 0;
+            gap: var(--space-2);
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* ================= Tools Section ================= */
+        .tools-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* ================= Sidebar Footer ================= */
+        .footer-sidebar {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: var(--space-3) 0 0 0;
+            gap: var(--space-2);
+            width: 100%;
+            flex: 1;
+        }
+
+        /* ================= User Profile & Settings Section (Fixed Avatar) ================= */
+        .button-setting-profile {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: var(--space-2) var(--space-3);
+            gap: var(--space-3);
+            width: 100%;
+            height: 56px; /* Standard 56px height */
+            background: var(--lemmo-surface-subtle);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background 0.15s ease;
+            position: relative;
+        }
+
+        .button-setting-profile:hover {
+            background: var(--lemmo-surface-hover);
+        }
+
+        /* Dedicated Avatar Container — Fixed: no longer nested in 20px .icon! */
+        .avatar-user {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-shape {
+            width: 40px;
+            height: 40px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: var(--radius-full); /* Clean circular avatar */
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Profile Meta Details */
+        .meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            width: 100%;
+            min-width: 0;
+            overflow: hidden;
+            transition: opacity 0.2s ease;
+        }
+
+        .meta-primary {
+            width: 80%;
+            height: 12px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: var(--radius-full);
+        }
+
+        .meta-secondary {
+            width: 50%;
+            height: 10px;
+            background: var(--lemmo-placeholder-secondary);
+            border-radius: var(--radius-full);
+        }
+
+        /* ================= Behavior in Collapsed State (72px Mini-Rail) ================= */
+        .sidebar.collapsed .lbl-pill,
+        .sidebar.collapsed .meta,
+        .sidebar.collapsed .brand-title-pill {
+            display: none;
+            opacity: 0;
+        }
+
+        .sidebar.collapsed .header {
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .app-brand {
+            display: none; /* In collapsed state, action-toggle becomes the centered top control */
+        }
+
+        .sidebar.collapsed .action-toggle {
+            width: 44px;
+            height: 44px;
+            margin-inline-start: 0;
+        }
+
+        .sidebar.collapsed .button {
+            width: 56px;
+            height: 44px;
+            padding: 0;
+            justify-content: center;
+            align-self: center;
+        }
+
+        .sidebar.collapsed .button.active::before {
+            top: 10px;
+            bottom: 10px;
+        }
+
+        .sidebar.collapsed .button-setting-profile {
+            width: 56px;
+            height: 56px;
+            padding: 0;
+            justify-content: center;
+            align-self: center;
+        }
+
+        .sidebar.collapsed .avatar-user {
+            margin: 0 auto;
+        }
+
+        /* ================= Demo Canvas Stage & Interactive Toolbar ================= */
+        .demo-stage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 32px;
+            background: #0B0C0E;
+            overflow-y: auto;
+        }
+
+        .demo-controls-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            background: #171717;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--lemmo-border);
+            margin-bottom: 24px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-size: 13px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .ctrl-btn {
+            background: #23262A;
+            color: #EDEDED;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ctrl-btn:hover {
+            background: #2C3035;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .ctrl-btn.active-ctrl {
+            background: var(--lemmo-accent-lime);
+            color: #000;
+            font-weight: 600;
+            border-color: var(--lemmo-accent-lime);
+        }
+
+        .specs-card {
+            background: #131517;
+            border: 1px solid var(--lemmo-border);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 800px;
+        }
+
+        .specs-card h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #FFFFFF;
+        }
+
+        .specs-card p {
+            font-size: 14px;
+            color: #A0A5AD;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .specs-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .specs-item {
+            background: #171717;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border-inline-start: 3px solid var(--lemmo-accent-lime);
+            font-size: 13px;
+            color: #D4D4D4;
+        }
+
+        .specs-item strong {
+            color: #FFF;
+            display: block;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= Studio Sidebar Wireframe ================= -->
+    <aside class="sidebar expanded" id="sidebar" aria-label="Main Studio Sidebar">
+        
+        <!-- Header: Brand Logo + Collapse/Expand Toggle -->
+        <div class="header">
+            <div class="app-brand" id="brand-home" title="Lemmo Studio Home">
+                <div class="brand-logo-box">
+                    <div class="brand-logo-mark"></div>
+                </div>
+                <div class="brand-title-pill"></div>
+            </div>
+            <div class="action-toggle" id="toggle-btn" title="Toggle Sidebar (Expand / Collapse)" role="button" tabindex="0">
+                <div class="toggle-icon"></div>
+            </div>
+        </div>
+
+        <!-- Primary Categories -->
+        <nav class="primary-cats" aria-label="Primary Categories">
+            <!-- Gallery (Active in wireframe) -->
+            <a href="#gallery" class="button active" title="Gallery">
+                <div class="icon"><div class="rect-icon"></div></div>
+                <div class="lbl-pill"></div>
+            </a>
+            <!-- Agent -->
+            <a href="#agent" class="button" title="Agent Studio">
+                <div class="icon"><div class="rect-icon"></div></div>
+                <div class="lbl-pill"></div>
+            </a>
+            <!-- Canvas -->
+            <a href="#canvas" class="button" title="Interactive Canvas">
+                <div class="icon"><div class="rect-icon"></div></div>
+                <div class="lbl-pill"></div>
+            </a>
+            <!-- Assets -->
+            <a href="#assets" class="button" title="Assets Archive">
+                <div class="icon"><div class="rect-icon"></div></div>
+                <div class="lbl-pill"></div>
+            </a>
+        </nav>
+
+        <!-- Tools Section -->
+        <div class="tools-section">
+            <a href="#tools" class="button" title="Tools Catalog">
+                <div class="icon"><div class="rect-icon"></div></div>
+                <div class="lbl-pill"></div>
+            </a>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer-sidebar">
+            <!-- Tutorials / Help -->
+            <a href="#tutorials" class="button" title="Tutorials & Guide">
+                <div class="icon"><div class="rect-icon"></div></div>
+                <div class="lbl-pill"></div>
+            </a>
+
+            <!-- User Profile & Settings (Fixed Avatar) -->
+            <div class="button-setting-profile" id="profile-btn" title="Account & Settings">
+                <div class="avatar-user">
+                    <div class="avatar-shape"></div>
+                </div>
+                <div class="meta">
+                    <div class="meta-primary"></div>
+                    <div class="meta-secondary"></div>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ================= Interactive Demo Controls Stage ================= -->
+    <main class="demo-stage">
+        <div class="demo-controls-bar">
+            <div class="control-group">
+                <span class="control-label">Sidebar State:</span>
+                <button type="button" class="ctrl-btn active-ctrl" id="btn-state-expanded">Expanded (256px)</button>
+                <button type="button" class="ctrl-btn" id="btn-state-collapsed">Collapsed (72px)</button>
+            </div>
+
+            <div class="control-group" style="margin-inline-start: auto;">
+                <span class="control-label">Direction:</span>
+                <button type="button" class="ctrl-btn active-ctrl" id="btn-dir-ltr">LTR (Default)</button>
+                <button type="button" class="ctrl-btn" id="btn-dir-rtl">RTL (Bilingual)</button>
+            </div>
+        </div>
+
+        <section class="specs-card">
+            <h2>Lemmo Workspace — Sidebar Wireframe Standard</h2>
+            <p>
+                This interactive wireframe models the 2-state navigation rail of Lemmo Studio according to the
+                Lemmo Design System standards (DOC-DS-001 &amp; DOC-DS-005).
+            </p>
+
+            <ul class="specs-list">
+                <li class="specs-item">
+                    <strong>Standardized 4px Ladder Grid</strong>
+                    Expanded: 256px (was 255px). Collapsed: 72px mini-rail (56px content + 16px padding).
+                </li>
+                <li class="specs-item">
+                    <strong>Fixed Avatar Dimensions</strong>
+                    40px circular shape with dedicated container. Perfectly centered in 56px collapsed slot.
+                </li>
+                <li class="specs-item">
+                    <strong>Prominent Brand Mark</strong>
+                    32px brand logo in expanded header, transitioning into a 44px centered toggle button in collapsed mode.
+                </li>
+                <li class="specs-item">
+                    <strong>Logical CSS &amp; Directionality</strong>
+                    Default is LTR as specified. Full logical property support (margin-inline, border-inline) for instant RTL flipping.
+                </li>
+                <li class="specs-item">
+                    <strong>Button Touch Targets</strong>
+                    Items snapped to 40px height with 8px radius, conforming to design system primitives.
+                </li>
+                <li class="specs-item">
+                    <strong>Active State Indication</strong>
+                    Accent lime bar marker on active tab with subtle border elevation.
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- ================= Interaction Script ================= -->
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const brandHome = document.getElementById('brand-home');
+        const btnExpanded = document.getElementById('btn-state-expanded');
+        const btnCollapsed = document.getElementById('btn-state-collapsed');
+        const btnLtr = document.getElementById('btn-dir-ltr');
+        const btnRtl = document.getElementById('btn-dir-rtl');
+
+        function setSidebarState(isExpanded) {
+            if (isExpanded) {
+                sidebar.classList.remove('collapsed');
+                sidebar.classList.add('expanded');
+                btnExpanded.classList.add('active-ctrl');
+                btnCollapsed.classList.remove('active-ctrl');
+            } else {
+                sidebar.classList.remove('expanded');
+                sidebar.classList.add('collapsed');
+                btnCollapsed.classList.add('active-ctrl');
+                btnExpanded.classList.remove('active-ctrl');
+            }
+        }
+
+        // Toggle button click handler
+        toggleBtn.addEventListener('click', () => {
+            const isCurrentlyExpanded = sidebar.classList.contains('expanded');
+            setSidebarState(!isCurrentlyExpanded);
+        });
+
+        btnExpanded.addEventListener('click', () => setSidebarState(true));
+        btnCollapsed.addEventListener('click', () => setSidebarState(false));
+
+        // Direction Toggle Handlers
+        btnLtr.addEventListener('click', () => {
+            document.documentElement.dir = 'ltr';
+            document.documentElement.lang = 'en';
+            btnLtr.classList.add('active-ctrl');
+            btnRtl.classList.remove('active-ctrl');
+        });
+
+        btnRtl.addEventListener('click', () => {
+            document.documentElement.dir = 'rtl';
+            document.documentElement.lang = 'fa';
+            btnRtl.classList.add('active-ctrl');
+            btnLtr.classList.remove('active-ctrl');
+        });
+
+        // Tab click activation simulation
+        const navButtons = document.querySelectorAll('.sidebar .button');
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
