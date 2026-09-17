@@ -166,6 +166,19 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/_1anvha4._.js",
       "static/chunks/turbopack-_0b9iprb._.js",
       "static/chunks/_0e64yin._.js"
+    ],
+    "/(workspace)/app/canvas/page": [
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_0mc0n9p._.js",
+      "static/chunks/1v6e_next_dist_compiled_next-devtools_index_0iyeti5.js",
+      "static/chunks/1v6e_next_dist_compiled_react-dom_0kl59ei._.js",
+      "static/chunks/1v6e_next_dist_compiled_react-server-dom-turbopack_08s87s7._.js",
+      "static/chunks/1v6e_next_dist_compiled_14qsu1q._.js",
+      "static/chunks/1v6e_next_dist_client_0ooenlw._.js",
+      "static/chunks/1v6e_next_dist_0qmgn-w._.js",
+      "static/chunks/0zix_@swc_helpers_cjs_0hi-e47._.js",
+      "static/chunks/_1anvha4._.js",
+      "static/chunks/turbopack-_0b9iprb._.js",
+      "static/chunks/_0powpu6._.js"
     ]
   },
   "pagesChunkGroupBootstrapParams": {},

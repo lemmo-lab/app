@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Index Wireframe</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0A0A0A;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Canvas Index Root Container */
+        .canvas-index {
+            position: relative;
+            width: 1920px;
+            height: 1080px;
+            background: #0A0A0A;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        /* Main Body Wrapper */
+        .main-body {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 48px;
+            width: 1848px;
+            height: 1080px;
+            background: #0A0A0A;
+            flex: none;
+            order: 0;
+            flex-grow: 1;
+        }
+
+        /* Page Head Section */
+        .page-head {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0px 0px 60px;
+            gap: 24px;
+            width: 1752px;
+            height: 460px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        /* Cover Hero Banner */
+        .cover {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 48px;
+            gap: 62px;
+            width: 1752px;
+            height: 400px;
+            background: #353535;
+            border-radius: 32px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .title-subtitle {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0px;
+            gap: 22px;
+            width: 532px;
+            height: 64px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .rect-title {
+            width: 290px;
+            height: 28px;
+            background: #D9D9D9;
+            border-radius: 99px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .rect-subtitle {
+            width: 532px;
+            height: 14px;
+            background: #D9D9D9;
+            border-radius: 99px;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .button-new {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0px;
+            gap: 10px;
+            width: 276px;
+            height: 40px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        .rect-button {
+            width: 276px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 8px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        /* Workflow Section */
+        .workflow-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0px;
+            width: 1752px;
+            height: 341px;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .action-section {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0px;
+            gap: 268px;
+            width: 1752px;
+            height: 72px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .action {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 19px;
+            width: 512px;
+            height: 40px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .filter-box {
+            width: 115px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 8px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .search-box {
+            width: 378px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 8px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        .tabs {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0px;
+            gap: 13px;
+            width: 459px;
+            height: 40px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        .tab-item {
+            width: 105px;
+            height: 40px;
+            background: #464646;
+            border-radius: 8px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .tab-item.active {
+            background: #D9D9D9;
+            order: 3;
+        }
+
+        /* Projects Grid Container */
+        .projects {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+            align-content: center;
+            padding: 16px 0px;
+            gap: 24px;
+            width: 1752px;
+            height: 269px;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        /* Project Card Item */
+        .project-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0px;
+            gap: 16px;
+            width: 272px;
+            height: 237px;
+            flex: none;
+            flex-grow: 0;
+        }
+
+        .project-cover {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0px;
+            gap: 10px;
+            width: 272px;
+            height: 181px;
+            background: #AEAEAE;
+            border-radius: 12px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .project-cover.dark {
+            background: #2C2C2C;
+        }
+
+        .plus-icon {
+            width: 32px;
+            height: 32px;
+            background: #D9D9D9;
+            border-radius: 999px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .meta-project {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0px;
+            gap: 8px;
+            width: 272px;
+            height: 40px;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .project-name {
+            width: 81px;
+            height: 18px;
+            background: #D9D9D9;
+            border-radius: 99px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .project-meta-line {
+            width: 164px;
+            height: 14px;
+            background: #575757;
+            border-radius: 99px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        /* Sidebar Navigation */
+        .side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            width: 72px;
+            height: 1080px;
+            background: #131517;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .side .button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            gap: 10px;
+            width: 56px;
+            height: 56px;
+            background: #171717;
+            border-radius: 8px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .side .icon-box-large {
+            width: 40px;
+            height: 40px;
+            background: #D9D9D9;
+            border-radius: 4px;
+            flex: none;
+            order: 0;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .primary-cats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 16px 0px;
+            width: 56px;
+            height: 272px;
+            flex: none;
+            order: 1;
+            flex-grow: 0;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            gap: 10px;
+            width: 56px;
+            height: 60px;
+            background: #171717;
+            border-radius: 8px;
+            flex: none;
+            flex-grow: 0;
+            margin-bottom: 8px;
+        }
+
+        .nav-btn.active {
+            background: #453D3D;
+        }
+
+        .nav-btn .icon {
+            width: 20px;
+            height: 20px;
+            background: #D9D9D9;
+            border-radius: 4px;
+            flex: none;
+            order: 0;
+            flex-grow: 0;
+        }
+
+        .nav-btn .label-line {
+            width: 40px;
+            height: 14px;
+            background: #D9D9D9;
+            border-radius: 99px;
+            flex: none;
+            order: 1;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .tools-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0px;
+            width: 56px;
+            height: 60px;
+            flex: none;
+            order: 2;
+            align-self: stretch;
+            flex-grow: 0;
+        }
+
+        .footer-sidebar {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding: 16px 0px;
+            width: 56px;
+            height: 676px;
+            flex: none;
+            order: 3;
+            align-self: stretch;
+            flex-grow: 1;
+        }
+
+        .nav-btn.tutorials {
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="canvas-index">
+        <!-- Main Content Area -->
+        <div class="main-body">
+            
+            <!-- Page Head -->
+            <div class="page-head">
+                <div class="cover">
+                    <div class="title-subtitle">
+                        <div class="rect-title"></div>
+                        <div class="rect-subtitle"></div>
+                    </div>
+                    <div class="button-new">
+                        <div class="rect-button"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Section -->
+            <div class="workflow-section">
+                <!-- Action Section (Filter, Search & Tabs) -->
+                <div class="action-section">
+                    <div class="action">
+                        <div class="filter-box"></div>
+                        <div class="search-box"></div>
+                    </div>
+                    <div class="tabs">
+                        <div class="tab-item" style="order: 0;"></div>
+                        <div class="tab-item" style="order: 1;"></div>
+                        <div class="tab-item" style="order: 2;"></div>
+                        <div class="tab-item active"></div>
+                    </div>
+                </div>
+
+                <!-- Projects Grid -->
+                <div class="projects">
+                    <!-- Project Card 1 -->
+                    <div class="project-card">
+                        <div class="project-cover"></div>
+                        <div class="meta-project">
+                            <div class="project-name"></div>
+                            <div class="project-meta-line"></div>
+                        </div>
+                    </div>
+
+                    <!-- Project Card 2 (Create / Plus Card) -->
+                    <div class="project-card">
+                        <div class="project-cover dark">
+                            <div class="plus-icon"></div>
+                        </div>
+                        <div class="meta-project">
+                            <div class="project-name"></div>
+                            <div class="project-meta-line"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <div class="side">
+            <div class="button">
+                <div class="icon-box-large"></div>
+            </div>
+            
+            <div class="primary-cats">
+                <div class="nav-btn active">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+                <div class="nav-btn">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+                <div class="nav-btn">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+                <div class="nav-btn">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+            </div>
+
+            <div class="tools-section">
+                <div class="nav-btn">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+            </div>
+
+            <div class="footer-sidebar">
+                <div class="nav-btn tutorials">
+                    <div class="icon"></div>
+                    <div class="label-line"></div>
+                </div>
+                <div class="button">
+                    <div class="icon-box-large"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

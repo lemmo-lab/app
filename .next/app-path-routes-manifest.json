@@ -6,6 +6,7 @@
   "/(workspace)/app/assets/[filename]/page": "/app/assets/[filename]",
   "/(workspace)/app/assets/empty-state/page": "/app/assets/empty-state",
   "/(workspace)/app/assets/page": "/app/assets",
+  "/(workspace)/app/canvas/page": "/app/canvas",
   "/(workspace)/app/feed/[filename]/page": "/app/feed/[filename]",
   "/(workspace)/app/page": "/app",
   "/(workspace)/app/tools/page": "/app/tools",

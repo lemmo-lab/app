@@ -1,11 +1,6 @@
 /**
- * Canvas Page — Lemmo interactive canvas surface.
- * TODO M6: Implement CanvasBoard, ToolNode, typedConnection.
+ * Canvas Route Helper — /canvas
+ * Re-exports the CanvasIndexPage from /app/canvas.
  */
-export default function CanvasPage() {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh', color: 'var(--lemmo-text-secondary, #8a8f96)', fontFamily: 'inherit' }}>
-      <p>Canvas Studio — Coming in M6</p>
-    </div>
-  );
-}
+
+export { default } from '../app/canvas/page';

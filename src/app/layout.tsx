@@ -3,9 +3,14 @@
  * Sets the default html dir/lang to RTL/FA; updated dynamically by DirectionProvider on the client.
  */
 
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { DirectionProvider } from '@/shared/ui/primitives/DirectionProvider';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: 'Lemmo Studio',
