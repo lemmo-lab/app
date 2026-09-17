@@ -13,6 +13,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export default function AppIndexPage() {
   // 10 gallery cards matching wireframe
@@ -29,21 +30,21 @@ export default function AppIndexPage() {
             <div className="placeholder slider-image" />
           </div>
           <div className="slider-footer">
+            <div className="placeholder label" />
             <div className="pagination">
               <div className="placeholder arrow" />
               <div className="placeholder arrow" />
             </div>
-            <div className="placeholder label" />
           </div>
         </section>
 
         {/* 2. Tools Section */}
         <section className="wireframe-tools-section">
           {toolCards.map((_, i) => (
-            <div key={i} className="tools-card">
+            <Link key={i} href="/app/tools" className="tools-card" title={`Tool ${i + 1}`}>
               <div className="placeholder tools-card-img" />
               <div className="placeholder tools-card-label" />
-            </div>
+            </Link>
           ))}
         </section>
 
@@ -51,18 +52,23 @@ export default function AppIndexPage() {
         <section className="wireframe-gallery">
           {/* Header & Actions */}
           <div className="gallery-header">
-            <div className="placeholder publish-button" />
             <div className="gallery-actions">
-              <div className="placeholder search-bar" />
-              <div className="divider" />
               <div className="placeholder tab" />
+              <div className="divider" />
+              <div className="placeholder search-bar" />
             </div>
+            <div className="placeholder publish-button" />
           </div>
 
           {/* Cards Grid */}
           <div className="gallery-grid">
             {galleryCards.map((_, i) => (
-              <div key={i} className="placeholder gallery-card" />
+              <Link
+                key={i}
+                href={`/app/feed/item-${i + 1}`}
+                className="placeholder gallery-card"
+                title={`Gallery Item ${i + 1}`}
+              />
             ))}
           </div>
         </section>
@@ -82,11 +88,11 @@ export default function AppIndexPage() {
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        .placeholder {
+        :global(.placeholder) {
           background: #d9d9d9;
           transition: opacity 0.15s ease;
         }
-        .placeholder:hover {
+        :global(.placeholder:hover) {
           opacity: 0.9;
         }
 
@@ -153,21 +159,26 @@ export default function AppIndexPage() {
 
         /* ---- Tools Section ---- */
         .wireframe-tools-section {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
           padding-bottom: 3.75rem;
           gap: 1.5rem;
           width: 100%;
         }
 
-        .tools-card {
+        :global(.tools-card) {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
           gap: 16px;
-          flex: 1 1 0;
-          min-width: 0;
+          width: 100%;
+          text-decoration: none;
+          cursor: pointer;
+          transition: transform 0.15s ease;
+        }
+
+        :global(.tools-card:hover) {
+          transform: translateY(-2px);
         }
 
         .tools-card-img {
@@ -203,25 +214,17 @@ export default function AppIndexPage() {
           flex-wrap: wrap;
         }
 
-        .publish-button {
-          width: 126px;
-          height: 40px;
-          border-radius: 8px;
-          flex-shrink: 0;
-        }
-
         .gallery-actions {
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 2rem;
+          gap: 1.5rem;
           height: 40px;
           flex-wrap: wrap;
         }
 
-        .search-bar {
-          width: 515px;
-          max-width: 100%;
+        .tab {
+          width: 227px;
           height: 40px;
           border-radius: 8px;
         }
@@ -233,41 +236,41 @@ export default function AppIndexPage() {
           opacity: 0.2;
         }
 
-        .tab {
-          width: 227px;
+        .search-bar {
+          width: 480px;
+          max-width: 100%;
           height: 40px;
           border-radius: 8px;
         }
 
+        .publish-button {
+          width: 126px;
+          height: 40px;
+          border-radius: 8px;
+          flex-shrink: 0;
+          cursor: pointer;
+        }
+
         .gallery-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: 12px;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 16px;
           width: 100%;
-          border-radius: 32px;
         }
 
-        .gallery-card {
+        :global(.gallery-card) {
+          display: block;
           width: 100%;
-          height: 560px;
-          border-radius: 12px;
+          height: 380px;
+          background: #d9d9d9;
+          border-radius: 18px;
+          cursor: pointer;
+          transition: transform 0.15s ease, opacity 0.15s ease;
         }
 
-        /* ===== SIDEBAR ===== */
-        .wireframe-sidebar {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 8px;
-          width: 72px;
-          min-height: 100dvh;
-          background: #131517;
-          flex-shrink: 0;
-          position: sticky;
-          top: 0;
-          align-self: stretch;
-          border-inline-start: 1px solid rgba(255, 255, 255, 0.08);
-          z-index: 20;
+        :global(.gallery-card:hover) {
+          transform: translateY(-3px);
+          opacity: 0.9;
         }
 
         /* ===== RESPONSIVENESS ===== */

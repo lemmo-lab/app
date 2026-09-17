@@ -27,7 +27,7 @@ interface CanvasProject {
 }
 
 export default function CanvasIndexPage() {
-  const [activeTab, setActiveTab] = useState(3);
+  const [activeTab, setActiveTab] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
   const projects: CanvasProject[] = [
@@ -52,39 +52,22 @@ export default function CanvasIndexPage() {
             </div>
 
             <div className="button-new">
-              <button
-                type="button"
-                className="rect-button"
-                title="Create New Canvas"
-                aria-label="Create New Canvas"
-              />
+              <Link href="/app/tools" style={{ textDecoration: 'none', width: '100%' }}>
+                <button
+                  type="button"
+                  className="rect-button"
+                  title="Create New Canvas"
+                  aria-label="Create New Canvas"
+                />
+              </Link>
             </div>
           </div>
         </section>
 
         {/* Workflow & Projects Section */}
         <section className="workflow-section">
-          {/* Action Bar (Filter, Search & Tabs) */}
+          {/* Action Bar (Tabs on Left, Search & Filter on Right) */}
           <div className="action-section">
-            <div className="action">
-              <button
-                type="button"
-                className="filter-box"
-                title="Filter projects"
-                aria-label="Filter projects"
-              />
-              <div className="search-box-wrap">
-                <input
-                  type="text"
-                  className="search-box"
-                  placeholder=""
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  aria-label="Search canvas projects"
-                />
-              </div>
-            </div>
-
             {/* 4 Tabs */}
             <div className="tabs">
               {[0, 1, 2, 3].map((tabIdx) => (
@@ -98,6 +81,25 @@ export default function CanvasIndexPage() {
                 />
               ))}
             </div>
+
+            <div className="action">
+              <div className="search-box-wrap">
+                <input
+                  type="text"
+                  className="search-box"
+                  placeholder=""
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search canvas projects"
+                />
+              </div>
+              <button
+                type="button"
+                className="filter-box"
+                title="Filter projects"
+                aria-label="Filter projects"
+              />
+            </div>
           </div>
 
           {/* Projects Grid */}
@@ -105,7 +107,13 @@ export default function CanvasIndexPage() {
             {projects.map((project) =>
               project.isNew ? (
                 /* New Project / Plus Card */
-                <div key={project.id} className="project-card create-card" tabIndex={0} role="button">
+                <Link
+                  key={project.id}
+                  href="/app/tools"
+                  className="project-card create-card"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                  title="Create New Canvas"
+                >
                   <div className="project-cover dark">
                     <div className="plus-icon" />
                   </div>
@@ -113,16 +121,22 @@ export default function CanvasIndexPage() {
                     <div className="project-name" />
                     <div className="project-meta-line" />
                   </div>
-                </div>
+                </Link>
               ) : (
                 /* Regular Project Card */
-                <div key={project.id} className="project-card" tabIndex={0} role="button">
+                <Link
+                  key={project.id}
+                  href="/app/tools"
+                  className="project-card"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                  title="Open Canvas"
+                >
                   <div className="project-cover" />
                   <div className="meta-project">
                     <div className="project-name" />
                     <div className="project-meta-line" />
                   </div>
-                </div>
+                </Link>
               )
             )}
           </div>
@@ -316,25 +330,29 @@ export default function CanvasIndexPage() {
 
         /* Projects Grid */
         .projects {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: flex-start;
           gap: 24px;
           width: 100%;
           padding: 8px 0 40px 0;
         }
 
         /* Project Card */
-        .project-card {
+        :global(.project-card) {
           display: flex;
           flex-direction: column;
           align-items: stretch;
+          width: 272px;
           gap: 12px;
           cursor: pointer;
           transition: transform 0.15s ease;
           outline: none;
         }
 
-        .project-card:hover {
+        :global(.project-card:hover) {
           transform: translateY(-4px);
         }
 
@@ -434,12 +452,21 @@ export default function CanvasIndexPage() {
           }
 
           .projects {
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 16px;
           }
 
+          :global(.project-card) {
+            width: calc(50% - 8px);
+          }
+
           .project-cover {
-            height: 130px;
+            height: 140px;
+          }
+        }
+
+        @media (max-width: 520px) {
+          :global(.project-card) {
+            width: 100%;
           }
         }
       `}</style>

@@ -47,6 +47,7 @@
 
 ### 1.3. Bilingual i18n & Logical CSS Directionality
 - **Bilingual Support:** Persian (FA) and English (EN).
+- **Design System Directionality & Layout Guidelines ([DOC-DS-005](../docs/design-system/interaction-and-layout.md)):** Strict adherence to the 24 interaction & layout principles: define relationships not coordinates (`Start / End`, `Leading / Trailing`), directional vs non-directional icon mirroring, semantic action hierarchy, and dropdown adaptive positioning.
 - **Logical CSS Properties:** Modern logical CSS declarations (e.g., `margin-inline-start`, `padding-inline-end`, `inset-inline-start`) are enforced across all components, enabling seamless RTL/LTR layout mirroring without maintaining parallel stylesheets.
 - Root layout dynamically reflects language and direction: `<html lang="fa" dir="rtl" data-theme="default">`.
 
