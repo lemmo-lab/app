@@ -65,11 +65,10 @@ export default function AssetsEmptyStatePage() {
           flex-direction: column;
           align-items: stretch;
           width: 100%;
-          min-height: 100dvh;
+          min-height: 100%;
           background: #0a0a0a;
           color: #fff;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-          overflow-x: hidden;
         }
 
         /* ===== MAIN BODY ===== */

@@ -36,19 +36,19 @@ function SingleImageFeedPage() {
         length: 14
     });
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "jsx-9dd060eec893843f" + " " + "single-image-app",
+        className: "jsx-95626b0a89c67311" + " " + "single-image-app",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "jsx-9dd060eec893843f" + " " + "main-body",
+                className: "jsx-95626b0a89c67311" + " " + "main-body",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "jsx-9dd060eec893843f" + " " + "content",
+                    className: "jsx-95626b0a89c67311" + " " + "content",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "jsx-9dd060eec893843f" + " " + "little-gallery",
+                            className: "jsx-95626b0a89c67311" + " " + "little-gallery",
                             children: focusPics.map((_, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "jsx-9dd060eec893843f" + " " + "focus-pic",
+                                    className: "jsx-95626b0a89c67311" + " " + "focus-pic",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "jsx-9dd060eec893843f" + " " + `rect-14 ${i === 0 ? 'active' : ''}`
+                                        className: "jsx-95626b0a89c67311" + " " + `rect-14 ${i === 0 ? 'active' : ''}`
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                         lineNumber: 38,
@@ -65,20 +65,20 @@ function SingleImageFeedPage() {
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "jsx-9dd060eec893843f" + " " + "details-content",
+                            className: "jsx-95626b0a89c67311" + " " + "details-content",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "jsx-9dd060eec893843f" + " " + "promp",
+                                    className: "jsx-95626b0a89c67311" + " " + "promp",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "jsx-9dd060eec893843f" + " " + "top_section",
+                                            className: "jsx-95626b0a89c67311" + " " + "top_section",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "quick-action",
+                                                    className: "jsx-95626b0a89c67311" + " " + "quick-action",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             title: "Copy",
-                                                            className: "jsx-9dd060eec893843f" + " " + "copy-button"
+                                                            className: "jsx-95626b0a89c67311" + " " + "copy-button"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                             lineNumber: 50,
@@ -86,7 +86,7 @@ function SingleImageFeedPage() {
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             title: "Share",
-                                                            className: "jsx-9dd060eec893843f" + " " + "share-button"
+                                                            className: "jsx-95626b0a89c67311" + " " + "share-button"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                             lineNumber: 51,
@@ -99,7 +99,7 @@ function SingleImageFeedPage() {
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "label"
+                                                    className: "jsx-95626b0a89c67311" + " " + "label"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 53,
@@ -112,59 +112,59 @@ function SingleImageFeedPage() {
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "jsx-9dd060eec893843f" + " " + "promp_card",
+                                            className: "jsx-95626b0a89c67311" + " " + "promp_card",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "text"
+                                                    className: "jsx-95626b0a89c67311" + " " + "text"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 58,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "text"
+                                                    className: "jsx-95626b0a89c67311" + " " + "text"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 59,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "text"
+                                                    className: "jsx-95626b0a89c67311" + " " + "text"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 60,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "text"
+                                                    className: "jsx-95626b0a89c67311" + " " + "text"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 61,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "text"
+                                                    className: "jsx-95626b0a89c67311" + " " + "text"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 62,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "text"
+                                                    className: "jsx-95626b0a89c67311" + " " + "text"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 63,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "text"
+                                                    className: "jsx-95626b0a89c67311" + " " + "text"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 64,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "text short"
+                                                    className: "jsx-95626b0a89c67311" + " " + "text short"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 65,
@@ -177,12 +177,12 @@ function SingleImageFeedPage() {
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "jsx-9dd060eec893843f" + " " + "tag-container",
+                                            className: "jsx-95626b0a89c67311" + " " + "tag-container",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "tag-box",
+                                                    className: "jsx-95626b0a89c67311" + " " + "tag-box",
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "jsx-9dd060eec893843f" + " " + "tag_"
+                                                        className: "jsx-95626b0a89c67311" + " " + "tag_"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                         lineNumber: 70,
@@ -194,9 +194,9 @@ function SingleImageFeedPage() {
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "tag-box",
+                                                    className: "jsx-95626b0a89c67311" + " " + "tag-box",
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "jsx-9dd060eec893843f" + " " + "tag_"
+                                                        className: "jsx-95626b0a89c67311" + " " + "tag_"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                         lineNumber: 71,
@@ -214,22 +214,22 @@ function SingleImageFeedPage() {
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "jsx-9dd060eec893843f" + " " + "refrance",
+                                            className: "jsx-95626b0a89c67311" + " " + "refrance",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "label-box"
+                                                    className: "jsx-95626b0a89c67311" + " " + "label-box"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                     lineNumber: 76,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "jsx-9dd060eec893843f" + " " + "refrances",
+                                                    className: "jsx-95626b0a89c67311" + " " + "refrances",
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "jsx-9dd060eec893843f" + " " + "ref-item",
+                                                            className: "jsx-95626b0a89c67311" + " " + "ref-item",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "jsx-9dd060eec893843f" + " " + "refrance-image"
+                                                                className: "jsx-95626b0a89c67311" + " " + "refrance-image"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                                 lineNumber: 78,
@@ -241,9 +241,9 @@ function SingleImageFeedPage() {
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                            className: "jsx-9dd060eec893843f" + " " + "ref-item",
+                                                            className: "jsx-95626b0a89c67311" + " " + "ref-item",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                className: "jsx-9dd060eec893843f" + " " + "refrance-image"
+                                                                className: "jsx-95626b0a89c67311" + " " + "refrance-image"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                                                 lineNumber: 79,
@@ -273,9 +273,9 @@ function SingleImageFeedPage() {
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "jsx-9dd060eec893843f" + " " + "action_base",
+                                    className: "jsx-95626b0a89c67311" + " " + "action_base",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "jsx-9dd060eec893843f" + " " + "regreat-button"
+                                        className: "jsx-95626b0a89c67311" + " " + "regreat-button"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                         lineNumber: 86,
@@ -293,14 +293,14 @@ function SingleImageFeedPage() {
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "jsx-9dd060eec893843f" + " " + "content-area",
+                            className: "jsx-95626b0a89c67311" + " " + "content-area",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                                     href: "/app",
                                     className: "back-button",
                                     title: "Back to App Index",
                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "jsx-9dd060eec893843f" + " " + "rect-11"
+                                        className: "jsx-95626b0a89c67311" + " " + "rect-11"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                         lineNumber: 93,
@@ -312,7 +312,7 @@ function SingleImageFeedPage() {
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "jsx-9dd060eec893843f" + " " + "rect-17"
+                                    className: "jsx-95626b0a89c67311" + " " + "rect-17"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(workspace)/app/feed/[filename]/page.tsx",
                                     lineNumber: 95,
@@ -336,8 +336,8 @@ function SingleImageFeedPage() {
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$3$2e$5_$40$babel$2b$core$40$7$2e$29$2e$7_$40$types$2b$node$40$20$2e$19$2e$43_react$2d$dom$40$19$2e$3$2e$0_react$40$19$2e$3$2e$0_$5f$react$40$19$2e$3$2e$0$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$styled$2d$jsx$40$5$2e$1$2e$6_$40$babel$2b$core$40$7$2e$29$2e$7_react$40$19$2e$3$2e$0$2f$node_modules$2f$styled$2d$jsx$2f$style$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                id: "9dd060eec893843f",
-                children: ".single-image-app.jsx-9dd060eec893843f{color:#fff;background:#0a0a0a;flex-direction:row;align-items:flex-start;width:100%;min-height:100dvh;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;display:flex;position:relative;overflow-x:hidden}.main-body.jsx-9dd060eec893843f{flex-direction:row;flex:1 1 0;justify-content:flex-end;align-items:flex-start;min-width:0;padding:3rem;display:flex}.content.jsx-9dd060eec893843f{flex-direction:row;justify-content:flex-end;align-items:flex-start;gap:3rem;width:100%;min-height:calc(100dvh - 6rem);display:flex}.little-gallery.jsx-9dd060eec893843f{flex-direction:column;flex-shrink:0;align-items:center;gap:1rem;width:64px;height:calc(100dvh - 6rem);display:flex;overflow-y:auto}.focus-pic.jsx-9dd060eec893843f{flex-shrink:0;justify-content:center;align-items:center;width:58px;height:58px;display:flex}.rect-14.jsx-9dd060eec893843f{cursor:pointer;background:#474747;border-radius:8px;width:58px;height:58px;transition:background .15s}.rect-14.active.jsx-9dd060eec893843f,.rect-14.jsx-9dd060eec893843f:hover{background:#dedede}.details-content.jsx-9dd060eec893843f{flex-direction:column;flex-shrink:0;align-items:stretch;gap:1rem;width:450px;max-width:100%;display:flex}.promp.jsx-9dd060eec893843f{flex-direction:column;flex:1 1 0;align-items:stretch;gap:1rem;display:flex}.top_section.jsx-9dd060eec893843f{flex-direction:row;justify-content:space-between;align-items:center;width:100%;height:18px;display:flex}.quick-action.jsx-9dd060eec893843f{flex-direction:row;align-items:center;gap:8px;height:18px;display:flex}.copy-button.jsx-9dd060eec893843f,.share-button.jsx-9dd060eec893843f{cursor:pointer;background:#d9d9d9;border-radius:4px;width:18px;height:18px}.top_section.jsx-9dd060eec893843f .label.jsx-9dd060eec893843f{background:#d9d9d9;border-radius:99px;width:89px;height:14px}.promp_card.jsx-9dd060eec893843f{background:#272525;border-radius:16px;flex-direction:column;gap:10px;width:100%;padding:1rem;display:flex}.promp_card.jsx-9dd060eec893843f .text.jsx-9dd060eec893843f{background:#484848;border-radius:99px;width:100%;height:12px}.promp_card.jsx-9dd060eec893843f .text.short.jsx-9dd060eec893843f{width:92px}.tag-container.jsx-9dd060eec893843f{flex-direction:row;align-items:center;gap:10px;width:100%;height:28px;display:flex}.tag-box.jsx-9dd060eec893843f{width:106px;height:28px;display:flex}.tag_.jsx-9dd060eec893843f{cursor:pointer;background:#464646;border-radius:4px;width:106px;height:28px}.refrance.jsx-9dd060eec893843f{flex-direction:column;gap:10px;width:100%;display:flex}.label-box.jsx-9dd060eec893843f{background:#424242;border-radius:99px;width:65px;height:12px}.refrances.jsx-9dd060eec893843f{flex-direction:row;align-items:center;gap:8px;width:100%;height:48px;display:flex}.ref-item.jsx-9dd060eec893843f{width:48px;height:48px}.refrance-image.jsx-9dd060eec893843f{background:#464646;border-radius:8px;width:48px;height:48px}.action_base.jsx-9dd060eec893843f{flex-direction:row;align-items:center;width:100%;height:40px;margin-top:auto;display:flex}.regreat-button.jsx-9dd060eec893843f{cursor:pointer;background:#d9d9d9;border-radius:999px;width:100%;height:40px;transition:opacity .15s}.regreat-button.jsx-9dd060eec893843f:hover{opacity:.9}.content-area.jsx-9dd060eec893843f{background:#111;border-radius:16px;flex-direction:column;flex:1 1 0;justify-content:center;align-items:center;min-width:0;height:calc(100dvh - 6rem);display:flex;position:relative}.back-button.jsx-9dd060eec893843f{cursor:pointer;width:32px;height:32px;text-decoration:none;display:flex;position:absolute;top:1.5rem;left:1.5rem}.rect-11.jsx-9dd060eec893843f{background:#d9d9d9;border-radius:6px;width:32px;height:32px}.rect-17.jsx-9dd060eec893843f{background:#d9d9d9;border-radius:4px;width:100%;max-width:450px;height:80%}@media (width<=1024px){.main-body.jsx-9dd060eec893843f{padding:1.5rem}.content.jsx-9dd060eec893843f{gap:1.5rem}.details-content.jsx-9dd060eec893843f{width:360px}}@media (width<=768px){.single-image-app.jsx-9dd060eec893843f{flex-direction:column}.side.jsx-9dd060eec893843f,.little-gallery.jsx-9dd060eec893843f{display:none}.main-body.jsx-9dd060eec893843f{width:100%;padding:1rem 1rem 3rem}.content.jsx-9dd060eec893843f{flex-direction:column;align-items:stretch;gap:1.5rem;height:auto}.content-area.jsx-9dd060eec893843f{border-radius:8px;width:100%;height:480px}.rect-17.jsx-9dd060eec893843f{max-width:280px;height:380px}.details-content.jsx-9dd060eec893843f{width:100%;height:auto}}"
+                id: "95626b0a89c67311",
+                children: ".single-image-app.jsx-95626b0a89c67311{color:#fff;background:#0a0a0a;flex-direction:column;align-items:stretch;width:100%;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;display:flex;position:relative}.main-body.jsx-95626b0a89c67311{flex-direction:row;flex:1 1 0;justify-content:flex-start;align-items:flex-start;min-width:0;padding:3rem;display:flex}.content.jsx-95626b0a89c67311{flex-direction:row;justify-content:flex-start;align-items:flex-start;gap:3rem;width:100%;min-height:calc(100dvh - 6rem);display:flex}.little-gallery.jsx-95626b0a89c67311{flex-direction:column;flex-shrink:0;align-items:center;gap:1rem;width:64px;height:calc(100dvh - 6rem);display:flex;overflow-y:auto}.focus-pic.jsx-95626b0a89c67311{flex-shrink:0;justify-content:center;align-items:center;width:58px;height:58px;display:flex}.rect-14.jsx-95626b0a89c67311{cursor:pointer;background:#474747;border-radius:8px;width:58px;height:58px;transition:background .15s}.rect-14.active.jsx-95626b0a89c67311,.rect-14.jsx-95626b0a89c67311:hover{background:#dedede}.details-content.jsx-95626b0a89c67311{flex-direction:column;flex-shrink:0;align-items:stretch;gap:1rem;width:450px;max-width:100%;display:flex}.promp.jsx-95626b0a89c67311{flex-direction:column;flex:1 1 0;align-items:stretch;gap:1rem;display:flex}.top_section.jsx-95626b0a89c67311{flex-direction:row;justify-content:space-between;align-items:center;width:100%;height:18px;display:flex}.quick-action.jsx-95626b0a89c67311{flex-direction:row;align-items:center;gap:8px;height:18px;display:flex}.copy-button.jsx-95626b0a89c67311,.share-button.jsx-95626b0a89c67311{cursor:pointer;background:#d9d9d9;border-radius:4px;width:18px;height:18px}.top_section.jsx-95626b0a89c67311 .label.jsx-95626b0a89c67311{background:#d9d9d9;border-radius:99px;width:89px;height:14px}.promp_card.jsx-95626b0a89c67311{background:#272525;border-radius:16px;flex-direction:column;gap:10px;width:100%;padding:1rem;display:flex}.promp_card.jsx-95626b0a89c67311 .text.jsx-95626b0a89c67311{background:#484848;border-radius:99px;width:100%;height:12px}.promp_card.jsx-95626b0a89c67311 .text.short.jsx-95626b0a89c67311{width:92px}.tag-container.jsx-95626b0a89c67311{flex-direction:row;align-items:center;gap:10px;width:100%;height:28px;display:flex}.tag-box.jsx-95626b0a89c67311{width:106px;height:28px;display:flex}.tag_.jsx-95626b0a89c67311{cursor:pointer;background:#464646;border-radius:4px;width:106px;height:28px}.refrance.jsx-95626b0a89c67311{flex-direction:column;gap:10px;width:100%;display:flex}.label-box.jsx-95626b0a89c67311{background:#424242;border-radius:99px;width:65px;height:12px}.refrances.jsx-95626b0a89c67311{flex-direction:row;align-items:center;gap:8px;width:100%;height:48px;display:flex}.ref-item.jsx-95626b0a89c67311{width:48px;height:48px}.refrance-image.jsx-95626b0a89c67311{background:#464646;border-radius:8px;width:48px;height:48px}.action_base.jsx-95626b0a89c67311{flex-direction:row;align-items:center;width:100%;height:40px;margin-top:auto;display:flex}.regreat-button.jsx-95626b0a89c67311{cursor:pointer;background:#d9d9d9;border-radius:999px;width:100%;height:40px;transition:opacity .15s}.regreat-button.jsx-95626b0a89c67311:hover{opacity:.9}.content-area.jsx-95626b0a89c67311{background:#111;border-radius:16px;flex-direction:column;flex:1 1 0;justify-content:center;align-items:center;min-width:0;height:calc(100dvh - 6rem);display:flex;position:relative}.back-button.jsx-95626b0a89c67311{cursor:pointer;width:32px;height:32px;text-decoration:none;display:flex;position:absolute;top:1.5rem}.back-button.jsx-95626b0a89c67311:not(:is(:lang(ae),:lang(ar),:lang(arc),:lang(bcc),:lang(bqi),:lang(ckb),:lang(dv),:lang(fa),:lang(glk),:lang(he),:lang(ku),:lang(mzn),:lang(nqo),:lang(pnb),:lang(ps),:lang(sd),:lang(ug),:lang(ur),:lang(yi))){left:1.5rem}.back-button.jsx-95626b0a89c67311:is(:lang(ae),:lang(ar),:lang(arc),:lang(bcc),:lang(bqi),:lang(ckb),:lang(dv),:lang(fa),:lang(glk),:lang(he),:lang(ku),:lang(mzn),:lang(nqo),:lang(pnb),:lang(ps),:lang(sd),:lang(ug),:lang(ur),:lang(yi)){right:1.5rem}.rect-11.jsx-95626b0a89c67311{background:#d9d9d9;border-radius:6px;width:32px;height:32px}.rect-17.jsx-95626b0a89c67311{background:#d9d9d9;border-radius:4px;width:100%;max-width:450px;height:80%}@media (width<=1024px){.main-body.jsx-95626b0a89c67311{padding:1.5rem}.content.jsx-95626b0a89c67311{gap:1.5rem}.details-content.jsx-95626b0a89c67311{width:360px}}@media (width<=768px){.single-image-app.jsx-95626b0a89c67311{flex-direction:column}.side.jsx-95626b0a89c67311,.little-gallery.jsx-95626b0a89c67311{display:none}.main-body.jsx-95626b0a89c67311{width:100%;padding:1rem 1rem 3rem}.content.jsx-95626b0a89c67311{flex-direction:column;align-items:stretch;gap:1.5rem;height:auto}.content-area.jsx-95626b0a89c67311{border-radius:8px;width:100%;height:480px}.rect-17.jsx-95626b0a89c67311{max-width:280px;height:380px}.details-content.jsx-95626b0a89c67311{width:100%;height:auto}}"
             }, void 0, false, void 0, this)
         ]
     }, void 0, true, {

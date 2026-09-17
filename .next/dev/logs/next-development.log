@@ -87,3 +87,28 @@
 {"timestamp":"02:28:44.583","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
 {"timestamp":"02:28:46.428","source":"Browser","level":"WARN","message":"Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior=\"smooth\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior"}
 {"timestamp":"02:28:46.429","source":"Server","level":"WARN","message":"[browser] \"Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior=\\\"smooth\\\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior\""}
+{"timestamp":"09:45:57.192","source":"Server","level":"LOG","message":"✓ Compiled in 138ms"}
+{"timestamp":"09:46:05.569","source":"Server","level":"LOG","message":"✓ Compiled in 28ms"}
+{"timestamp":"09:46:26.739","source":"Server","level":"LOG","message":"✓ Compiled in 31ms"}
+{"timestamp":"09:46:42.030","source":"Server","level":"LOG","message":"✓ Compiled in 30ms"}
+{"timestamp":"09:47:12.426","source":"Server","level":"LOG","message":"✓ Compiled in 54ms"}
+{"timestamp":"09:47:25.206","source":"Server","level":"LOG","message":"✓ Compiled in 23ms"}
+{"timestamp":"09:53:16.176","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"09:55:17.839","source":"Server","level":"LOG","message":"✓ Compiled in 196ms"}
+{"timestamp":"09:58:16.847","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"09:58:37.817","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"09:58:41.274","source":"Browser","level":"WARN","message":"Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior=\"smooth\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior"}
+{"timestamp":"09:58:41.274","source":"Server","level":"WARN","message":"[browser] \"Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior=\\\"smooth\\\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior\""}
+{"timestamp":"09:59:03.130","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"09:59:14.887","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"09:59:46.435","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"10:00:00.509","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"10:00:10.797","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"10:02:16.449","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"10:02:22.556","source":"Browser","level":"WARN","message":"Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior=\"smooth\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior"}
+{"timestamp":"10:02:22.556","source":"Server","level":"WARN","message":"[browser] \"Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior=\\\"smooth\\\"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior\""}
+{"timestamp":"10:04:26.203","source":"Server","level":"LOG","message":"✓ Compiled in 25ms"}
+{"timestamp":"10:04:57.791","source":"Server","level":"LOG","message":"✓ Compiled in 24ms"}
+{"timestamp":"10:05:21.242","source":"Server","level":"LOG","message":"✓ Compiled in 25ms"}
+{"timestamp":"10:05:31.025","source":"Server","level":"LOG","message":"✓ Compiled in 28ms"}
+{"timestamp":"10:05:53.376","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}

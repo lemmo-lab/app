@@ -137,7 +137,8 @@ export default function StudioSidebar() {
           top: 0;
           box-sizing: border-box;
           z-index: 50;
-          direction: ltr;
+          border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+          flex-shrink: 0;
         }
 
         .button-home {
@@ -286,8 +287,7 @@ export default function StudioSidebar() {
           .studio-sidebar {
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
+            inset-inline: 0;
             top: auto;
             width: 100%;
             height: 64px;
@@ -295,6 +295,8 @@ export default function StudioSidebar() {
             justify-content: space-between;
             padding: 4px 16px;
             z-index: 90;
+            border-inline-end: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.7);
           }
 

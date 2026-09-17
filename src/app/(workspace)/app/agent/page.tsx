@@ -181,13 +181,11 @@ export default function AgentEmptyStatePage() {
         .agent-container {
           position: relative;
           width: 100%;
-          min-height: 100dvh;
+          min-height: 100%;
           background: #0A0A0A;
           display: flex;
           flex-direction: column;
           align-items: stretch;
-          overflow-x: hidden;
-          direction: ltr;
         }
 
         .main-content {
@@ -296,8 +294,8 @@ export default function AgentEmptyStatePage() {
         .input-container {
           position: fixed;
           bottom: 24px;
-          left: 0;
-          right: 72px;
+          inset-inline-start: 72px;
+          inset-inline-end: 0;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -594,7 +592,7 @@ export default function AgentEmptyStatePage() {
           }
 
           .input-container {
-            right: 0;
+            inset-inline: 0;
             bottom: 74px;
             padding: 0 16px;
           }

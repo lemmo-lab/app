@@ -219,13 +219,11 @@ function AgentChatView({ currentId }: { currentId: string }) {
         .agent-container {
           position: relative;
           width: 100%;
-          min-height: 100dvh;
+          min-height: 100%;
           background: #0A0A0A;
           display: flex;
           flex-direction: column;
           align-items: stretch;
-          overflow-x: hidden;
-          direction: ltr;
         }
 
         .main-chat {
@@ -300,7 +298,7 @@ function AgentChatView({ currentId }: { currentId: string }) {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          align-items: flex-end;
+          align-items: flex-start;
           padding: 16px;
           gap: 8px;
           width: 100%;
@@ -407,8 +405,8 @@ function AgentChatView({ currentId }: { currentId: string }) {
         .input-bar-container {
           position: fixed;
           bottom: 24px;
-          left: 0;
-          right: 72px;
+          inset-inline-start: 72px;
+          inset-inline-end: 0;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -670,7 +668,7 @@ function AgentChatView({ currentId }: { currentId: string }) {
           }
 
           .input-bar-container {
-            right: 0;
+            inset-inline: 0;
             bottom: 74px;
             padding: 0 16px;
           }
@@ -811,13 +809,11 @@ function AgentSingleContentView({ currentId }: { currentId: string }) {
         .single-content-container {
           position: relative;
           width: 100%;
-          min-height: 100dvh;
+          min-height: 100%;
           background: #0A0A0A;
           display: flex;
           flex-direction: column;
           align-items: stretch;
-          overflow-x: hidden;
-          direction: ltr;
         }
 
         .main-content {
@@ -899,7 +895,7 @@ function AgentSingleContentView({ currentId }: { currentId: string }) {
           align-items: center;
           gap: 8px;
           position: absolute;
-          left: 20px;
+          inset-inline-start: 20px;
           top: 20px;
           z-index: 10;
         }
@@ -976,7 +972,7 @@ function AgentSingleContentView({ currentId }: { currentId: string }) {
         /* Back to Chat Button */
         .back-button-container {
           position: absolute;
-          left: 20px;
+          inset-inline-start: 20px;
           bottom: 24px;
           z-index: 10;
         }
@@ -1007,8 +1003,7 @@ function AgentSingleContentView({ currentId }: { currentId: string }) {
         .floating-div {
           position: absolute;
           bottom: 20px;
-          left: 0;
-          right: 0;
+          inset-inline: 0;
           display: flex;
           justify-content: center;
           align-items: center;

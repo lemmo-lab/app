@@ -134,13 +134,11 @@ export default function CanvasIndexPage() {
         .canvas-index {
           position: relative;
           width: 100%;
-          min-height: 100dvh;
+          min-height: 100%;
           background: #0A0A0A;
           display: flex;
           flex-direction: column;
           align-items: stretch;
-          overflow-x: hidden;
-          direction: ltr;
         }
 
         /* Main Body Wrapper */

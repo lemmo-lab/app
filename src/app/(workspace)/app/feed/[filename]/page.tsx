@@ -102,21 +102,20 @@ export default function SingleImageFeedPage() {
         .single-image-app {
           position: relative;
           display: flex;
-          flex-direction: row;
-          align-items: flex-start;
+          flex-direction: column;
+          align-items: stretch;
           width: 100%;
-          min-height: 100dvh;
+          min-height: 100%;
           background: #0a0a0a;
           color: #fff;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-          overflow-x: hidden;
         }
 
         /* ===== MAIN BODY ===== */
         .main-body {
           display: flex;
           flex-direction: row;
-          justify-content: flex-end;
+          justify-content: flex-start;
           align-items: flex-start;
           padding: 3rem;
           flex: 1 1 0;
@@ -126,7 +125,7 @@ export default function SingleImageFeedPage() {
         .content {
           display: flex;
           flex-direction: row;
-          justify-content: flex-end;
+          justify-content: flex-start;
           align-items: flex-start;
           gap: 3rem;
           width: 100%;
@@ -335,7 +334,7 @@ export default function SingleImageFeedPage() {
         .back-button {
           position: absolute;
           top: 1.5rem;
-          left: 1.5rem;
+          inset-inline-start: 1.5rem;
           display: flex;
           width: 32px;
           height: 32px;

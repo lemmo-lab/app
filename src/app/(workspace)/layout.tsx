@@ -21,28 +21,30 @@ export default function WorkspaceLayout({
 }) {
   return (
     <div className="studio-shell">
-      {/* Main Content Area for Pages */}
-      <main className="studio-viewport">{children}</main>
-
-      {/* Unified 72px Navigation Rail & Mobile Bottom Bar */}
+      {/* Unified 72px Navigation Rail (docked at inline-start / left in LTR) */}
       <StudioSidebar />
+
+      {/* Main Content Area for Pages (independently scrollable viewport) */}
+      <main className="studio-viewport">{children}</main>
 
       <style>{`
         .studio-shell {
           display: flex;
           flex-direction: row;
-          min-height: 100dvh;
+          height: 100dvh;
+          max-height: 100dvh;
           width: 100%;
           background: #0A0A0A;
-          direction: ltr;
           position: relative;
-          overflow-x: hidden;
+          overflow: hidden;
         }
 
         .studio-viewport {
           flex: 1;
           min-width: 0;
-          min-height: 100dvh;
+          height: 100dvh;
+          overflow-y: auto;
+          overflow-x: hidden;
           display: flex;
           flex-direction: column;
           position: relative;
@@ -51,9 +53,11 @@ export default function WorkspaceLayout({
         @media (max-width: 900px) {
           .studio-shell {
             flex-direction: column;
+            height: 100dvh;
           }
 
           .studio-viewport {
+            height: calc(100dvh - 64px);
             padding-bottom: 64px;
           }
         }

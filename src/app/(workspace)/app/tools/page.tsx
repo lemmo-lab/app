@@ -64,26 +64,6 @@ export default function ToolsIndexPage() {
     <div className="tools-index">
       {/* ===== MAIN CONTENT AREA ===== */}
       <div className="main-body">
-        {/* Interactive Canvas Workspace */}
-        <section className={`canvas ${mobileTab === 'canvas' ? 'mobile-active' : ''}`}>
-          <div className="canvas-grid-bg" />
-          
-          <div className="canvas-center-placeholder">
-            <div className="canvas-icon-placeholder" />
-            <div className="canvas-title-pill" />
-            <div className="canvas-desc-pill" />
-            
-            {/* Quick Action to open tools on mobile */}
-            <button
-              type="button"
-              className="open-drawer-pill"
-              onClick={() => setMobileTab('tools')}
-            >
-              Browse Tools Drawer &rarr;
-            </button>
-          </div>
-        </section>
-
         {/* Tools Drawer Side Panel */}
         <aside className={`tools-side ${mobileTab === 'tools' ? 'mobile-active' : ''}`}>
           {/* Mobile view switcher tab */}
@@ -277,6 +257,26 @@ export default function ToolsIndexPage() {
             </div>
           </div>
         </aside>
+
+        {/* Interactive Canvas Workspace */}
+        <section className={`canvas ${mobileTab === 'canvas' ? 'mobile-active' : ''}`}>
+          <div className="canvas-grid-bg" />
+          
+          <div className="canvas-center-placeholder">
+            <div className="canvas-icon-placeholder" />
+            <div className="canvas-title-pill" />
+            <div className="canvas-desc-pill" />
+            
+            {/* Quick Action to open tools on mobile */}
+            <button
+              type="button"
+              className="open-drawer-pill"
+              onClick={() => setMobileTab('tools')}
+            >
+              &larr; Browse Tools Drawer
+            </button>
+          </div>
+        </section>
       </div>
 
       {/* ===== STYLES ===== */}
@@ -284,13 +284,11 @@ export default function ToolsIndexPage() {
         .tools-index {
           position: relative;
           width: 100%;
-          min-height: 100dvh;
+          min-height: 100%;
           background: #0A0A0A;
           display: flex;
           flex-direction: column;
           align-items: stretch;
-          overflow-x: hidden;
-          direction: ltr;
         }
 
         /* Main Content Body */
@@ -380,7 +378,8 @@ export default function ToolsIndexPage() {
           min-width: 346px;
           min-height: 100dvh;
           background: #1D1D1D;
-          box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+          border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 8px 0 24px rgba(0, 0, 0, 0.3);
           z-index: 20;
           overflow: visible;
         }
@@ -527,7 +526,7 @@ export default function ToolsIndexPage() {
         .tutorial-banner-inner {
           position: absolute;
           bottom: 12px;
-          left: 12px;
+          inset-inline-start: 12px;
           width: 120px;
           height: 14px;
           background: rgba(0, 0, 0, 0.2);
@@ -575,7 +574,7 @@ export default function ToolsIndexPage() {
 
         .tools-card:hover {
           background: #555555;
-          transform: translateX(-2px);
+          transform: translateX(2px);
         }
 
         .tools-card.active-card {
@@ -653,7 +652,8 @@ export default function ToolsIndexPage() {
 
         .tools-preview-popup {
           position: absolute;
-          right: calc(100% + 20px);
+          inset-inline-start: calc(100% + 16px);
+          inset-inline-end: auto;
           top: 120px;
           display: flex;
           flex-direction: column;
@@ -666,7 +666,7 @@ export default function ToolsIndexPage() {
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateX(10px);
+            transform: translateX(-10px);
           }
           to {
             opacity: 1;
@@ -691,7 +691,7 @@ export default function ToolsIndexPage() {
         .close-preview-btn {
           position: absolute;
           top: 8px;
-          right: 8px;
+          inset-inline-end: 8px;
           width: 28px;
           height: 28px;
           background: rgba(0, 0, 0, 0.5);
@@ -854,6 +854,8 @@ export default function ToolsIndexPage() {
             top: 50%;
             left: 50%;
             right: auto;
+            inset-inline-start: 50%;
+            inset-inline-end: auto;
             transform: translate(-50%, -50%);
             z-index: 60;
             max-width: 90vw;
