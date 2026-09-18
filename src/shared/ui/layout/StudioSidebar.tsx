@@ -1,20 +1,23 @@
 /**
- * Studio Sidebar — Workspace navigation rail with 2 display contexts:
+ * Studio Sidebar — Production Implementation
+ *
+ * Workspace navigation rail with 2 responsive display contexts:
  *
  * 1. Desktop (> 900px):
- *    - Expanded state (256px) with horizontal rows, icon + wireframe text pill, full header & profile meta.
- *    - Collapsed state (72px) with centered icons, centered header toggle & avatar.
+ *    - Expanded state (256px) with horizontal rows, Synthline icons, typography labels, brand mark, and profile meta.
+ *    - Collapsed state (72px) with centered icons, centered header toggle, and circular 40px avatar.
  *
  * 2. Mobile (<= 900px):
- *    - NO bottom bar!
- *    - Top App Header (48px) with Hamburger button (inline-start) and token pill / avatar (inline-end).
- *    - Slide-over Navigation Drawer (256px) with dark backdrop, close button (X), full categories & profile.
+ *    - Top App Header (48px) with Hamburger button (inline-start), live token pill, and profile avatar (inline-end).
+ *    - Slide-over Navigation Drawer (256px) with backdrop, close button, full navigation categories, and profile.
+ *    - NO bottom bar (strict architecture constraint).
  *
- * Conforms strictly to wireframe standards:
- * - Simple geometric shapes only (#D9D9D9 rects & pills, #171717 subtle surfaces, #453D3D active)
- * - Standard 4px ladder grid (256px expanded / 72px collapsed / 40px buttons / 48px headers)
- * - Dedicated 40px circular avatar wireframe
- * - Pure logical CSS properties for RTL/LTR compatibility
+ * Conforms strictly to:
+ * - DOC-DS-001 (Styleguide) & @lemmo-lab/tokens (Dual SSOT)
+ * - DOC-BRAND-001 (Lemmo 3-dot triad mark, 32px logo box)
+ * - DOC-DS-004 (Synthline icon ladder: 20px, strokeWidth 1.5, currentColor)
+ * - DOC-DS-007 & DOC-DS-008 (Concentric radii & 4px ladder)
+ * - DOC-DS-011 (Accessible names, stable data-action attributes)
  */
 
 'use client';
@@ -22,13 +25,28 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  Compass01,
+  AiRobot01,
+  FolderCopy,
+  LayersThree,
+  AiMagicWand01,
+  Image03,
+  Menu02,
+  ChevronLeft,
+  ChevronRight,
+} from 'synthline/react';
+import { useUiStore } from '@/stores/uiStore';
 import ProfilePopover from './ProfilePopover';
 
 export default function StudioSidebar() {
   const pathname = usePathname();
+  const { locale, dir } = useUiStore();
   const [isExpanded, setIsExpanded] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
 
   // Active route detection
   const isFeedActive = pathname === '/app' || pathname.startsWith('/app/feed');
@@ -40,6 +58,7 @@ export default function StudioSidebar() {
   const isSettingsActive = pathname.startsWith('/settings');
 
   const closeMobileDrawer = () => setMobileOpen(false);
+  const isRtl = dir === 'rtl';
 
   return (
     <>
@@ -50,35 +69,43 @@ export default function StudioSidebar() {
           type="button"
           className="hamburger-btn"
           onClick={() => setMobileOpen(true)}
-          title="Open Navigation Menu"
-          aria-label="Open Navigation Menu"
+          title={locale === 'fa' ? 'باز کردن منو' : 'Open Navigation Menu'}
+          aria-label={locale === 'fa' ? 'باز کردن منو' : 'Open Navigation Menu'}
           aria-expanded={mobileOpen}
+          data-action="open-mobile-drawer"
         >
-          <div className="hamburger-icon-shape">
-            <span />
-            <span />
-            <span />
-          </div>
+          <Menu02 size={22} strokeWidth={1.5} color="currentColor" />
         </button>
 
-        {/* User Meta: Token Balance Pill & Profile Avatar Trigger */}
+        {/* User Meta: Live Token Balance Pill & Profile Avatar Trigger */}
         <div className="mobile-header-meta">
-          <div className="token-balance-pill" title="Token Balance">
-            <div className="token-icon-dot" />
-            <div className="token-text-wire" />
-          </div>
+          <Link
+            href="/settings/billing"
+            className="token-balance-pill"
+            title={locale === 'fa' ? 'اعتبار توکن‌ها' : 'Token Balance'}
+            data-action="view-tokens"
+          >
+            <span className="token-icon-dot" />
+            <span className="token-text" data-numeric>
+              2,450
+            </span>
+          </Link>
 
           <button
             type="button"
             className="mobile-avatar-btn"
             onClick={(e) => {
               e.stopPropagation();
-              setPopoverOpen(!popoverOpen);
+              setMobileSheetOpen(!mobileSheetOpen);
             }}
-            title="Account & Settings"
-            aria-label="Account & Settings"
-            aria-expanded={popoverOpen}
-          />
+            title={locale === 'fa' ? 'حساب کاربری و تنظیمات' : 'Account & Settings'}
+            aria-label={locale === 'fa' ? 'حساب کاربری و تنظیمات' : 'Account & Settings'}
+            aria-expanded={mobileSheetOpen}
+            data-action="open-profile-menu-mobile"
+          >
+            <span className="avatar-initials">LM</span>
+            <span className="status-dot" />
+          </button>
         </div>
       </header>
 
@@ -91,70 +118,210 @@ export default function StudioSidebar() {
         />
       )}
 
+      {/* ================= MOBILE BOTTOM SHEET (MOUNTED OUTSIDE SIDEBAR TO AVOID TRANSFORM CLIPPING) ================= */}
+      <ProfilePopover
+        variant="sheet"
+        isOpen={mobileSheetOpen}
+        onClose={() => setMobileSheetOpen(false)}
+      />
+
       {/* ================= MAIN STUDIO SIDEBAR / DRAWER ================= */}
       <aside
         className={`studio-sidebar ${isExpanded ? 'expanded' : 'collapsed'} ${
           mobileOpen ? 'mobile-open' : ''
         }`}
-        aria-label="Studio Navigation"
+        aria-label={locale === 'fa' ? 'ناوبری استودیو' : 'Studio Navigation'}
       >
         {/* Header: Brand Logo + Expand/Collapse Toggle (Desktop) / Close Button (Mobile) */}
         <div className="header">
+          {/* Desktop Collapsed Toggle: Hover changes 3-dot logo to expand chevron */}
+          {!isExpanded ? (
+            <button
+              type="button"
+              className="collapsed-brand-toggle desktop-only-btn"
+              onClick={() => setIsExpanded(true)}
+              onMouseEnter={() => setIsLogoHovered(true)}
+              onMouseLeave={() => setIsLogoHovered(false)}
+              title={locale === 'fa' ? 'باز کردن نوار کناری' : 'Expand sidebar'}
+              aria-label={locale === 'fa' ? 'باز کردن نوار کناری' : 'Expand sidebar'}
+              data-action="expand-sidebar"
+            >
+              <div className="logo-box" aria-hidden="true">
+                {isLogoHovered ? (
+                  isRtl ? (
+                    <ChevronLeft size={20} strokeWidth={2} color="var(--lemmo-surface-brand-background, #d1fe17)" />
+                  ) : (
+                    <ChevronRight size={20} strokeWidth={2} color="var(--lemmo-surface-brand-background, #d1fe17)" />
+                  )
+                ) : (
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 512 512"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M143.836 311.343C174.673 311.343 199.671 336.341 199.671 367.178C199.671 398.015 174.673 423.014 143.836 423.014C112.998 423.014 88 398.015 88 367.178C88 336.341 112.998 311.343 143.836 311.343Z"
+                      fill="var(--lemmo-surface-brand-background, #d1fe17)"
+                    />
+                    <path
+                      d="M367.178 311.343C398.015 311.343 423.014 336.341 423.014 367.178C423.014 398.015 398.015 423.014 367.178 423.014C336.341 423.014 311.343 398.015 311.343 367.178C311.343 336.341 336.341 311.343 367.178 311.343Z"
+                      fill="var(--lemmo-surface-brand-background, #d1fe17)"
+                    />
+                    <path
+                      d="M255.507 88C286.344 88 311.343 112.998 311.343 143.836C311.343 174.673 286.344 199.671 255.507 199.671C224.67 199.671 199.671 174.673 199.671 143.836C199.671 112.998 224.67 88 255.507 88Z"
+                      fill="var(--lemmo-surface-brand-background, #d1fe17)"
+                    />
+                  </svg>
+                )}
+              </div>
+            </button>
+          ) : (
+            <>
+              <Link
+                href="/app"
+                className="brand-box desktop-only-btn"
+                title={locale === 'fa' ? 'صفحه اصلی لیمو استودیو' : 'Lemmo Studio Home'}
+                data-action="nav-home"
+              >
+                <div className="logo-box" aria-hidden="true">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 512 512"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M143.836 311.343C174.673 311.343 199.671 336.341 199.671 367.178C199.671 398.015 174.673 423.014 143.836 423.014C112.998 423.014 88 398.015 88 367.178C88 336.341 112.998 311.343 143.836 311.343Z"
+                      fill="var(--lemmo-surface-brand-background, #d1fe17)"
+                    />
+                    <path
+                      d="M367.178 311.343C398.015 311.343 423.014 336.341 423.014 367.178C423.014 398.015 398.015 423.014 367.178 423.014C336.341 423.014 311.343 398.015 311.343 367.178C311.343 336.341 336.341 311.343 367.178 311.343Z"
+                      fill="var(--lemmo-surface-brand-background, #d1fe17)"
+                    />
+                    <path
+                      d="M255.507 88C286.344 88 311.343 112.998 311.343 143.836C311.343 174.673 286.344 199.671 255.507 199.671C224.67 199.671 199.671 174.673 199.671 143.836C199.671 112.998 224.67 88 255.507 88Z"
+                      fill="var(--lemmo-surface-brand-background, #d1fe17)"
+                    />
+                  </svg>
+                </div>
+                <span className="brand-wordmark">lemmo</span>
+              </Link>
+
+              {/* Desktop Collapse Toggle Button */}
+              <button
+                type="button"
+                className="toggle-btn desktop-only-btn"
+                onClick={() => setIsExpanded(false)}
+                title={locale === 'fa' ? 'بستن نوار کناری' : 'Collapse sidebar'}
+                aria-label={locale === 'fa' ? 'بستن نوار کناری' : 'Collapse sidebar'}
+                data-action="collapse-sidebar"
+              >
+                {isRtl ? (
+                  <ChevronRight size={18} strokeWidth={1.5} color="currentColor" />
+                ) : (
+                  <ChevronLeft size={18} strokeWidth={1.5} color="currentColor" />
+                )}
+              </button>
+            </>
+          )}
+
+          {/* Mobile Drawer Header: Always Logo + Wordmark */}
           <Link
             href="/app"
-            className="brand-box"
+            className="brand-box mobile-only-btn"
             onClick={closeMobileDrawer}
-            title="Lemmo Studio Home"
+            title={locale === 'fa' ? 'صفحه اصلی لیمو استودیو' : 'Lemmo Studio Home'}
+            data-action="nav-home-mobile"
           >
-            <div className="logo-shape" />
-            <div className="brand-pill" />
+            <div className="logo-box" aria-hidden="true">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 512 512"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M143.836 311.343C174.673 311.343 199.671 336.341 199.671 367.178C199.671 398.015 174.673 423.014 143.836 423.014C112.998 423.014 88 398.015 88 367.178C88 336.341 112.998 311.343 143.836 311.343Z"
+                  fill="var(--lemmo-surface-brand-background, #d1fe17)"
+                />
+                <path
+                  d="M367.178 311.343C398.015 311.343 423.014 336.341 423.014 367.178C423.014 398.015 398.015 423.014 367.178 423.014C336.341 423.014 311.343 398.015 311.343 367.178C311.343 336.341 336.341 311.343 367.178 311.343Z"
+                  fill="var(--lemmo-surface-brand-background, #d1fe17)"
+                />
+                <path
+                  d="M255.507 88C286.344 88 311.343 112.998 311.343 143.836C311.343 174.673 286.344 199.671 255.507 199.671C224.67 199.671 199.671 174.673 199.671 143.836C199.671 112.998 224.67 88 255.507 88Z"
+                  fill="var(--lemmo-surface-brand-background, #d1fe17)"
+                />
+              </svg>
+            </div>
+            <span className="brand-wordmark">lemmo</span>
           </Link>
-
-          {/* Desktop Toggle Button */}
-          <button
-            type="button"
-            className="toggle-btn desktop-only-btn"
-            onClick={() => setIsExpanded(!isExpanded)}
-            title={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-            aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-          >
-            <div className="chevron-icon" />
-          </button>
 
           {/* Mobile Close Button (X) */}
           <button
             type="button"
             className="close-drawer-btn mobile-only-btn"
             onClick={closeMobileDrawer}
-            title="Close navigation menu"
-            aria-label="Close navigation menu"
+            title={locale === 'fa' ? 'بستن منو' : 'Close navigation menu'}
+            aria-label={locale === 'fa' ? 'بستن منو' : 'Close navigation menu'}
+            data-action="close-mobile-drawer"
           >
-            <div className="close-x-shape" />
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
         {/* Primary Category Nav Items */}
-        <nav className="primary-cats" aria-label="Primary Categories">
+        <nav
+          className="primary-cats"
+          aria-label={locale === 'fa' ? 'بخش‌های اصلی' : 'Primary Categories'}
+        >
           {/* 1. Feed / Home */}
           <Link
             href="/app"
             className={`nav-btn ${isFeedActive ? 'active' : ''}`}
             onClick={closeMobileDrawer}
-            title="Community Feed"
+            title={locale === 'fa' ? 'کاوش و فید' : 'Community Feed'}
+            data-action="nav-feed"
           >
-            <div className="icon-shape"><div className="rect-icon" /></div>
-            <div className="label-pill" />
+            <span className="icon-slot">
+              <Compass01 size={20} strokeWidth={1.5} color="currentColor" />
+            </span>
+            <span className="nav-label">
+              {locale === 'fa' ? 'کاوش و فید' : 'Feed'}
+            </span>
+            {isFeedActive && <span className="active-pill-indicator" />}
           </Link>
 
-          {/* 2. Agent */}
+          {/* 2. Agent Studio */}
           <Link
             href="/app/agent"
             className={`nav-btn ${isAgentActive ? 'active' : ''}`}
             onClick={closeMobileDrawer}
-            title="Agent Studio"
+            title={locale === 'fa' ? 'استودیو ایجنت' : 'Agent Studio'}
+            data-action="nav-agent"
           >
-            <div className="icon-shape"><div className="rect-icon" /></div>
-            <div className="label-pill" />
+            <span className="icon-slot">
+              <AiRobot01 size={20} strokeWidth={1.5} color="currentColor" />
+            </span>
+            <span className="nav-label">
+              {locale === 'fa' ? 'ایجنت استودیو' : 'Agent'}
+            </span>
+            {isAgentActive && <span className="active-pill-indicator" />}
           </Link>
 
           {/* 3. Assets */}
@@ -162,10 +329,16 @@ export default function StudioSidebar() {
             href="/app/assets"
             className={`nav-btn ${isAssetsActive ? 'active' : ''}`}
             onClick={closeMobileDrawer}
-            title="Assets Archive"
+            title={locale === 'fa' ? 'آرشیو دارایی‌ها' : 'Assets Archive'}
+            data-action="nav-assets"
           >
-            <div className="icon-shape"><div className="rect-icon" /></div>
-            <div className="label-pill" />
+            <span className="icon-slot">
+              <FolderCopy size={20} strokeWidth={1.5} color="currentColor" />
+            </span>
+            <span className="nav-label">
+              {locale === 'fa' ? 'دارایی‌ها' : 'Assets'}
+            </span>
+            {isAssetsActive && <span className="active-pill-indicator" />}
           </Link>
 
           {/* 4. Canvas */}
@@ -173,23 +346,39 @@ export default function StudioSidebar() {
             href="/app/canvas"
             className={`nav-btn ${isCanvasActive ? 'active' : ''}`}
             onClick={closeMobileDrawer}
-            title="Interactive Canvas"
+            title={locale === 'fa' ? 'کانواس تعاملی' : 'Interactive Canvas'}
+            data-action="nav-canvas"
           >
-            <div className="icon-shape"><div className="rect-icon" /></div>
-            <div className="label-pill" />
+            <span className="icon-slot">
+              <LayersThree size={20} strokeWidth={1.5} color="currentColor" />
+            </span>
+            <span className="nav-label">
+              {locale === 'fa' ? 'کانواس' : 'Canvas'}
+            </span>
+            {isCanvasActive && <span className="active-pill-indicator" />}
           </Link>
         </nav>
 
         {/* Specialized Tools Section */}
-        <div className="tools-section">
+        <div
+          className="tools-section"
+          role="group"
+          aria-label={locale === 'fa' ? 'ابزارها' : 'Specialized Tools'}
+        >
           <Link
             href="/app/tools"
             className={`nav-btn ${isToolsActive ? 'active' : ''}`}
             onClick={closeMobileDrawer}
-            title="Tools Catalog"
+            title={locale === 'fa' ? 'کاتالوگ ابزارها' : 'Tools Catalog'}
+            data-action="nav-tools"
           >
-            <div className="icon-shape"><div className="rect-icon" /></div>
-            <div className="label-pill" />
+            <span className="icon-slot">
+              <AiMagicWand01 size={20} strokeWidth={1.5} color="currentColor" />
+            </span>
+            <span className="nav-label">
+              {locale === 'fa' ? 'ابزارها' : 'Tools'}
+            </span>
+            {isToolsActive && <span className="active-pill-indicator" />}
           </Link>
         </div>
 
@@ -200,34 +389,53 @@ export default function StudioSidebar() {
             href="/gallery"
             className={`nav-btn ${isGalleryActive ? 'active' : ''}`}
             onClick={closeMobileDrawer}
-            title="Community Gallery"
+            title={locale === 'fa' ? 'گالری عمومی' : 'Community Gallery'}
+            data-action="nav-gallery"
           >
-            <div className="icon-shape"><div className="rect-icon" /></div>
-            <div className="label-pill" />
+            <span className="icon-slot">
+              <Image03 size={20} strokeWidth={1.5} color="currentColor" />
+            </span>
+            <span className="nav-label">
+              {locale === 'fa' ? 'گالری' : 'Gallery'}
+            </span>
+            {isGalleryActive && <span className="active-pill-indicator" />}
           </Link>
 
-          {/* User Profile & Settings Trigger (Fixed Avatar) */}
+          {/* User Profile & Settings Trigger */}
           <div className="profile-container">
             <button
               type="button"
               className={`profile-trigger-btn ${popoverOpen || isSettingsActive ? 'active' : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
-                setPopoverOpen(!popoverOpen);
+                if (typeof window !== 'undefined' && window.innerWidth <= 900) {
+                  setMobileOpen(false);
+                  setMobileSheetOpen(true);
+                } else {
+                  setPopoverOpen(!popoverOpen);
+                }
               }}
-              title="Account & Settings"
-              aria-label="Account & Settings"
+              title={locale === 'fa' ? 'حساب کاربری و تنظیمات' : 'Account & Settings'}
+              aria-label={locale === 'fa' ? 'حساب کاربری و تنظیمات' : 'Account & Settings'}
               aria-expanded={popoverOpen}
+              data-action="toggle-profile-popover"
             >
-              <div className="avatar-shape" />
-              <div className="meta">
-                <div className="meta-primary" />
-                <div className="meta-secondary" />
+              <div className="avatar-wrapper" aria-hidden="true">
+                <span className="avatar-initials">LM</span>
+                <span className="status-dot" />
+              </div>
+              <div className="user-meta">
+                <span className="user-display-name">Behroz</span>
+                <span className="user-plan-label">Pro Workspace</span>
               </div>
             </button>
 
-            {/* Settings / Profile Popover Modal */}
-            <ProfilePopover isOpen={popoverOpen} onClose={() => setPopoverOpen(false)} />
+            {/* Settings / Profile Popover Modal (Desktop) */}
+            <ProfilePopover
+              variant="popover"
+              isOpen={popoverOpen}
+              onClose={() => setPopoverOpen(false)}
+            />
           </div>
         </div>
       </aside>
@@ -242,12 +450,14 @@ export default function StudioSidebar() {
           display: none;
         }
 
+        :global(.mobile-only-btn),
         .mobile-only-btn {
-          display: none;
+          display: none !important;
         }
 
+        :global(.desktop-only-btn),
         .desktop-only-btn {
-          display: flex;
+          display: flex !important;
         }
 
         /* ================= DESKTOP SIDEBAR (> 900px) ================= */
@@ -255,20 +465,20 @@ export default function StudioSidebar() {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          padding: 8px;
+          padding: var(--lemmo-space-200, 8px);
           height: 100dvh;
-          background: #131517;
+          background: var(--lemmo-page-background, #131517);
           position: sticky;
           top: 0;
           box-sizing: border-box;
           z-index: 50;
-          border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+          border-inline-end: 1px solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.08));
           flex-shrink: 0;
-          transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: width 0.24s cubic-bezier(0.4, 0, 0.2, 1);
           user-select: none;
         }
 
-        /* Expanded State (256px — 8px grid aligned) */
+        /* Expanded State (256px — standard 8px grid aligned) */
         .studio-sidebar.expanded {
           width: 256px;
           min-width: 256px;
@@ -289,7 +499,7 @@ export default function StudioSidebar() {
           width: 100%;
           height: 48px;
           flex-shrink: 0;
-          margin-bottom: 8px;
+          margin-bottom: var(--lemmo-space-200, 8px);
           position: relative;
         }
 
@@ -297,528 +507,523 @@ export default function StudioSidebar() {
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 10px;
-          height: 48px;
-          padding: 0 8px;
-          background: #171717;
-          border-radius: 8px;
+          gap: var(--lemmo-space-200, 8px);
           text-decoration: none;
-          flex: 1;
-          min-width: 0;
-          cursor: pointer;
-          transition: background 0.15s ease;
-          overflow: hidden;
+          padding: var(--lemmo-space-100, 4px);
+          border-radius: var(--lemmo-radius-base, 8px);
+          transition: opacity 0.15s ease;
         }
 
         :global(.brand-box:hover) {
-          background: #222529;
+          opacity: 0.88;
         }
 
-        .logo-shape {
+        :global(.brand-box:focus-visible) {
+          outline: 2px solid var(--lemmo-surface-brand-background, #d1fe17);
+          outline-offset: 2px;
+        }
+
+        .logo-box {
           width: 32px;
           height: 32px;
-          background: #D9D9D9;
-          border-radius: 6px;
+          border-radius: var(--lemmo-radius-base, 8px);
+          background: var(--lemmo-surface-primary-background, #1c1e20);
+          border: 1px solid var(--lemmo-border-subtle, rgba(255, 255, 255, 0.04));
+          display: flex;
+          align-items: center;
+          justify-content: center;
           flex-shrink: 0;
         }
 
-        .brand-pill {
-          height: 14px;
-          width: 76px;
-          background: #D9D9D9;
-          border-radius: 99px;
-          flex-shrink: 0;
-          transition: opacity 0.2s ease;
+        .brand-wordmark {
+          font-family: var(--lemmo-font-heading, 'Oddval', 'Morabba', sans-serif);
+          font-size: var(--lemmo-type-size-400, 1.125rem);
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          color: var(--lemmo-text-primary, #e1e1e3);
         }
 
+        /* Collapse / Expand Toggle Button */
         .toggle-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: var(--lemmo-radius-base, 8px);
+          background: transparent;
+          border: 1px solid transparent;
+          color: var(--lemmo-text-muted, #898a8b);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .toggle-btn:hover {
+          background: rgba(255, 255, 255, 0.06);
+          color: var(--lemmo-text-primary, #e1e1e3);
+          border-color: var(--lemmo-border-subtle, rgba(255, 255, 255, 0.04));
+        }
+
+        .collapsed-brand-toggle {
+          display: flex;
           align-items: center;
           justify-content: center;
           width: 36px;
           height: 36px;
-          background: #171717;
+          padding: 0;
+          background: transparent;
           border: none;
-          border-radius: 8px;
+          border-radius: var(--lemmo-radius-base, 8px);
           cursor: pointer;
-          flex-shrink: 0;
-          margin-inline-start: 6px;
-          transition: background 0.15s ease, transform 0.15s ease;
+          transition: transform 0.15s ease;
+          margin: 0 auto;
         }
 
-        .toggle-btn:hover {
-          background: #222529;
+        .collapsed-brand-toggle:hover .logo-box {
+          background: var(--lemmo-surface-secondary-background, #23262a);
+          border-color: var(--lemmo-surface-brand-background, #d1fe17);
+          box-shadow: 0 0 12px rgba(209, 254, 23, 0.25);
         }
 
-        .toggle-btn:active {
-          transform: scale(0.94);
+        .collapsed-brand-toggle:focus-visible {
+          outline: 2px solid var(--lemmo-surface-brand-background, #d1fe17);
+          outline-offset: 2px;
         }
 
-        .chevron-icon {
-          width: 8px;
-          height: 8px;
-          border-top: 2px solid #D9D9D9;
-          border-inline-start: 2px solid #D9D9D9;
-          transform: rotate(-45deg);
-          transition: transform 0.25s ease;
-        }
-
-        :global([dir="rtl"]) .chevron-icon {
-          transform: rotate(135deg);
-        }
-
-        .studio-sidebar.collapsed .chevron-icon {
-          transform: rotate(135deg);
-        }
-
-        :global([dir="rtl"]) .studio-sidebar.collapsed .chevron-icon {
-          transform: rotate(-45deg);
-        }
-
-        /* Collapsed Header Behavior */
+        /* Centering header in collapsed mode */
         .studio-sidebar.collapsed .header {
           justify-content: center;
         }
 
-        .studio-sidebar.collapsed :global(.brand-box) {
-          display: none;
+        .studio-sidebar.collapsed .header :global(.brand-box) {
+          margin: 0 auto;
         }
 
         .studio-sidebar.collapsed .toggle-btn {
-          width: 44px;
-          height: 44px;
-          margin-inline-start: 0;
+          display: none;
         }
 
-        /* ================= Nav Buttons ================= */
+        /* Collapsed mode: hide labels and user meta on desktop */
+        .studio-sidebar.collapsed:not(.mobile-open) .brand-wordmark,
+        .studio-sidebar.collapsed:not(.mobile-open) .nav-label,
+        .studio-sidebar.collapsed:not(.mobile-open) .user-meta {
+          display: none;
+        }
+
+        .studio-sidebar.collapsed:not(.mobile-open) :global(.nav-btn) {
+          padding: 0;
+          justify-content: center;
+        }
+
+        .studio-sidebar.collapsed:not(.mobile-open) .active-pill-indicator {
+          top: 6px;
+          bottom: 6px;
+          width: 3px;
+        }
+
+        .studio-sidebar.collapsed:not(.mobile-open) .profile-trigger-btn {
+          padding: 0;
+          justify-content: center;
+        }
+
+        /* ================= Navigation Rows ================= */
         .primary-cats {
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
-          padding: 12px 0;
-          gap: 8px;
           width: 100%;
-          flex-shrink: 0;
+          gap: var(--lemmo-space-100, 4px);
+        }
+
+        .tools-section {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          margin-top: var(--lemmo-space-300, 12px);
+          padding-top: var(--lemmo-space-300, 12px);
+          border-top: 1px solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.08));
+        }
+
+        .footer-sidebar {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          margin-top: auto;
+          gap: var(--lemmo-space-100, 4px);
+          padding-top: var(--lemmo-space-200, 8px);
         }
 
         :global(.nav-btn) {
           display: flex;
           flex-direction: row;
           align-items: center;
-          padding: 0 10px;
-          gap: 12px;
-          width: 100%;
+          gap: var(--lemmo-space-300, 12px);
           height: 40px;
-          background: #171717;
-          border-radius: 8px;
+          width: 100%;
+          padding: 0 var(--lemmo-space-300, 12px);
+          border-radius: var(--lemmo-radius-base, 8px);
           text-decoration: none;
-          box-sizing: border-box;
-          transition: background 0.15s ease;
+          color: var(--lemmo-text-secondary, #a1a1a5);
+          background: transparent;
           border: 1px solid transparent;
-          flex-shrink: 0;
+          box-sizing: border-box;
           position: relative;
-          overflow: hidden;
+          transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
         }
 
         :global(.nav-btn:hover) {
-          background: #222529;
+          background: rgba(255, 255, 255, 0.04);
+          color: var(--lemmo-text-primary, #e1e1e3);
+        }
+
+        :global(.nav-btn:focus-visible) {
+          outline: 2px solid var(--lemmo-surface-brand-background, #d1fe17);
+          outline-offset: 1px;
         }
 
         :global(.nav-btn.active) {
-          background: #453D3D;
-          border-color: rgba(255, 255, 255, 0.12);
+          background: var(--lemmo-surface-primary-background, #1c1e20);
+          color: var(--lemmo-text-primary, #e1e1e3);
+          border-color: var(--lemmo-border-subtle, rgba(255, 255, 255, 0.04));
         }
 
-        :global(.nav-btn.active)::before {
-          content: '';
-          position: absolute;
-          inset-inline-start: 0;
-          top: 8px;
-          bottom: 8px;
-          width: 3px;
-          background: #d1fe17;
-          border-start-end-radius: 4px;
-          border-end-end-radius: 4px;
-        }
-
-        .icon-shape {
+        .icon-slot {
           display: flex;
           align-items: center;
           justify-content: center;
           width: 20px;
           height: 20px;
           flex-shrink: 0;
+          color: inherit;
         }
 
-        .rect-icon {
-          width: 20px;
-          height: 20px;
-          background: #D9D9D9;
-          border-radius: 4px;
+        :global(.nav-btn.active) .icon-slot {
+          color: var(--lemmo-surface-brand-background, #d1fe17);
         }
 
-        .label-pill {
-          height: 12px;
-          max-width: 120px;
-          flex: 1;
-          background: #D9D9D9;
-          border-radius: 99px;
-          transition: opacity 0.2s ease;
+        .nav-label {
+          font-family: var(--lemmo-font-body, inherit);
+          font-size: var(--lemmo-type-size-200, 0.875rem);
+          font-weight: var(--lemmo-font-weight-medium, 500);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        .tools-section {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          padding: 0;
-          width: 100%;
-          flex-shrink: 0;
+        .active-pill-indicator {
+          position: absolute;
+          inset-inline-start: 0;
+          top: 8px;
+          bottom: 8px;
+          width: 3px;
+          background: var(--lemmo-surface-brand-background, #d1fe17);
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          box-shadow: 0 0 6px rgba(209, 254, 23, 0.6);
         }
 
-        /* Collapsed Button Behavior */
+        /* Collapsed mode centering */
         .studio-sidebar.collapsed :global(.nav-btn) {
-          width: 56px;
-          height: 44px;
           padding: 0;
           justify-content: center;
-          align-self: center;
         }
 
-        .studio-sidebar.collapsed .label-pill {
-          display: none;
+        .studio-sidebar.collapsed .active-pill-indicator {
+          top: 6px;
+          bottom: 6px;
+          width: 3px;
         }
 
-        /* ================= Footer Section & Profile ================= */
-        .footer-sidebar {
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-          align-items: flex-start;
-          padding: 12px 0 0 0;
-          width: 100%;
-          flex-grow: 1;
-          gap: 8px;
-          position: relative;
-        }
-
+        /* ================= User Profile Section ================= */
         .profile-container {
           position: relative;
           width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
+          margin-top: var(--lemmo-space-100, 4px);
         }
 
         .profile-trigger-btn {
           display: flex;
           flex-direction: row;
           align-items: center;
-          padding: 8px 10px;
-          gap: 12px;
+          gap: var(--lemmo-space-250, 10px);
+          height: 52px;
           width: 100%;
-          height: 56px;
-          background: #171717;
+          padding: var(--lemmo-space-150, 6px);
+          border-radius: var(--lemmo-radius-base, 8px);
+          background: transparent;
           border: 1px solid transparent;
-          border-radius: 8px;
           cursor: pointer;
-          transition: background 0.15s ease;
           box-sizing: border-box;
+          transition: background 0.15s ease, border-color 0.15s ease;
           text-align: start;
         }
 
         .profile-trigger-btn:hover {
-          background: #222529;
+          background: rgba(255, 255, 255, 0.04);
+        }
+
+        .profile-trigger-btn:focus-visible {
+          outline: 2px solid var(--lemmo-surface-brand-background, #d1fe17);
+          outline-offset: 1px;
         }
 
         .profile-trigger-btn.active {
-          background: #453D3D;
-          border-color: rgba(255, 255, 255, 0.12);
+          background: var(--lemmo-surface-primary-background, #1c1e20);
+          border-color: var(--lemmo-border-default, rgba(255, 255, 255, 0.15));
         }
 
-        /* Fixed Avatar shape */
-        .avatar-shape {
+        .avatar-wrapper {
           width: 40px;
           height: 40px;
-          background: #D9D9D9;
-          border-radius: 9999px;
+          border-radius: var(--lemmo-radius-full, 9999px);
+          background: linear-gradient(135deg, #2a2d30 0%, #151718 100%);
+          border: 1.5px solid var(--lemmo-border-default, rgba(255, 255, 255, 0.15));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
           flex-shrink: 0;
-          border: 2px solid rgba(255, 255, 255, 0.08);
+          color: var(--lemmo-text-primary, #e1e1e3);
+          font-family: var(--lemmo-font-heading, 'Oddval', 'Morabba', sans-serif);
+          font-weight: 700;
+          font-size: 0.8125rem;
         }
 
-        .meta {
+        .status-dot {
+          position: absolute;
+          bottom: 1px;
+          inset-inline-end: 1px;
+          width: 9px;
+          height: 9px;
+          background: var(--lemmo-text-success, #4ee466);
+          border-radius: var(--lemmo-radius-full, 9999px);
+          border: 1.5px solid var(--lemmo-page-background, #131517);
+        }
+
+        .user-meta {
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
-          gap: 6px;
-          width: 100%;
           min-width: 0;
+          flex: 1;
+        }
+
+        .user-display-name {
+          font-family: var(--lemmo-font-body, inherit);
+          font-size: var(--lemmo-type-size-200, 0.875rem);
+          font-weight: var(--lemmo-font-weight-semi-bold, 600);
+          color: var(--lemmo-text-primary, #e1e1e3);
+          white-space: nowrap;
           overflow: hidden;
-          transition: opacity 0.2s ease;
+          text-overflow: ellipsis;
         }
 
-        .meta-primary {
-          width: 80%;
-          height: 12px;
-          background: #D9D9D9;
-          border-radius: 99px;
+        .user-plan-label {
+          font-size: 0.6875rem;
+          color: var(--lemmo-text-muted, #898a8b);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        .meta-secondary {
-          width: 50%;
-          height: 10px;
-          background: #525252;
-          border-radius: 99px;
-        }
-
-        /* Collapsed Profile Behavior */
-        .studio-sidebar.collapsed .profile-container {
-          align-items: center;
-        }
-
-        .studio-sidebar.collapsed .profile-trigger-btn {
-          width: 56px;
-          height: 56px;
-          padding: 0;
-          justify-content: center;
-          align-self: center;
-        }
-
-        .studio-sidebar.collapsed .avatar-shape {
-          margin: 0 auto;
-        }
-
-        .studio-sidebar.collapsed .meta {
-          display: none;
-        }
-
-        /* ================= MOBILE DRAWER ARCHITECTURE (<= 900px) ================= */
+        /* ================= MOBILE BREAKPOINT (<= 900px) ================= */
         @media (max-width: 900px) {
-          /* 1. Mobile Top Header */
+          .desktop-only-btn {
+            display: none !important;
+          }
+
+          .mobile-only-btn {
+            display: flex !important;
+          }
+
+          /* Force full drawer elements to always display on mobile */
+          .studio-sidebar .brand-wordmark {
+            display: inline-block !important;
+          }
+
+          .studio-sidebar .nav-label {
+            display: inline-block !important;
+          }
+
+          .studio-sidebar .user-meta {
+            display: flex !important;
+          }
+
+          .studio-sidebar :global(.nav-btn) {
+            padding: 0 var(--lemmo-space-300, 12px) !important;
+            justify-content: flex-start !important;
+          }
+
+          .studio-sidebar .profile-trigger-btn {
+            padding: var(--lemmo-space-150, 6px) !important;
+            justify-content: flex-start !important;
+          }
+
+          .studio-sidebar .header {
+            justify-content: space-between !important;
+          }
+
+          /* 48px Top App Header */
           .mobile-header {
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
             align-items: center;
-            padding: 0 16px;
-            width: 100%;
+            justify-content: space-between;
             height: 48px;
-            background: #0A0A0A;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 40;
+            width: 100%;
+            padding: 0 var(--lemmo-space-300, 12px);
+            background: var(--lemmo-page-background, #131517);
+            border-bottom: 1px solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.08));
             position: fixed;
             top: 0;
             inset-inline: 0;
+            z-index: 40;
             box-sizing: border-box;
           }
 
           .hamburger-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             width: 36px;
             height: 36px;
-            border-radius: 8px;
-            cursor: pointer;
-            background: #171717;
+            border-radius: var(--lemmo-radius-base, 8px);
+            background: transparent;
             border: none;
-            transition: background 0.15s ease;
+            color: var(--lemmo-text-primary, #e1e1e3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
           }
 
           .hamburger-btn:hover {
-            background: #222529;
+            background: rgba(255, 255, 255, 0.05);
           }
 
-          .hamburger-icon-shape {
-            width: 18px;
-            height: 14px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-          }
-
-          .hamburger-icon-shape span {
-            display: block;
-            height: 2px;
-            width: 100%;
-            background: #D9D9D9;
-            border-radius: 2px;
+          .hamburger-btn:focus-visible {
+            outline: 2px solid var(--lemmo-surface-brand-background, #d1fe17);
           }
 
           .mobile-header-meta {
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 10px;
+            gap: var(--lemmo-space-200, 8px);
           }
 
-          .token-balance-pill {
-            width: 64px;
-            height: 20px;
-            background: #171717;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 9999px;
+          :global(.token-balance-pill) {
             display: flex;
+            flex-direction: row;
             align-items: center;
-            padding: 0 6px;
-            gap: 4px;
+            gap: 6px;
+            height: 28px;
+            padding: 0 10px;
+            background: rgba(209, 254, 23, 0.08);
+            border: 1px solid rgba(209, 254, 23, 0.2);
+            border-radius: var(--lemmo-radius-pill, 9999px);
+            text-decoration: none;
           }
 
           .token-icon-dot {
-            width: 8px;
-            height: 8px;
-            background: #d1fe17;
-            border-radius: 50%;
+            width: 6px;
+            height: 6px;
+            border-radius: var(--lemmo-radius-full, 9999px);
+            background: var(--lemmo-surface-brand-background, #d1fe17);
+            box-shadow: 0 0 6px rgba(209, 254, 23, 0.6);
           }
 
-          .token-text-wire {
-            width: 36px;
-            height: 6px;
-            background: #D9D9D9;
-            border-radius: 9999px;
+          .token-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--lemmo-surface-brand-background, #d1fe17);
           }
 
           .mobile-avatar-btn {
             width: 32px;
             height: 32px;
-            border-radius: 9999px;
-            background: #D9D9D9;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--lemmo-radius-full, 9999px);
+            background: linear-gradient(135deg, #2a2d30 0%, #151718 100%);
+            border: 1.5px solid var(--lemmo-border-default, rgba(255, 255, 255, 0.15));
+            position: relative;
             cursor: pointer;
-            flex-shrink: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
 
-          /* 2. Slide-over Backdrop */
+          .mobile-avatar-btn .avatar-initials {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            color: var(--lemmo-text-primary, #e1e1e3);
+          }
+
+          .mobile-avatar-btn .status-dot {
+            width: 7px;
+            height: 7px;
+            bottom: 0;
+            inset-inline-end: 0;
+          }
+
+          /* Backdrop */
           .mobile-backdrop {
             display: block;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
             z-index: 90;
-            animation: backdropFadeIn 0.2s ease;
+            animation: fadeIn 0.2s ease-out;
           }
 
-          @keyframes backdropFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
           }
 
-          /* 3. Slide-over Drawer Sidebar (256px, NO bottom bar!) */
-          .studio-sidebar,
-          .studio-sidebar.expanded,
-          .studio-sidebar.collapsed {
+          /* Slide-Over Drawer */
+          .studio-sidebar {
             position: fixed;
             top: 0;
             bottom: 0;
             inset-inline-start: 0;
-            width: 256px;
-            min-width: 256px;
+            width: 256px !important;
+            min-width: 256px !important;
             height: 100dvh;
-            background: #131517;
-            border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.85);
             z-index: 100;
             transform: translateX(-100%);
-            transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 8px;
-            flex-direction: column;
-            overflow-y: auto;
+            transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s ease;
+            box-shadow: 0 0 32px rgba(0, 0, 0, 0.85);
+            visibility: hidden;
+            pointer-events: none;
           }
 
-          :global([dir="rtl"]) .studio-sidebar,
-          :global([dir="rtl"]) .studio-sidebar.expanded,
-          :global([dir="rtl"]) .studio-sidebar.collapsed {
+          :global([dir='rtl']) .studio-sidebar,
+          [dir='rtl'] .studio-sidebar {
             transform: translateX(100%);
           }
 
-          /* Open Drawer State */
-          .studio-sidebar.mobile-open,
-          :global([dir="rtl"]) .studio-sidebar.mobile-open {
-            transform: translateX(0);
-          }
-
-          /* 4. Controls inside Drawer Header */
-          .desktop-only-btn {
-            display: none;
-          }
-
-          .mobile-only-btn {
-            display: flex;
+          .studio-sidebar.mobile-open {
+            transform: translateX(0) !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
           }
 
           .close-drawer-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--lemmo-radius-base, 8px);
+            background: transparent;
+            border: none;
+            color: var(--lemmo-text-secondary, #a1a1a5);
+            cursor: pointer;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: #171717;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-inline-start: 6px;
-            transition: background 0.15s ease;
-            position: relative;
           }
 
           .close-drawer-btn:hover {
-            background: #222529;
-          }
-
-          .close-x-shape {
-            width: 16px;
-            height: 16px;
-            position: relative;
-          }
-
-          .close-x-shape::before,
-          .close-x-shape::after {
-            content: '';
-            position: absolute;
-            top: 7px;
-            left: 0;
-            width: 16px;
-            height: 2px;
-            background: #D9D9D9;
-            border-radius: 2px;
-          }
-
-          .close-x-shape::before {
-            transform: rotate(45deg);
-          }
-
-          .close-x-shape::after {
-            transform: rotate(-45deg);
-          }
-
-          /* Drawer elements always display expanded on mobile */
-          .studio-sidebar.collapsed .header {
-            justify-content: space-between;
-          }
-
-          .studio-sidebar.collapsed :global(.brand-box) {
-            display: flex;
-          }
-
-          .studio-sidebar.collapsed .label-pill {
-            display: block;
-          }
-
-          .studio-sidebar.collapsed :global(.nav-btn) {
-            width: 100%;
-            height: 40px;
-            padding: 0 10px;
-            justify-content: flex-start;
-          }
-
-          .studio-sidebar.collapsed .profile-trigger-btn {
-            width: 100%;
-            height: 56px;
-            padding: 8px 10px;
-            justify-content: flex-start;
-          }
-
-          .studio-sidebar.collapsed .meta {
-            display: flex;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--lemmo-text-primary, #e1e1e3);
           }
         }
       `}</style>

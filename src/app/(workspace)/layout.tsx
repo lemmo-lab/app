@@ -34,7 +34,7 @@ export default function WorkspaceLayout({
           height: 100dvh;
           max-height: 100dvh;
           width: 100%;
-          background: #0A0A0A;
+          background: var(--lemmo-page-background, #131517);
           position: relative;
           overflow: hidden;
         }
