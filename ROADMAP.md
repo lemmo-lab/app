@@ -87,7 +87,9 @@
 ---
 
 ## Milestone 3: Design System Primitives & Studio Shell Assembly
-> **Goal:** Replace simple geometric wireframes with interactive, production-ready design system primitives and studio chrome.
+> **Goal:** Replace simple geometric wireframes with interactive, production-ready design system primitives and studio chrome.  
+> **Execution Specification:** [`TASK-1-WIREFRAME-TO-PRODUCTION.md`](./TASK-1-WIREFRAME-TO-PRODUCTION.md) (Developer Implementation)  
+> **Quality Gate & Sign-Off:** [`TASK-2-TEAM-VALIDATION-AND-AUDIT.md`](./TASK-2-TEAM-VALIDATION-AND-AUDIT.md) (Supervisory Team Audit)
 
 - [ ] **Base Primitives (`src/shared/ui/primitives/`):**
   - Reusable components: `Button`, `Input`, `Textarea`, `Slider`, `Select`, `Modal`, `Tooltip`, `Badge`.
