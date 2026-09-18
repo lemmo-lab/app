@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lemmo Studio — Interactive Mobile Sidebar Wireframe</title>
+    <style>
+        /* ================= Reset & Base Styles ================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: #0b0c0e;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px;
+            color: #ededed;
+        }
+
+        /* ================= Design System Tokens ================= */
+        :root {
+            --lemmo-canvas: #131517;
+            --lemmo-surface-subtle: #171717;
+            --lemmo-surface-hover: #222529;
+            --lemmo-surface-active: #453D3D;
+            --lemmo-border: rgba(255, 255, 255, 0.08);
+            --lemmo-placeholder-primary: #D9D9D9;
+            --lemmo-placeholder-secondary: #525252;
+            --lemmo-accent-lime: #d1fe17;
+
+            /* Standard Dimensions */
+            --sidebar-width: 256px;
+            --header-height: 48px;
+        }
+
+        /* ================= Interactive Demo Controls Toolbar ================= */
+        .demo-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            background: #171717;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--lemmo-border);
+            margin-bottom: 24px;
+            max-width: 440px;
+            width: 100%;
+        }
+
+        .ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ctrl-btn {
+            background: #23262A;
+            color: #EDEDED;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .ctrl-btn:hover {
+            background: #2C3035;
+        }
+
+        .ctrl-btn.active-ctrl {
+            background: var(--lemmo-accent-lime);
+            color: #000;
+            font-weight: 600;
+            border-color: var(--lemmo-accent-lime);
+        }
+
+        /* ================= Mobile Device Simulation Frame ================= */
+        .app-frame {
+            position: relative;
+            width: 390px;
+            height: 800px;
+            background: #0A0A0A;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+            border: 4px solid #222;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ================= Mobile App Top Header (48px) ================= */
+        .mobile-header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            width: 100%;
+            height: var(--header-height);
+            background: #0A0A0A;
+            border-bottom: 1px solid var(--lemmo-border);
+            z-index: 20;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* Menu / Hamburger Button */
+        .hamburger-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: var(--lemmo-surface-subtle);
+            border: none;
+            transition: background 0.15s ease;
+        }
+
+        .hamburger-btn:hover {
+            background: var(--lemmo-surface-hover);
+        }
+
+        .menu-icon-shape {
+            width: 18px;
+            height: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .menu-icon-shape span {
+            display: block;
+            height: 2px;
+            width: 100%;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 2px;
+        }
+
+        /* Header Right Meta: Token Balance + Profile Avatar */
+        .header-meta {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            height: 32px;
+        }
+
+        .token-balance-pill {
+            width: 64px;
+            height: 18px;
+            background: var(--lemmo-surface-subtle);
+            border: 1px solid var(--lemmo-border);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            gap: 4px;
+        }
+
+        .token-icon-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--lemmo-accent-lime);
+            border-radius: 50%;
+        }
+
+        .token-text-wire {
+            width: 36px;
+            height: 6px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 9999px;
+        }
+
+        .header-avatar-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 9999px;
+            background: var(--lemmo-placeholder-primary);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* ================= Mobile Main Content Area ================= */
+        .mobile-viewport {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            background: #0A0A0A;
+        }
+
+        .viewport-placeholder-hero {
+            width: 100%;
+            height: 180px;
+            background: var(--lemmo-surface-subtle);
+            border: 1px solid var(--lemmo-border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 16px;
+        }
+
+        .hero-wire-box {
+            width: 48px;
+            height: 48px;
+            background: var(--lemmo-placeholder-secondary);
+            border-radius: 8px;
+        }
+
+        .hero-wire-pill {
+            width: 140px;
+            height: 14px;
+            background: var(--lemmo-placeholder-secondary);
+            border-radius: 9999px;
+        }
+
+        .viewport-placeholder-card {
+            width: 100%;
+            height: 100px;
+            background: var(--lemmo-surface-subtle);
+            border: 1px solid var(--lemmo-border);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-wire-thumb {
+            width: 72px;
+            height: 72px;
+            background: var(--lemmo-placeholder-secondary);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .card-wire-lines {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card-line-1 {
+            width: 80%;
+            height: 12px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 9999px;
+        }
+
+        .card-line-2 {
+            width: 50%;
+            height: 10px;
+            background: var(--lemmo-placeholder-secondary);
+            border-radius: 9999px;
+        }
+
+        /* ================= Slide-over Backdrop ================= */
+        .backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+            z-index: 40;
+        }
+
+        /* ================= Mobile Slide-Over Sidebar (256px) ================= */
+        .mobile-sidebar {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            inset-inline-start: 0;
+            width: var(--sidebar-width);
+            height: 100%;
+            background: var(--lemmo-canvas);
+            border-inline-end: 1px solid var(--lemmo-border);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 8px;
+            z-index: 50;
+            box-shadow: 0 0 32px rgba(0, 0, 0, 0.8);
+            transform: translateX(-100%);
+            transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        [dir="rtl"] .mobile-sidebar {
+            transform: translateX(100%);
+        }
+
+        /* Open State */
+        .app-frame.open-side .mobile-sidebar {
+            transform: translateX(0);
+        }
+
+        .app-frame.open-side .backdrop {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Drawer Header */
+        .drawer-header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            height: var(--header-height);
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .brand-box {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            height: 48px;
+            padding: 0 8px;
+            background: var(--lemmo-surface-subtle);
+            border-radius: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .logo-shape {
+            width: 32px;
+            height: 32px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .brand-pill {
+            height: 14px;
+            width: 76px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 9999px;
+            flex-shrink: 0;
+        }
+
+        .close-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--lemmo-surface-subtle);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-inline-start: 6px;
+            transition: background 0.15s ease;
+            position: relative;
+        }
+
+        .close-btn:hover {
+            background: var(--lemmo-surface-hover);
+        }
+
+        .close-icon-x {
+            width: 16px;
+            height: 16px;
+            position: relative;
+        }
+
+        .close-icon-x::before,
+        .close-icon-x::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            left: 0;
+            width: 16px;
+            height: 2px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 2px;
+        }
+
+        .close-icon-x::before {
+            transform: rotate(45deg);
+        }
+
+        .close-icon-x::after {
+            transform: rotate(-45deg);
+        }
+
+        /* Nav Buttons */
+        .primary-cats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 12px 0;
+            gap: 8px;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0 12px;
+            gap: 12px;
+            width: 100%;
+            height: 40px;
+            background: var(--lemmo-surface-subtle);
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: background 0.15s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background: var(--lemmo-surface-hover);
+        }
+
+        .nav-btn.active {
+            background: var(--lemmo-surface-active);
+        }
+
+        .nav-btn.active::before {
+            content: '';
+            position: absolute;
+            inset-inline-start: 0;
+            top: 8px;
+            bottom: 8px;
+            width: 3px;
+            background: var(--lemmo-accent-lime);
+            border-start-end-radius: 4px;
+            border-end-end-radius: 4px;
+        }
+
+        .icon-shape {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .rect-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 4px;
+        }
+
+        .label-pill {
+            height: 12px;
+            max-width: 120px;
+            flex: 1;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 9999px;
+        }
+
+        .tools-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* Footer & User Profile (Fixed 40px Avatar) */
+        .drawer-footer {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            padding: 12px 0 0 0;
+            width: 100%;
+            flex: 1;
+            gap: 8px;
+        }
+
+        .profile-btn {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 8px 12px;
+            gap: 12px;
+            width: 100%;
+            height: 56px;
+            background: var(--lemmo-surface-subtle);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            box-sizing: border-box;
+        }
+
+        .profile-btn:hover {
+            background: var(--lemmo-surface-hover);
+        }
+
+        /* Fixed 40px circular avatar */
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 9999px;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            width: 100%;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .meta-primary {
+            width: 80%;
+            height: 12px;
+            background: var(--lemmo-placeholder-primary);
+            border-radius: 9999px;
+        }
+
+        .meta-secondary {
+            width: 50%;
+            height: 10px;
+            background: var(--lemmo-placeholder-secondary);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Demo Controls Toolbar -->
+    <div class="demo-toolbar">
+        <div class="ctrl-group">
+            <span style="font-size: 12px; color: #888;">Sidebar Drawer:</span>
+            <button type="button" class="ctrl-btn active-ctrl" id="btnToggleSide">Toggle Drawer</button>
+        </div>
+        <div class="ctrl-group" style="margin-inline-start: auto;">
+            <span style="font-size: 12px; color: #888;">Direction:</span>
+            <button type="button" class="ctrl-btn active-ctrl" id="btnDirLtr">LTR (Default)</button>
+            <button type="button" class="ctrl-btn" id="btnDirRtl">RTL (FA)</button>
+        </div>
+    </div>
+
+    <!-- Mobile Simulated Frame -->
+    <div class="app-frame" id="appFrame">
+        
+        <!-- Slide-over Backdrop -->
+        <div class="backdrop" id="backdrop"></div>
+
+        <!-- Mobile Top App Header (48px) -->
+        <header class="mobile-header">
+            <!-- Hamburger Menu Button (opens side drawer) -->
+            <button type="button" class="hamburger-btn" id="menuBtn" title="Open Navigation Menu" aria-label="Open Navigation Menu">
+                <div class="menu-icon-shape">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+
+            <!-- User Meta: Token balance pill & mini profile avatar -->
+            <div class="header-meta">
+                <div class="token-balance-pill" title="Token Balance">
+                    <div class="token-icon-dot"></div>
+                    <div class="token-text-wire"></div>
+                </div>
+                <div class="header-avatar-btn" title="Profile Settings"></div>
+            </div>
+        </header>
+
+        <!-- Main Viewport Content (Independent scroll) -->
+        <main class="mobile-viewport">
+            <div class="viewport-placeholder-hero">
+                <div class="hero-wire-box"></div>
+                <div class="hero-wire-pill"></div>
+            </div>
+
+            <div class="viewport-placeholder-card">
+                <div class="card-wire-thumb"></div>
+                <div class="card-wire-lines">
+                    <div class="card-line-1"></div>
+                    <div class="card-line-2"></div>
+                </div>
+            </div>
+
+            <div class="viewport-placeholder-card">
+                <div class="card-wire-thumb"></div>
+                <div class="card-wire-lines">
+                    <div class="card-line-1"></div>
+                    <div class="card-line-2"></div>
+                </div>
+            </div>
+
+            <div class="viewport-placeholder-card">
+                <div class="card-wire-thumb"></div>
+                <div class="card-wire-lines">
+                    <div class="card-line-1"></div>
+                    <div class="card-line-2"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Slide-over Mobile Sidebar Drawer (256px) -->
+        <aside class="mobile-sidebar" id="sidebar" aria-label="Mobile Navigation Drawer">
+            <!-- Drawer Header: Brand + Close Button -->
+            <div class="drawer-header">
+                <div class="brand-box" title="Lemmo Studio Home">
+                    <div class="logo-shape"></div>
+                    <div class="brand-pill"></div>
+                </div>
+                <button type="button" class="close-btn" id="closeBtn" title="Close Menu" aria-label="Close Menu">
+                    <div class="close-icon-x"></div>
+                </button>
+            </div>
+
+            <!-- Primary Categories -->
+            <nav class="primary-cats" aria-label="Primary Navigation">
+                <div class="nav-btn active" title="Community Feed">
+                    <div class="icon-shape"><div class="rect-icon"></div></div>
+                    <div class="label-pill"></div>
+                </div>
+                <div class="nav-btn" title="Agent Studio">
+                    <div class="icon-shape"><div class="rect-icon"></div></div>
+                    <div class="label-pill"></div>
+                </div>
+                <div class="nav-btn" title="Assets Archive">
+                    <div class="icon-shape"><div class="rect-icon"></div></div>
+                    <div class="label-pill"></div>
+                </div>
+                <div class="nav-btn" title="Interactive Canvas">
+                    <div class="icon-shape"><div class="rect-icon"></div></div>
+                    <div class="label-pill"></div>
+                </div>
+            </nav>
+
+            <!-- Tools Section -->
+            <div class="tools-section">
+                <div class="nav-btn" title="Tools Catalog">
+                    <div class="icon-shape"><div class="rect-icon"></div></div>
+                    <div class="label-pill"></div>
+                </div>
+            </div>
+
+            <!-- Footer: Tutorials + Profile Button -->
+            <div class="drawer-footer">
+                <div class="nav-btn" title="Tutorials & Guide">
+                    <div class="icon-shape"><div class="rect-icon"></div></div>
+                    <div class="label-pill"></div>
+                </div>
+
+                <!-- User Profile & Settings (Fixed 40px Avatar) -->
+                <div class="profile-btn" title="Account & Settings">
+                    <div class="avatar-circle"></div>
+                    <div class="profile-meta">
+                        <div class="meta-primary"></div>
+                        <div class="meta-secondary"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        const appFrame = document.getElementById('appFrame');
+        const menuBtn = document.getElementById('menuBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const backdrop = document.getElementById('backdrop');
+        const btnToggleSide = document.getElementById('btnToggleSide');
+        const btnDirLtr = document.getElementById('btnDirLtr');
+        const btnDirRtl = document.getElementById('btnDirRtl');
+
+        function toggleDrawer() {
+            appFrame.classList.toggle('open-side');
+        }
+
+        menuBtn.addEventListener('click', toggleDrawer);
+        closeBtn.addEventListener('click', toggleDrawer);
+        backdrop.addEventListener('click', toggleDrawer);
+        btnToggleSide.addEventListener('click', toggleDrawer);
+
+        // Direction Toggle Handlers
+        btnDirLtr.addEventListener('click', () => {
+            document.documentElement.dir = 'ltr';
+            document.documentElement.lang = 'en';
+            btnDirLtr.classList.add('active-ctrl');
+            btnDirRtl.classList.remove('active-ctrl');
+        });
+
+        btnDirRtl.addEventListener('click', () => {
+            document.documentElement.dir = 'rtl';
+            document.documentElement.lang = 'fa';
+            btnDirRtl.classList.add('active-ctrl');
+            btnDirLtr.classList.remove('active-ctrl');
+        });
+
+        // Tab click activation simulation
+        const navButtons = document.querySelectorAll('.mobile-sidebar .nav-btn');
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                navButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

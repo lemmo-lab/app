@@ -57,8 +57,9 @@ export default function WorkspaceLayout({
           }
 
           .studio-viewport {
-            height: calc(100dvh - 64px);
-            padding-bottom: 64px;
+            height: calc(100dvh - 48px);
+            margin-top: 48px;
+            padding-bottom: 0;
           }
         }
       `}</style>

@@ -1,11 +1,18 @@
 /**
- * Studio Sidebar — Workspace navigation rail with 2 states:
- * 1. Expanded (256px) — Horizontal rows with icon + wireframe text pill, full header & profile meta.
- * 2. Collapsed (72px) — Mini-rail with centered icons, centered header toggle & avatar.
+ * Studio Sidebar — Workspace navigation rail with 2 display contexts:
+ *
+ * 1. Desktop (> 900px):
+ *    - Expanded state (256px) with horizontal rows, icon + wireframe text pill, full header & profile meta.
+ *    - Collapsed state (72px) with centered icons, centered header toggle & avatar.
+ *
+ * 2. Mobile (<= 900px):
+ *    - NO bottom bar!
+ *    - Top App Header (48px) with Hamburger button (inline-start) and token pill / avatar (inline-end).
+ *    - Slide-over Navigation Drawer (256px) with dark backdrop, close button (X), full categories & profile.
  *
  * Conforms strictly to wireframe standards:
  * - Simple geometric shapes only (#D9D9D9 rects & pills, #171717 subtle surfaces, #453D3D active)
- * - Standard 4px ladder grid (256px expanded / 72px collapsed / 40px buttons)
+ * - Standard 4px ladder grid (256px expanded / 72px collapsed / 40px buttons / 48px headers)
  * - Dedicated 40px circular avatar wireframe
  * - Pure logical CSS properties for RTL/LTR compatibility
  */
@@ -20,6 +27,7 @@ import ProfilePopover from './ProfilePopover';
 export default function StudioSidebar() {
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   // Active route detection
@@ -31,101 +39,38 @@ export default function StudioSidebar() {
   const isGalleryActive = pathname.startsWith('/gallery');
   const isSettingsActive = pathname.startsWith('/settings');
 
-  return (
-    <aside
-      className={`studio-sidebar ${isExpanded ? 'expanded' : 'collapsed'}`}
-      aria-label="Studio Navigation"
-    >
-      {/* Header: Brand Logo + Expand/Collapse Toggle */}
-      <div className="header">
-        <Link href="/app" className="brand-box" title="Lemmo Studio Home">
-          <div className="logo-shape" />
-          <div className="brand-pill" />
-        </Link>
+  const closeMobileDrawer = () => setMobileOpen(false);
 
+  return (
+    <>
+      {/* ================= MOBILE TOP APP HEADER (<= 900px) ================= */}
+      <header className="mobile-header" aria-label="Mobile Navigation Header">
+        {/* Hamburger Menu Button */}
         <button
           type="button"
-          className="toggle-btn"
-          onClick={() => setIsExpanded(!isExpanded)}
-          title={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-          aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          className="hamburger-btn"
+          onClick={() => setMobileOpen(true)}
+          title="Open Navigation Menu"
+          aria-label="Open Navigation Menu"
+          aria-expanded={mobileOpen}
         >
-          <div className="chevron-icon" />
+          <div className="hamburger-icon-shape">
+            <span />
+            <span />
+            <span />
+          </div>
         </button>
-      </div>
 
-      {/* Primary Category Nav Items */}
-      <nav className="primary-cats" aria-label="Primary Categories">
-        {/* 1. Feed / Home */}
-        <Link
-          href="/app"
-          className={`nav-btn ${isFeedActive ? 'active' : ''}`}
-          title="Community Feed"
-        >
-          <div className="icon-shape"><div className="rect-icon" /></div>
-          <div className="label-pill" />
-        </Link>
+        {/* User Meta: Token Balance Pill & Profile Avatar Trigger */}
+        <div className="mobile-header-meta">
+          <div className="token-balance-pill" title="Token Balance">
+            <div className="token-icon-dot" />
+            <div className="token-text-wire" />
+          </div>
 
-        {/* 2. Agent */}
-        <Link
-          href="/app/agent"
-          className={`nav-btn ${isAgentActive ? 'active' : ''}`}
-          title="Agent Studio"
-        >
-          <div className="icon-shape"><div className="rect-icon" /></div>
-          <div className="label-pill" />
-        </Link>
-
-        {/* 3. Assets */}
-        <Link
-          href="/app/assets"
-          className={`nav-btn ${isAssetsActive ? 'active' : ''}`}
-          title="Assets Archive"
-        >
-          <div className="icon-shape"><div className="rect-icon" /></div>
-          <div className="label-pill" />
-        </Link>
-
-        {/* 4. Canvas */}
-        <Link
-          href="/app/canvas"
-          className={`nav-btn ${isCanvasActive ? 'active' : ''}`}
-          title="Interactive Canvas"
-        >
-          <div className="icon-shape"><div className="rect-icon" /></div>
-          <div className="label-pill" />
-        </Link>
-      </nav>
-
-      {/* Specialized Tools Section */}
-      <div className="tools-section">
-        <Link
-          href="/app/tools"
-          className={`nav-btn ${isToolsActive ? 'active' : ''}`}
-          title="Tools Catalog"
-        >
-          <div className="icon-shape"><div className="rect-icon" /></div>
-          <div className="label-pill" />
-        </Link>
-      </div>
-
-      {/* Footer Navigation & Profile Trigger */}
-      <div className="footer-sidebar">
-        {/* Gallery */}
-        <Link
-          href="/gallery"
-          className={`nav-btn ${isGalleryActive ? 'active' : ''}`}
-          title="Community Gallery"
-        >
-          <div className="icon-shape"><div className="rect-icon" /></div>
-          <div className="label-pill" />
-        </Link>
-
-        {/* User Profile & Settings Trigger (Fixed Avatar) */}
-        <div className="profile-container">
           <button
             type="button"
-            className={`profile-trigger-btn ${popoverOpen || isSettingsActive ? 'active' : ''}`}
+            className="mobile-avatar-btn"
             onClick={(e) => {
               e.stopPropagation();
               setPopoverOpen(!popoverOpen);
@@ -133,20 +78,179 @@ export default function StudioSidebar() {
             title="Account & Settings"
             aria-label="Account & Settings"
             aria-expanded={popoverOpen}
+          />
+        </div>
+      </header>
+
+      {/* ================= MOBILE SLIDE-OVER BACKDROP ================= */}
+      {mobileOpen && (
+        <div
+          className="mobile-backdrop"
+          onClick={closeMobileDrawer}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* ================= MAIN STUDIO SIDEBAR / DRAWER ================= */}
+      <aside
+        className={`studio-sidebar ${isExpanded ? 'expanded' : 'collapsed'} ${
+          mobileOpen ? 'mobile-open' : ''
+        }`}
+        aria-label="Studio Navigation"
+      >
+        {/* Header: Brand Logo + Expand/Collapse Toggle (Desktop) / Close Button (Mobile) */}
+        <div className="header">
+          <Link
+            href="/app"
+            className="brand-box"
+            onClick={closeMobileDrawer}
+            title="Lemmo Studio Home"
           >
-            <div className="avatar-shape" />
-            <div className="meta">
-              <div className="meta-primary" />
-              <div className="meta-secondary" />
-            </div>
+            <div className="logo-shape" />
+            <div className="brand-pill" />
+          </Link>
+
+          {/* Desktop Toggle Button */}
+          <button
+            type="button"
+            className="toggle-btn desktop-only-btn"
+            onClick={() => setIsExpanded(!isExpanded)}
+            title={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            <div className="chevron-icon" />
           </button>
 
-          {/* Settings / Profile Popover Modal */}
-          <ProfilePopover isOpen={popoverOpen} onClose={() => setPopoverOpen(false)} />
+          {/* Mobile Close Button (X) */}
+          <button
+            type="button"
+            className="close-drawer-btn mobile-only-btn"
+            onClick={closeMobileDrawer}
+            title="Close navigation menu"
+            aria-label="Close navigation menu"
+          >
+            <div className="close-x-shape" />
+          </button>
         </div>
-      </div>
+
+        {/* Primary Category Nav Items */}
+        <nav className="primary-cats" aria-label="Primary Categories">
+          {/* 1. Feed / Home */}
+          <Link
+            href="/app"
+            className={`nav-btn ${isFeedActive ? 'active' : ''}`}
+            onClick={closeMobileDrawer}
+            title="Community Feed"
+          >
+            <div className="icon-shape"><div className="rect-icon" /></div>
+            <div className="label-pill" />
+          </Link>
+
+          {/* 2. Agent */}
+          <Link
+            href="/app/agent"
+            className={`nav-btn ${isAgentActive ? 'active' : ''}`}
+            onClick={closeMobileDrawer}
+            title="Agent Studio"
+          >
+            <div className="icon-shape"><div className="rect-icon" /></div>
+            <div className="label-pill" />
+          </Link>
+
+          {/* 3. Assets */}
+          <Link
+            href="/app/assets"
+            className={`nav-btn ${isAssetsActive ? 'active' : ''}`}
+            onClick={closeMobileDrawer}
+            title="Assets Archive"
+          >
+            <div className="icon-shape"><div className="rect-icon" /></div>
+            <div className="label-pill" />
+          </Link>
+
+          {/* 4. Canvas */}
+          <Link
+            href="/app/canvas"
+            className={`nav-btn ${isCanvasActive ? 'active' : ''}`}
+            onClick={closeMobileDrawer}
+            title="Interactive Canvas"
+          >
+            <div className="icon-shape"><div className="rect-icon" /></div>
+            <div className="label-pill" />
+          </Link>
+        </nav>
+
+        {/* Specialized Tools Section */}
+        <div className="tools-section">
+          <Link
+            href="/app/tools"
+            className={`nav-btn ${isToolsActive ? 'active' : ''}`}
+            onClick={closeMobileDrawer}
+            title="Tools Catalog"
+          >
+            <div className="icon-shape"><div className="rect-icon" /></div>
+            <div className="label-pill" />
+          </Link>
+        </div>
+
+        {/* Footer Navigation & Profile Trigger */}
+        <div className="footer-sidebar">
+          {/* Gallery */}
+          <Link
+            href="/gallery"
+            className={`nav-btn ${isGalleryActive ? 'active' : ''}`}
+            onClick={closeMobileDrawer}
+            title="Community Gallery"
+          >
+            <div className="icon-shape"><div className="rect-icon" /></div>
+            <div className="label-pill" />
+          </Link>
+
+          {/* User Profile & Settings Trigger (Fixed Avatar) */}
+          <div className="profile-container">
+            <button
+              type="button"
+              className={`profile-trigger-btn ${popoverOpen || isSettingsActive ? 'active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setPopoverOpen(!popoverOpen);
+              }}
+              title="Account & Settings"
+              aria-label="Account & Settings"
+              aria-expanded={popoverOpen}
+            >
+              <div className="avatar-shape" />
+              <div className="meta">
+                <div className="meta-primary" />
+                <div className="meta-secondary" />
+              </div>
+            </button>
+
+            {/* Settings / Profile Popover Modal */}
+            <ProfilePopover isOpen={popoverOpen} onClose={() => setPopoverOpen(false)} />
+          </div>
+        </div>
+      </aside>
 
       <style jsx>{`
+        /* ================= MOBILE TOP HEADER (<= 900px) ================= */
+        .mobile-header {
+          display: none;
+        }
+
+        .mobile-backdrop {
+          display: none;
+        }
+
+        .mobile-only-btn {
+          display: none;
+        }
+
+        .desktop-only-btn {
+          display: flex;
+        }
+
+        /* ================= DESKTOP SIDEBAR (> 900px) ================= */
         .studio-sidebar {
           display: flex;
           flex-direction: column;
@@ -203,6 +307,7 @@ export default function StudioSidebar() {
           min-width: 0;
           cursor: pointer;
           transition: background 0.15s ease;
+          overflow: hidden;
         }
 
         :global(.brand-box:hover) {
@@ -227,7 +332,6 @@ export default function StudioSidebar() {
         }
 
         .toggle-btn {
-          display: flex;
           align-items: center;
           justify-content: center;
           width: 36px;
@@ -312,6 +416,7 @@ export default function StudioSidebar() {
           border: 1px solid transparent;
           flex-shrink: 0;
           position: relative;
+          overflow: hidden;
         }
 
         :global(.nav-btn:hover) {
@@ -485,90 +590,238 @@ export default function StudioSidebar() {
           display: none;
         }
 
-        /* ================= Mobile Responsive (< 900px) ================= */
+        /* ================= MOBILE DRAWER ARCHITECTURE (<= 900px) ================= */
         @media (max-width: 900px) {
+          /* 1. Mobile Top Header */
+          .mobile-header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            width: 100%;
+            height: 48px;
+            background: #0A0A0A;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 40;
+            position: fixed;
+            top: 0;
+            inset-inline: 0;
+            box-sizing: border-box;
+          }
+
+          .hamburger-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #171717;
+            border: none;
+            transition: background 0.15s ease;
+          }
+
+          .hamburger-btn:hover {
+            background: #222529;
+          }
+
+          .hamburger-icon-shape {
+            width: 18px;
+            height: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+          }
+
+          .hamburger-icon-shape span {
+            display: block;
+            height: 2px;
+            width: 100%;
+            background: #D9D9D9;
+            border-radius: 2px;
+          }
+
+          .mobile-header-meta {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+          }
+
+          .token-balance-pill {
+            width: 64px;
+            height: 20px;
+            background: #171717;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            gap: 4px;
+          }
+
+          .token-icon-dot {
+            width: 8px;
+            height: 8px;
+            background: #d1fe17;
+            border-radius: 50%;
+          }
+
+          .token-text-wire {
+            width: 36px;
+            height: 6px;
+            background: #D9D9D9;
+            border-radius: 9999px;
+          }
+
+          .mobile-avatar-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 9999px;
+            background: #D9D9D9;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            flex-shrink: 0;
+          }
+
+          /* 2. Slide-over Backdrop */
+          .mobile-backdrop {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(2px);
+            z-index: 90;
+            animation: backdropFadeIn 0.2s ease;
+          }
+
+          @keyframes backdropFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+
+          /* 3. Slide-over Drawer Sidebar (256px, NO bottom bar!) */
           .studio-sidebar,
           .studio-sidebar.expanded,
           .studio-sidebar.collapsed {
             position: fixed;
+            top: 0;
             bottom: 0;
-            inset-inline: 0;
-            top: auto;
-            width: 100%;
-            min-width: 100%;
-            height: 64px;
-            flex-direction: row;
-            justify-content: space-around;
-            align-items: center;
-            padding: 4px 8px calc(4px + env(safe-area-inset-bottom)) 8px;
-            z-index: 90;
-            border-inline-end: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.75);
+            inset-inline-start: 0;
+            width: 256px;
+            min-width: 256px;
+            height: 100dvh;
             background: #131517;
+            border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 8px;
+            flex-direction: column;
+            overflow-y: auto;
           }
 
-          .header {
+          :global([dir="rtl"]) .studio-sidebar,
+          :global([dir="rtl"]) .studio-sidebar.expanded,
+          :global([dir="rtl"]) .studio-sidebar.collapsed {
+            transform: translateX(100%);
+          }
+
+          /* Open Drawer State */
+          .studio-sidebar.mobile-open,
+          :global([dir="rtl"]) .studio-sidebar.mobile-open {
+            transform: translateX(0);
+          }
+
+          /* 4. Controls inside Drawer Header */
+          .desktop-only-btn {
             display: none;
           }
 
-          .label-pill,
-          .meta {
-            display: none;
-          }
-
-          .primary-cats {
-            flex-direction: row;
-            padding: 0;
-            width: auto;
-            gap: 6px;
-            align-items: center;
-          }
-
-          :global(.nav-btn),
-          .studio-sidebar.collapsed :global(.nav-btn) {
-            width: 44px;
-            height: 44px;
-            padding: 4px;
-            margin-bottom: 0;
-            justify-content: center;
-          }
-
-          .tools-section {
+          .mobile-only-btn {
             display: flex;
-            flex-direction: row;
-            padding: 0;
-            width: auto;
+          }
+
+          .close-drawer-btn {
             align-items: center;
-          }
-
-          .footer-sidebar {
-            flex-direction: row;
-            padding: 0;
-            width: auto;
-            flex-grow: 0;
-            gap: 6px;
-            align-items: center;
-          }
-
-          .profile-container {
-            width: auto;
-          }
-
-          .profile-trigger-btn,
-          .studio-sidebar.collapsed .profile-trigger-btn {
-            width: 44px;
-            height: 44px;
-            padding: 4px;
             justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: #171717;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-inline-start: 6px;
+            transition: background 0.15s ease;
+            position: relative;
           }
 
-          .avatar-shape {
-            width: 28px;
-            height: 28px;
+          .close-drawer-btn:hover {
+            background: #222529;
+          }
+
+          .close-x-shape {
+            width: 16px;
+            height: 16px;
+            position: relative;
+          }
+
+          .close-x-shape::before,
+          .close-x-shape::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            left: 0;
+            width: 16px;
+            height: 2px;
+            background: #D9D9D9;
+            border-radius: 2px;
+          }
+
+          .close-x-shape::before {
+            transform: rotate(45deg);
+          }
+
+          .close-x-shape::after {
+            transform: rotate(-45deg);
+          }
+
+          /* Drawer elements always display expanded on mobile */
+          .studio-sidebar.collapsed .header {
+            justify-content: space-between;
+          }
+
+          .studio-sidebar.collapsed :global(.brand-box) {
+            display: flex;
+          }
+
+          .studio-sidebar.collapsed .label-pill {
+            display: block;
+          }
+
+          .studio-sidebar.collapsed :global(.nav-btn) {
+            width: 100%;
+            height: 40px;
+            padding: 0 10px;
+            justify-content: flex-start;
+          }
+
+          .studio-sidebar.collapsed .profile-trigger-btn {
+            width: 100%;
+            height: 56px;
+            padding: 8px 10px;
+            justify-content: flex-start;
+          }
+
+          .studio-sidebar.collapsed .meta {
+            display: flex;
           }
         }
       `}</style>
-    </aside>
+    </>
   );
 }
