@@ -16,7 +16,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search01, Heart, AiRobot01, Sparks, Copy01, AiMagicWand01, Check01 } from 'synthline/react';
+import { Search01, Heart, Plus01, Sparks, Copy01, AiMagicWand01, Check01 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
 import { FEED_ITEMS, FeedItem } from '@/shared/data/feedData';
 
@@ -127,16 +127,16 @@ export default function MasonryFeed() {
             )}
           </div>
 
-          {/* New Generation CTA Button */}
+          {/* Publish New Feed Creation CTA Button */}
           <Link
-            href="/app/agent"
-            className="btn-create"
-            title={locale === 'fa' ? 'تولید تصویر جدید در استودیو' : 'Generate New in Studio'}
-            data-action="create-new"
+            href="/app/assets"
+            className="btn-publish"
+            title={locale === 'fa' ? 'انتشار اثر جدید در فید گالری' : 'Publish new creation to gallery feed'}
+            data-action="publish-feed"
           >
-            <AiRobot01 size={18} strokeWidth={2} color="currentColor" />
-            <span className="btn-create-label">
-              {locale === 'fa' ? 'تولید جدید' : 'Generate'}
+            <Plus01 size={16} strokeWidth={2.4} color="currentColor" />
+            <span className="btn-publish-label">
+              {locale === 'fa' ? 'انتشار اثر' : 'Publish'}
             </span>
           </Link>
         </div>
@@ -407,7 +407,8 @@ export default function MasonryFeed() {
           padding: 0;
         }
 
-        /* Create Button */
+        /* Publish Button */
+        :global(.btn-publish),
         :global(.btn-create) {
           display: inline-flex;
           align-items: center;
@@ -423,8 +424,11 @@ export default function MasonryFeed() {
           text-decoration: none;
           box-shadow: 0 2px 10px rgba(209, 254, 23, 0.3);
           transition: filter 0.15s ease, box-shadow 0.15s ease;
+          white-space: nowrap;
+          flex-shrink: 0;
         }
 
+        :global(.btn-publish:hover),
         :global(.btn-create:hover) {
           filter: brightness(1.08);
           box-shadow: 0 0 16px rgba(209, 254, 23, 0.45);
@@ -852,6 +856,7 @@ export default function MasonryFeed() {
             column-count: 1;
           }
 
+          .btn-publish-label,
           .btn-create-label {
             display: inline;
           }
