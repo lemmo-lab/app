@@ -19,7 +19,7 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Search01,
@@ -36,6 +36,10 @@ import {
   Check01,
   AiVideoCamera,
   LayersThree,
+  ChevronLeft,
+  ChevronRight,
+  Copy01,
+  AiCpu,
 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
 import { AssetItem, AssetFilterCategory, AssetSubFilter, DateGroupKey } from '../types';
@@ -159,6 +163,65 @@ export default function AssetsManager({ initialEmpty = false }: AssetsManagerPro
 
     return groups.filter((g) => g.items.length > 0);
   }, [filteredItems]);
+
+  const [copiedModalPrompt, setCopiedModalPrompt] = useState(false);
+
+  // Cycling through preview items
+  const currentIndex = useMemo(() => {
+    if (!previewItem) return -1;
+    return filteredItems.findIndex((item) => item.id === previewItem.id);
+  }, [previewItem, filteredItems]);
+
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex >= 0 && currentIndex < filteredItems.length - 1;
+
+  const handlePrevPreview = () => {
+    if (hasPrev) {
+      setPreviewItem(filteredItems[currentIndex - 1]);
+      setCopiedModalPrompt(false);
+    }
+  };
+
+  const handleNextPreview = () => {
+    if (hasNext) {
+      setPreviewItem(filteredItems[currentIndex + 1]);
+      setCopiedModalPrompt(false);
+    }
+  };
+
+  const handleCopyPromptText = (e: React.MouseEvent, promptText: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(promptText);
+      setCopiedModalPrompt(true);
+      setTimeout(() => setCopiedModalPrompt(false), 2000);
+    }
+  };
+
+  // Keyboard navigation for preview modal
+  useEffect(() => {
+    if (!previewItem) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setPreviewItem(null);
+      } else if (e.key === 'ArrowLeft') {
+        if (isRtl) {
+          if (hasNext) setPreviewItem(filteredItems[currentIndex + 1]);
+        } else {
+          if (hasPrev) setPreviewItem(filteredItems[currentIndex - 1]);
+        }
+      } else if (e.key === 'ArrowRight') {
+        if (isRtl) {
+          if (hasPrev) setPreviewItem(filteredItems[currentIndex - 1]);
+        } else {
+          if (hasNext) setPreviewItem(filteredItems[currentIndex + 1]);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [previewItem, currentIndex, hasPrev, hasNext, isRtl, filteredItems]);
 
   const isEmpty = forceEmptyState || filteredItems.length === 0;
 
@@ -436,59 +499,180 @@ export default function AssetsManager({ initialEmpty = false }: AssetsManagerPro
         )}
       </main>
 
-      {/* ===== FULLSCREEN LIGHTBOX PREVIEW MODAL ===== */}
+      {/* ===== FLAGSHIP PREVIEW & LIGHTBOX MODAL ===== */}
       {previewItem && (
         <div
-          className="fullscreen-lightbox"
+          className="preview-modal-overlay"
           onClick={() => setPreviewItem(null)}
           role="dialog"
           aria-modal="true"
+          aria-label={locale === 'fa' ? previewItem.titleFa : previewItem.title}
         >
-          <button
-            type="button"
-            className="close-lightbox-btn"
-            onClick={() => setPreviewItem(null)}
-            title={locale === 'fa' ? 'بستن' : 'Close'}
-            aria-label="Close preview"
-          >
-            <X01 size={22} strokeWidth={2} color="currentColor" />
-          </button>
-
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={previewItem.image}
-            alt={locale === 'fa' ? previewItem.titleFa : previewItem.title}
-            className="lightbox-full-img"
-            onClick={(e) => e.stopPropagation()}
-          />
-
-          <div className="lightbox-caption" onClick={(e) => e.stopPropagation()}>
-            <div className="caption-text">
-              <span className="caption-title">
+          {/* Top Bar Navigation */}
+          <div className="preview-top-bar" onClick={(e) => e.stopPropagation()}>
+            <div className="preview-header-meta">
+              <span className="preview-title">
                 {locale === 'fa' ? previewItem.titleFa : previewItem.title}
               </span>
-              <span className="caption-meta">
-                {previewItem.model} • {previewItem.dimensions} • {previewItem.fileSize}
-              </span>
+              <div className="preview-header-badges">
+                <span className="preview-model-badge">
+                  <AiCpu size={12} strokeWidth={2} color="currentColor" />
+                  <span>{previewItem.model}</span>
+                </span>
+                <span className="preview-aspect-badge">{previewItem.aspectRatio}</span>
+              </div>
             </div>
 
-            <div className="caption-actions">
+            <div className="preview-header-actions">
               <Link
-                href={`/app/agent?remix=${encodeURIComponent(previewItem.prompt)}`}
-                className="btn-remix-pill"
+                href={`/app/assets/${previewItem.id}`}
+                className="btn-full-details-pill"
+                title={locale === 'fa' ? 'مشاهده صفحه اختصاصی' : 'View Full Details'}
               >
-                <Sparks size={14} strokeWidth={2.2} color="currentColor" />
-                <span>{locale === 'fa' ? 'ریمیکس در استودیو' : 'Remix'}</span>
+                <span>{locale === 'fa' ? 'صفحه اختصاصی' : 'Full Details'}</span>
+                {isRtl ? (
+                  <ChevronLeft size={14} strokeWidth={2.4} color="currentColor" />
+                ) : (
+                  <ChevronRight size={14} strokeWidth={2.4} color="currentColor" />
+                )}
               </Link>
 
               <button
                 type="button"
-                className="btn-download-pill"
-                onClick={(e) => handleDownload(e, previewItem)}
+                className="preview-close-btn"
+                onClick={() => setPreviewItem(null)}
+                title={locale === 'fa' ? 'بستن (Esc)' : 'Close (Esc)'}
+                aria-label="Close preview"
               >
-                <Download01 size={14} strokeWidth={2.2} color="currentColor" />
-                <span>{locale === 'fa' ? 'دانلود' : 'Download'}</span>
+                <X01 size={18} strokeWidth={2.2} color="currentColor" />
               </button>
+            </div>
+          </div>
+
+          {/* Main Stage with Side Navigation Controls */}
+          <div className="preview-stage-container" onClick={(e) => e.stopPropagation()}>
+            {/* Prev Button */}
+            {hasPrev && (
+              <button
+                type="button"
+                className="nav-arrow-btn prev-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrevPreview();
+                }}
+                title={locale === 'fa' ? 'اثر قبلی' : 'Previous asset'}
+                aria-label="Previous asset"
+              >
+                {isRtl ? (
+                  <ChevronRight size={22} strokeWidth={2.4} color="currentColor" />
+                ) : (
+                  <ChevronLeft size={22} strokeWidth={2.4} color="currentColor" />
+                )}
+              </button>
+            )}
+
+            {/* Media Image Frame */}
+            <div className="preview-media-frame">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                key={previewItem.id}
+                src={previewItem.image}
+                alt={locale === 'fa' ? previewItem.titleFa : previewItem.title}
+                className="preview-img-element"
+              />
+            </div>
+
+            {/* Next Button */}
+            {hasNext && (
+              <button
+                type="button"
+                className="nav-arrow-btn next-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNextPreview();
+                }}
+                title={locale === 'fa' ? 'اثر بعدی' : 'Next asset'}
+                aria-label="Next asset"
+              >
+                {isRtl ? (
+                  <ChevronLeft size={22} strokeWidth={2.4} color="currentColor" />
+                ) : (
+                  <ChevronRight size={22} strokeWidth={2.4} color="currentColor" />
+                )}
+              </button>
+            )}
+          </div>
+
+          {/* Bottom Floating Control Dock */}
+          <div className="preview-bottom-dock" onClick={(e) => e.stopPropagation()}>
+            {/* Prompt Row */}
+            <div className="dock-prompt-section">
+              <p className="dock-prompt-text">{previewItem.prompt}</p>
+              <button
+                type="button"
+                className="dock-copy-btn"
+                onClick={(e) => handleCopyPromptText(e, previewItem.prompt)}
+                title={locale === 'fa' ? 'کپی متن پرامپت' : 'Copy prompt'}
+              >
+                {copiedModalPrompt ? (
+                  <>
+                    <Check01 size={13} strokeWidth={2.4} color="var(--lemmo-surface-brand-background, #d1fe17)" />
+                    <span>{locale === 'fa' ? 'کپی شد' : 'Copied'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy01 size={13} strokeWidth={2} color="currentColor" />
+                    <span>{locale === 'fa' ? 'کپی پرامپت' : 'Copy'}</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Dock Meta & Actions Bar */}
+            <div className="dock-controls-bar">
+              {/* Specs Pills */}
+              <div className="dock-specs-row">
+                <span className="dock-spec-pill">{previewItem.dimensions}</span>
+                <span className="dock-spec-pill">{previewItem.fileSize}</span>
+                <span className="dock-spec-pill">{locale === 'fa' ? previewItem.createdAtFa : previewItem.createdAt}</span>
+              </div>
+
+              {/* Actions Group */}
+              <div className="dock-actions-group">
+                <button
+                  type="button"
+                  className={`dock-action-circle ${previewItem.isFavorite ? 'favorited' : ''}`}
+                  onClick={(e) => handleToggleFavorite(e, previewItem.id)}
+                  title={locale === 'fa' ? 'علاقه‌مندی' : 'Favorite'}
+                  aria-label="Favorite asset"
+                >
+                  <Heart
+                    size={16}
+                    strokeWidth={2}
+                    color={previewItem.isFavorite ? '#ff3b5c' : 'currentColor'}
+                    fill={previewItem.isFavorite ? '#ff3b5c' : 'none'}
+                  />
+                </button>
+
+                <button
+                  type="button"
+                  className="dock-action-circle"
+                  onClick={(e) => handleDownload(e, previewItem)}
+                  title={locale === 'fa' ? 'دانلود تصویر' : 'Download'}
+                  aria-label="Download asset"
+                >
+                  <Download01 size={16} strokeWidth={2.2} color="currentColor" />
+                </button>
+
+                <Link
+                  href={`/app/agent?remix=${encodeURIComponent(previewItem.prompt)}`}
+                  className="dock-remix-flagship"
+                  title={locale === 'fa' ? 'ریمیکس در استودیو' : 'Remix in Studio'}
+                >
+                  <Sparks size={16} strokeWidth={2.2} color="currentColor" />
+                  <span>{locale === 'fa' ? 'ریمیکس در استودیو' : 'Remix in Studio'}</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -1046,115 +1230,359 @@ export default function AssetsManager({ initialEmpty = false }: AssetsManagerPro
           color: #ff3b5c;
         }
 
-        /* Lightbox Modal */
-        .fullscreen-lightbox {
+        /* ===== FLAGSHIP PREVIEW LIGHTBOX MODAL ===== */
+        .preview-modal-overlay {
           position: fixed;
           inset: 0;
           z-index: 1000;
-          background: rgba(0, 0, 0, 0.94);
-          backdrop-filter: blur(20px);
+          background: rgba(8, 10, 12, 0.92);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
           display: flex;
           flex-direction: column;
+          justify-content: space-between;
           align-items: center;
-          justify-content: center;
-          padding: 24px;
+          padding: 20px 32px 28px;
           box-sizing: border-box;
-          cursor: zoom-out;
+          overflow: hidden;
+          animation: previewFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .close-lightbox-btn {
-          position: absolute;
-          top: 24px;
-          inset-inline-end: 24px;
-          width: 44px;
-          height: 44px;
-          display: grid;
-          place-items: center;
-          border: none;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.12);
-          color: #ffffff;
-          cursor: pointer;
-          transition: background 0.15s ease;
+        @keyframes previewFadeIn {
+          from {
+            opacity: 0;
+            transform: scale(0.99);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
         }
 
-        .close-lightbox-btn:hover {
-          background: rgba(255, 255, 255, 0.25);
-        }
-
-        .lightbox-full-img {
-          max-width: 88vw;
-          max-height: 75vh;
-          object-fit: contain;
-          border-radius: 12px;
-          box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
-          cursor: default;
-        }
-
-        .lightbox-caption {
-          margin-top: 16px;
+        /* Top Bar Navigation */
+        .preview-top-bar {
+          width: 100%;
+          max-width: 1400px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          width: 100%;
-          max-width: 800px;
-          padding: 12px 20px;
-          background: rgba(20, 22, 24, 0.8);
-          backdrop-filter: blur(14px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: var(--lemmo-radius-pill, 9999px);
-          cursor: default;
+          gap: 16px;
+          z-index: 10;
+          flex-shrink: 0;
         }
 
-        .caption-text {
+        .preview-header-meta {
           display: flex;
-          flex-direction: column;
-          gap: 2px;
+          align-items: center;
+          gap: 12px;
+          min-width: 0;
         }
 
-        .caption-title {
-          font-size: 0.875rem;
+        .preview-title {
+          font-size: 0.9375rem;
           font-weight: 700;
           color: #ffffff;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 380px;
         }
 
-        .caption-meta {
-          font-size: 0.6875rem;
-          color: var(--lemmo-text-muted, #898a8b);
-        }
-
-        .caption-actions {
+        .preview-header-badges {
           display: flex;
           align-items: center;
           gap: 8px;
+          flex-shrink: 0;
         }
 
-        :global(.btn-remix-pill),
-        .btn-download-pill {
+        .preview-model-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          height: 26px;
+          padding: 0 10px;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          font-size: 0.6875rem;
+          font-weight: 600;
+          color: var(--lemmo-text-secondary, #b5b6b8);
+        }
+
+        .preview-aspect-badge {
+          display: inline-flex;
+          align-items: center;
+          height: 26px;
+          padding: 0 8px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          font-size: 0.6875rem;
+          font-weight: 600;
+          color: var(--lemmo-text-muted, #898a8b);
+        }
+
+        .preview-header-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+
+        :global(.btn-full-details-pill) {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          height: 32px;
-          padding: 0 12px;
+          height: 36px;
+          padding: 0 14px;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.14);
           border-radius: var(--lemmo-radius-pill, 9999px);
-          font-family: var(--lemmo-font-body, inherit);
+          color: var(--lemmo-text-primary, #ffffff);
           font-size: 0.75rem;
-          font-weight: 700;
-          cursor: pointer;
+          font-weight: 600;
           text-decoration: none;
           transition: all 0.15s ease;
         }
 
-        :global(.btn-remix-pill) {
-          background: var(--lemmo-surface-brand-background, #d1fe17);
-          color: var(--lemmo-text-on-brand, #131517);
-          border: none;
+        :global(.btn-full-details-pill:hover) {
+          background: rgba(255, 255, 255, 0.16);
+          border-color: rgba(255, 255, 255, 0.28);
+          color: var(--lemmo-surface-brand-background, #d1fe17);
         }
 
-        .btn-download-pill {
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.15);
+        .preview-close-btn {
+          width: 36px;
+          height: 36px;
+          display: grid;
+          place-items: center;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          border-radius: 50%;
           color: #ffffff;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .preview-close-btn:hover {
+          background: rgba(255, 255, 255, 0.2);
+          border-color: rgba(255, 255, 255, 0.3);
+          transform: scale(1.04);
+        }
+
+        /* Main Stage & Navigation */
+        .preview-stage-container {
+          position: relative;
+          flex: 1 1 auto;
+          width: 100%;
+          max-width: 1400px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 0;
+          margin: 16px 0;
+        }
+
+        .nav-arrow-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          display: grid;
+          place-items: center;
+          background: rgba(20, 22, 24, 0.75);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          color: #ffffff;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          z-index: 10;
+        }
+
+        .nav-arrow-btn:hover {
+          background: rgba(30, 34, 38, 0.95);
+          border-color: var(--lemmo-surface-brand-background, #d1fe17);
+          color: var(--lemmo-surface-brand-background, #d1fe17);
+          transform: translateY(-50%) scale(1.08);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-arrow-btn.prev-btn {
+          inset-inline-start: 16px;
+        }
+
+        .nav-arrow-btn.next-btn {
+          inset-inline-end: 16px;
+        }
+
+        .preview-media-frame {
+          max-width: calc(100% - 140px);
+          max-height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          border-radius: var(--lemmo-radius-lg, 16px);
+          overflow: hidden;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: #000000;
+        }
+
+        .preview-img-element {
+          max-width: 100%;
+          max-height: calc(100vh - 280px);
+          object-fit: contain;
+          display: block;
+        }
+
+        /* Bottom Floating Dock */
+        .preview-bottom-dock {
+          width: 100%;
+          max-width: 960px;
+          background: rgba(20, 22, 24, 0.88);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: var(--lemmo-radius-xl, 24px);
+          padding: 14px 20px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+          z-index: 10;
+          flex-shrink: 0;
+        }
+
+        .dock-prompt-section {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .dock-prompt-text {
+          margin: 0;
+          font-size: 0.8125rem;
+          line-height: 1.45;
+          color: var(--lemmo-text-primary, #ffffff);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          flex: 1 1 0;
+          word-break: break-word;
+        }
+
+        .dock-copy-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          height: 28px;
+          padding: 0 10px;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          color: var(--lemmo-text-secondary, #b5b6b8);
+          font-family: var(--lemmo-font-body, inherit);
+          font-size: 0.6875rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          flex-shrink: 0;
+        }
+
+        .dock-copy-btn:hover {
+          background: rgba(255, 255, 255, 0.14);
+          color: #ffffff;
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .dock-controls-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+
+        .dock-specs-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .dock-spec-pill {
+          font-size: 0.6875rem;
+          font-weight: 500;
+          color: var(--lemmo-text-muted, #898a8b);
+          background: rgba(255, 255, 255, 0.04);
+          padding: 3px 8px;
+          border-radius: var(--lemmo-radius-sm, 6px);
+        }
+
+        .dock-actions-group {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-inline-start: auto;
+        }
+
+        .dock-action-circle {
+          width: 34px;
+          height: 34px;
+          display: grid;
+          place-items: center;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 50%;
+          color: var(--lemmo-text-secondary, #b5b6b8);
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .dock-action-circle:hover {
+          background: rgba(255, 255, 255, 0.16);
+          color: #ffffff;
+          border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .dock-action-circle.favorited {
+          color: #ff3b5c;
+          border-color: rgba(255, 59, 92, 0.4);
+          background: rgba(255, 59, 92, 0.12);
+        }
+
+        :global(.dock-remix-flagship) {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          height: 34px;
+          padding: 0 14px;
+          background: var(--lemmo-surface-brand-background, #d1fe17);
+          color: var(--lemmo-text-on-brand, #131517);
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          font-family: var(--lemmo-font-body, inherit);
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          box-shadow: 0 2px 10px rgba(209, 254, 23, 0.3);
+        }
+
+        :global(.dock-remix-flagship:hover) {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 16px rgba(209, 254, 23, 0.45);
+          filter: brightness(1.05);
         }
 
         /* ===== RESPONSIVE ===== */
@@ -1217,6 +1645,70 @@ export default function AssetsManager({ initialEmpty = false }: AssetsManagerPro
           .card-hover-actions {
             opacity: 1;
             transform: translateY(0);
+          }
+
+          /* Modal responsive */
+          .preview-modal-overlay {
+            padding: 12px 12px 16px;
+          }
+
+          .preview-title {
+            max-width: 140px;
+            font-size: 0.8125rem;
+          }
+
+          .preview-header-badges {
+            display: none;
+          }
+
+          .nav-arrow-btn {
+            width: 36px;
+            height: 36px;
+          }
+
+          .nav-arrow-btn.prev-btn {
+            inset-inline-start: 4px;
+          }
+
+          .nav-arrow-btn.next-btn {
+            inset-inline-end: 4px;
+          }
+
+          .preview-media-frame {
+            max-width: 100%;
+          }
+
+          .preview-img-element {
+            max-height: calc(100vh - 270px);
+          }
+
+          .preview-bottom-dock {
+            padding: 12px 14px;
+            border-radius: var(--lemmo-radius-lg, 16px);
+            gap: 10px;
+          }
+
+          .dock-prompt-text {
+            font-size: 0.75rem;
+            -webkit-line-clamp: 1;
+          }
+
+          .dock-controls-bar {
+            gap: 10px;
+          }
+
+          .dock-specs-row {
+            display: none;
+          }
+
+          .dock-actions-group {
+            width: 100%;
+            justify-content: space-between;
+          }
+
+          :global(.dock-remix-flagship) {
+            flex: 1 1 auto;
+            justify-content: center;
           }
         }
       `}</style>
