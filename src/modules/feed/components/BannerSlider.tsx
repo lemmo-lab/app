@@ -1,32 +1,45 @@
 /**
- * BannerSlider Component — Featured Generative AI Showcase
+ * BannerSlider Component — Minimalist Feature & Announcement Hero
  *
- * Implements an accessible, high-performance carousel showcasing flagship
- * AI-generated creations with prompt previews, model badges, and remix actions.
+ * Designed per user specifications:
+ * - Dynamic platform announcements (new models, infinite canvas, AI copilot).
+ * - Ultra-minimal, modern & sleek aesthetic with focus on copy/message.
+ * - Ambient cinematic visual background without distraction.
+ * - Chic segmented slider indicator at the end side showing slide progress.
+ * - Icon emblem representing feature type/premium status (Crown/Award, CPU, Stars).
+ * - Headline, concise description, primary action CTA, and tutorial/details button-link.
+ * - Mobile experience: Action buttons completely removed for total cleanliness;
+ *   smooth touch swipe gesture navigation to switch slides.
  *
- * Conforms strictly to:
- * - DOC-DS-001 (Design System) & @lemmo-lab/tokens
- * - Concentric radii (outer 24px, inner 8px)
- * - WCAG 2.1 AA (4.5:1 contrast, keyboard navigable, aria-live)
- * - RTL/LTR logical positioning
+ * 100% token-driven with @lemmo-lab/tokens.
  */
 
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, AiMagicWand01, Sparks } from 'synthline/react';
+import {
+  Award01,
+  AiCpu,
+  Stars01,
+  ArrowRight,
+  ArrowLeft,
+  Play,
+  Book02,
+} from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
-import { BannerSlide, FEATURED_SLIDES } from '@/shared/data/feedData';
+import { FEATURE_ANNOUNCEMENTS, FeatureAnnouncement } from '@/shared/data/feedData';
+import DialPagination from './DialPagination';
 
 export default function BannerSlider() {
   const { locale, dir } = useUiStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const isRtl = dir === 'rtl';
 
-  const slidesCount = FEATURED_SLIDES.length;
-  const currentSlide: BannerSlide = FEATURED_SLIDES[currentIndex];
+  const slidesCount = FEATURE_ANNOUNCEMENTS.length;
+  const currentSlide: FeatureAnnouncement = FEATURE_ANNOUNCEMENTS[currentIndex];
 
   // Auto-play timer (paused on hover)
   useEffect(() => {
@@ -34,7 +47,7 @@ export default function BannerSlider() {
 
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % slidesCount);
-    }, 6000);
+    }, 6500);
 
     return () => clearInterval(timer);
   }, [isPaused, slidesCount]);
@@ -47,448 +60,429 @@ export default function BannerSlider() {
     setCurrentIndex((prev) => (prev + 1) % slidesCount);
   };
 
+  // Touch swipe navigation for mobile
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        // Swiped left
+        isRtl ? handlePrev() : handleNext();
+      } else {
+        // Swiped right
+        isRtl ? handleNext() : handlePrev();
+      }
+    }
+    setTouchStartX(null);
+  };
+
+  // Icon selector based on announcement type
+  const renderTypeIcon = (type: FeatureAnnouncement['type']) => {
+    switch (type) {
+      case 'premium':
+        return <Award01 size={14} strokeWidth={2} color="currentColor" />;
+      case 'model':
+        return <AiCpu size={14} strokeWidth={2} color="currentColor" />;
+      case 'workspace':
+        return <Stars01 size={14} strokeWidth={2} color="currentColor" />;
+      default:
+        return <Stars01 size={14} strokeWidth={2} color="currentColor" />;
+    }
+  };
+
   return (
     <section
-      className="banner-slider-wrapper"
+      className="feature-hero-wrapper"
       aria-roledescription="carousel"
-      aria-label={locale === 'fa' ? 'آثار برگزیده هوش مصنوعی' : 'Featured AI Creations'}
+      aria-label={locale === 'fa' ? 'اطلاعیه‌ها و ویژگی‌های جدید' : 'New Platform Features'}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
-      <div className="slider-card">
-        {/* Background Image with Gradient Overlay */}
-        <div className="image-container">
+      <div className="hero-banner-card">
+        {/* Ambient Subtle Background Artwork (Focused on End Side with Smooth Fade) */}
+        <div className="ambient-backdrop" aria-hidden="true">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
+            key={currentSlide.id}
             src={currentSlide.image}
-            alt={locale === 'fa' ? currentSlide.titleFa : currentSlide.title}
-            className="slide-image"
+            alt=""
+            className="ambient-img"
+            loading="eager"
           />
-          <div className="gradient-overlay" />
+          <div className="ambient-gradient-fade" />
         </div>
 
-        {/* Slide Content Meta */}
-        <div className="slide-content">
-          {/* Top Badge & Model Pill */}
-          <div className="badge-row">
-            <div className="featured-pill">
-              <Sparks size={14} strokeWidth={2} color="currentColor" />
-              <span>{locale === 'fa' ? 'اثر برگزیده هفته' : 'FEATURED SHOWCASE'}</span>
-            </div>
-            <div className="model-chip">
-              <span className="model-dot" />
-              <span>{currentSlide.model}</span>
+        {/* Banner Inner Content */}
+        <div className="banner-inner-content">
+          {/* Top Bar: Feature Type Badge on Start */}
+          <div className="banner-top-bar">
+            <div className="feature-badge">
+              <span className="badge-icon">{renderTypeIcon(currentSlide.type)}</span>
+              <span className="badge-tag">
+                {locale === 'fa' ? currentSlide.tagFa : currentSlide.tag}
+              </span>
             </div>
           </div>
 
-          {/* Title & Author */}
-          <h2 className="slide-title">
-            {locale === 'fa' ? currentSlide.titleFa : currentSlide.title}
-          </h2>
+          {/* Dial Pagination: Positioned at End Side, Vertically Centered */}
+          <div className="banner-dial-container" aria-label="Slide Pagination">
+            <DialPagination
+              total={slidesCount}
+              current={currentIndex}
+              onChange={(idx) => setCurrentIndex(idx)}
+              dir={dir as 'ltr' | 'rtl'}
+            />
+          </div>
 
-          {/* Prompt Snippet Box */}
-          <p className="slide-prompt" title={locale === 'fa' ? currentSlide.promptFa : currentSlide.prompt}>
-            &ldquo;{locale === 'fa' ? currentSlide.promptFa : currentSlide.prompt}&rdquo;
-          </p>
-
-          {/* Actions & Slide Navigation Bar */}
-          <div className="slide-footer">
-            <div className="cta-actions">
-              <Link
-                href="/app/agent"
-                className="btn-remix"
-                title={locale === 'fa' ? 'ریمیکس و پرامپت در استودیو' : 'Remix in Studio'}
-                data-action="remix-featured"
-              >
-                <AiMagicWand01 size={18} strokeWidth={2} color="currentColor" />
-                <span>{locale === 'fa' ? 'ریمیکس و ساخت' : 'Remix Prompt'}</span>
-              </Link>
-
-              <Link
-                href={`/app/feed/${currentSlide.id}`}
-                className="btn-inspect"
-                title={locale === 'fa' ? 'مشاهده جزییات رندر' : 'View Generation Details'}
-                data-action="view-details"
-              >
-                <span>{locale === 'fa' ? 'مشاهده جزییات' : 'View Details'}</span>
-              </Link>
+          {/* Bottom Content Area: Title, Description & Action that emerges from bottom pushing content up */}
+          <div className="banner-bottom-wrap">
+            <div className="banner-body">
+              <h2 className="feature-title">
+                {locale === 'fa' ? currentSlide.titleFa : currentSlide.title}
+              </h2>
+              <p className="feature-desc">
+                {locale === 'fa' ? currentSlide.descriptionFa : currentSlide.description}
+              </p>
             </div>
 
-            {/* Slider Controls: Dots + Prev/Next Arrow Buttons */}
-            <div className="slider-controls">
-              {/* Slide Counter */}
-              <div className="slide-counter" data-numeric>
-                <span className="current-num">0{currentIndex + 1}</span>
-                <span className="divider">/</span>
-                <span className="total-num">0{slidesCount}</span>
-              </div>
-
-              {/* Dots */}
-              <div className="dots-track" role="tablist" aria-label="Slide Dots">
-                {FEATURED_SLIDES.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    role="tab"
-                    aria-selected={currentIndex === idx}
-                    aria-label={`Slide ${idx + 1}`}
-                    className={`dot-pill ${currentIndex === idx ? 'active' : ''}`}
-                    onClick={() => setCurrentIndex(idx)}
-                  />
-                ))}
-              </div>
-
-              {/* Navigation Arrows */}
-              <div className="nav-arrows">
-                <button
-                  type="button"
-                  className="arrow-btn"
-                  onClick={isRtl ? handleNext : handlePrev}
-                  aria-label={locale === 'fa' ? 'اسلاید قبلی' : 'Previous slide'}
-                  data-action="slider-prev"
-                >
+            {/* Action Row: Emerges from bottom on card hover, pushing title/desc up */}
+            <div className="banner-actions-row">
+              <Link
+                href={currentSlide.primaryActionHref}
+                className="btn-primary-action"
+                title={locale === 'fa' ? currentSlide.primaryActionLabelFa : currentSlide.primaryActionLabel}
+                data-action={`launch-feature-${currentSlide.id}`}
+              >
+                <span>{locale === 'fa' ? currentSlide.primaryActionLabelFa : currentSlide.primaryActionLabel}</span>
+                <span className="action-arrow">
                   {isRtl ? (
-                    <ChevronRight size={18} strokeWidth={2} color="currentColor" />
+                    <ArrowLeft size={14} strokeWidth={2.5} color="currentColor" />
                   ) : (
-                    <ChevronLeft size={18} strokeWidth={2} color="currentColor" />
+                    <ArrowRight size={14} strokeWidth={2.5} color="currentColor" />
                   )}
-                </button>
-                <button
-                  type="button"
-                  className="arrow-btn"
-                  onClick={isRtl ? handlePrev : handleNext}
-                  aria-label={locale === 'fa' ? 'اسلاید بعدی' : 'Next slide'}
-                  data-action="slider-next"
-                >
-                  {isRtl ? (
-                    <ChevronLeft size={18} strokeWidth={2} color="currentColor" />
+                </span>
+              </Link>
+
+              <Link
+                href={currentSlide.secondaryActionHref}
+                className="btn-tutorial-link"
+                title={locale === 'fa' ? currentSlide.secondaryActionLabelFa : currentSlide.secondaryActionLabel}
+                data-action="view-tutorial"
+              >
+                <span className="tutorial-icon">
+                  {currentSlide.type === 'model' ? (
+                    <Play size={12} strokeWidth={2.5} color="currentColor" />
                   ) : (
-                    <ChevronRight size={18} strokeWidth={2} color="currentColor" />
+                    <Book02 size={13} strokeWidth={2} color="currentColor" />
                   )}
-                </button>
-              </div>
+                </span>
+                <span>{locale === 'fa' ? currentSlide.secondaryActionLabelFa : currentSlide.secondaryActionLabel}</span>
+              </Link>
             </div>
           </div>
         </div>
       </div>
 
       <style jsx>{`
-        .banner-slider-wrapper {
+        .feature-hero-wrapper {
           width: 100%;
-          position: relative;
-          box-sizing: border-box;
           margin-bottom: var(--lemmo-space-800, 32px);
+          box-sizing: border-box;
+          user-select: none;
         }
 
-        .slider-card {
+        .hero-banner-card {
           position: relative;
-          width: 100%;
-          height: 400px;
-          border-radius: var(--lemmo-radius-featured-card, 20px);
+          min-height: 260px;
+          border-radius: var(--lemmo-radius-2xl, 24px);
+          background: var(--lemmo-surface-primary-background, #17191b);
+          border: 1px solid var(--lemmo-border-default, rgba(255, 255, 255, 0.08));
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
           overflow: hidden;
-          background: var(--lemmo-surface-primary-background, #1c1e20);
-          border: 1px solid var(--lemmo-border-default, rgba(255, 255, 255, 0.12));
-          box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+          box-sizing: border-box;
+          transition: border-color 0.2s ease;
         }
 
-        .image-container {
+        .hero-banner-card:hover {
+          border-color: var(--lemmo-border-mid, rgba(255, 255, 255, 0.18));
+        }
+
+        /* Ambient Visual Backdrop (Clean & Undistracting) */
+        .ambient-backdrop {
           position: absolute;
-          inset: 0;
-          width: 100%;
+          inset-block: 0;
+          inset-inline-end: 0;
+          width: 52%;
           height: 100%;
+          pointer-events: none;
           z-index: 1;
+          overflow: hidden;
         }
 
-        .slide-image {
+        .ambient-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          object-position: center 35%;
-          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+          opacity: 0.44;
+          filter: saturate(1.15) brightness(0.85);
+          display: block;
         }
 
-        .slider-card:hover .slide-image {
-          transform: scale(1.025);
-        }
-
-        .gradient-overlay {
+        .ambient-gradient-fade {
           position: absolute;
           inset: 0;
           background: linear-gradient(
-            to top,
-            rgba(10, 12, 14, 0.96) 0%,
-            rgba(10, 12, 14, 0.72) 42%,
-            rgba(10, 12, 14, 0.2) 80%,
-            rgba(10, 12, 14, 0.05) 100%
+            to right,
+            var(--lemmo-surface-primary-background, #17191b) 0%,
+            rgba(23, 25, 27, 0.85) 30%,
+            rgba(23, 25, 27, 0.25) 70%,
+            transparent 100%
           );
         }
 
-        /* Slide Content Meta Overlay */
-        .slide-content {
-          position: absolute;
-          inset: 0;
+        :global([dir='rtl']) .ambient-gradient-fade {
+          background: linear-gradient(
+            to left,
+            var(--lemmo-surface-primary-background, #17191b) 0%,
+            rgba(23, 25, 27, 0.85) 30%,
+            rgba(23, 25, 27, 0.25) 70%,
+            transparent 100%
+          );
+        }
+
+        /* Banner Inner Content */
+        .banner-inner-content {
+          position: relative;
           z-index: 2;
           display: flex;
           flex-direction: column;
-          justify-content: flex-end;
-          padding: var(--lemmo-space-600, 24px) var(--lemmo-space-800, 32px);
+          justify-content: space-between;
+          padding: var(--lemmo-space-700, 28px) var(--lemmo-space-800, 32px);
+          min-height: 260px;
           box-sizing: border-box;
-          color: var(--lemmo-text-primary, #e1e1e3);
         }
 
-        .badge-row {
+        /* Top Bar: Start & End */
+        .banner-top-bar {
           display: flex;
-          flex-direction: row;
-          align-items: center;
-          gap: var(--lemmo-space-200, 8px);
-          margin-bottom: var(--lemmo-space-250, 10px);
-          flex-wrap: wrap;
-        }
-
-        .featured-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 10px;
-          background: var(--lemmo-surface-brand-background, #d1fe17);
-          color: var(--lemmo-text-on-brand, #131517);
-          border-radius: var(--lemmo-radius-pill, 9999px);
-          font-family: var(--lemmo-font-body, inherit);
-          font-size: 0.6875rem;
-          font-weight: var(--lemmo-font-weight-bold, 700);
-          letter-spacing: 0.04em;
-          box-shadow: 0 0 12px rgba(209, 254, 23, 0.4);
-        }
-
-        .model-chip {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 10px;
-          background: rgba(0, 0, 0, 0.45);
-          backdrop-filter: blur(8px);
-          border: 1px solid var(--lemmo-border-subtle, rgba(255, 255, 255, 0.1));
-          border-radius: var(--lemmo-radius-pill, 9999px);
-          font-size: 0.75rem;
-          color: var(--lemmo-text-secondary, #a1a1a5);
-        }
-
-        .model-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: var(--lemmo-radius-full, 9999px);
-          background: var(--lemmo-surface-brand-background, #d1fe17);
-        }
-
-        .slide-title {
-          font-family: var(--lemmo-font-heading, 'Oddval', 'Morabba', sans-serif);
-          font-size: clamp(1.25rem, 2.5vw, 1.875rem);
-          font-weight: 700;
-          color: #ffffff;
-          margin: 0 0 var(--lemmo-space-150, 6px) 0;
-          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-          line-height: 1.25;
-        }
-
-        .slide-prompt {
-          font-family: var(--lemmo-font-body, inherit);
-          font-size: var(--lemmo-type-size-200, 0.875rem);
-          line-height: 1.5;
-          color: rgba(255, 255, 255, 0.78);
-          max-width: 780px;
-          margin: 0 0 var(--lemmo-space-400, 16px) 0;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-        }
-
-        /* Slide Footer: Action Buttons + Slider Navigation */
-        .slide-footer {
-          display: flex;
-          flex-direction: row;
           align-items: center;
           justify-content: space-between;
-          gap: var(--lemmo-space-400, 16px);
-          flex-wrap: wrap;
+          margin-bottom: var(--lemmo-space-400, 16px);
+          gap: 12px;
         }
 
-        .cta-actions {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          gap: var(--lemmo-space-250, 10px);
-        }
-
-        :global(.btn-remix) {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          height: 38px;
-          padding: 0 16px;
-          background: var(--lemmo-surface-brand-background, #d1fe17);
-          color: var(--lemmo-text-on-brand, #131517);
-          border-radius: var(--lemmo-radius-base, 8px);
-          font-family: var(--lemmo-font-body, inherit);
-          font-size: 0.8125rem;
-          font-weight: 600;
-          text-decoration: none;
-          box-shadow: 0 2px 12px rgba(209, 254, 23, 0.35);
-          transition: transform 0.15s ease, filter 0.15s ease;
-        }
-
-        :global(.btn-remix:hover) {
-          transform: translateY(-1px);
-          filter: brightness(1.08);
-        }
-
-        :global(.btn-inspect) {
+        .feature-badge {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          height: 38px;
-          padding: 0 14px;
-          background: rgba(255, 255, 255, 0.08);
+          padding: 4px 12px;
+          background: rgba(255, 255, 255, 0.05);
           backdrop-filter: blur(8px);
-          color: var(--lemmo-text-primary, #e1e1e3);
-          border: 1px solid var(--lemmo-border-default, rgba(255, 255, 255, 0.15));
-          border-radius: var(--lemmo-radius-base, 8px);
-          font-size: 0.8125rem;
-          font-weight: 500;
-          text-decoration: none;
-          transition: background 0.15s ease;
-        }
-
-        :global(.btn-inspect:hover) {
-          background: rgba(255, 255, 255, 0.15);
-        }
-
-        /* Controls */
-        .slider-controls {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          gap: var(--lemmo-space-300, 12px);
-        }
-
-        .slide-counter {
-          font-size: 0.8125rem;
-          font-weight: 600;
-          color: var(--lemmo-text-muted, #898a8b);
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-
-        .current-num {
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: var(--lemmo-radius-pill, 9999px);
           color: var(--lemmo-surface-brand-background, #d1fe17);
         }
 
-        .dots-track {
+        .badge-icon {
           display: flex;
-          flex-direction: row;
           align-items: center;
-          gap: 6px;
+          line-height: 1;
         }
 
-        .dot-pill {
-          width: 8px;
-          height: 8px;
-          border-radius: var(--lemmo-radius-pill, 9999px);
-          background: rgba(255, 255, 255, 0.25);
+        .badge-tag {
+          font-family: var(--lemmo-font-body, inherit);
+          font-size: 0.6875rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+
+        /* Dial Pagination Container: Positioned at End Side, Vertically Centered (Transparent & Pure) */
+        .banner-dial-container {
+          position: absolute;
+          inset-inline-end: var(--lemmo-space-700, 28px);
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 4;
+          display: flex;
+          align-items: center;
+          background: transparent;
           border: none;
           padding: 0;
-          cursor: pointer;
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: none;
         }
 
-        .dot-pill.active {
-          width: 22px;
-          background: var(--lemmo-surface-brand-background, #d1fe17);
-          box-shadow: 0 0 8px rgba(209, 254, 23, 0.6);
-        }
-
-        .nav-arrows {
+        /* Bottom Content Area: Pinned at bottom, expands upward on hover */
+        .banner-bottom-wrap {
+          position: relative;
           display: flex;
-          flex-direction: row;
+          flex-direction: column;
+          justify-content: flex-end;
+          margin-top: auto;
+          box-sizing: border-box;
+          width: 100%;
+        }
+
+        /* Body Typography */
+        .banner-body {
+          max-width: min(640px, calc(100% - 200px));
+          margin: 0;
+        }
+
+        .feature-title {
+          font-family: var(--lemmo-font-heading, 'Oddval', 'Morabba', sans-serif);
+          font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+          font-weight: 700;
+          color: #ffffff;
+          line-height: 1.25;
+          margin: 0 0 8px 0;
+          letter-spacing: -0.01em;
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .feature-desc {
+          font-family: var(--lemmo-font-body, inherit);
+          font-size: var(--lemmo-type-size-200, 0.875rem);
+          line-height: 1.55;
+          color: var(--lemmo-text-secondary, #b5b6b8);
+          margin: 0;
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Action Buttons Row: Emerges from below on card hover, pushing title/desc up */
+        .banner-actions-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          max-height: 0;
+          opacity: 0;
+          margin-top: 0;
+          overflow: hidden;
+          pointer-events: none;
+          transform: translateY(12px);
+          transition: max-height 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                      opacity 0.24s ease,
+                      margin-top 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                      transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hero-banner-card:hover .banner-actions-row,
+        .hero-banner-card:focus-within .banner-actions-row {
+          max-height: 48px;
+          opacity: 1;
+          margin-top: 18px;
+          transform: translateY(0);
+          pointer-events: auto;
+        }
+
+        :global(.btn-primary-action) {
+          display: inline-flex;
           align-items: center;
           gap: 6px;
+          height: 38px;
+          padding: 0 18px;
+          background: var(--lemmo-surface-brand-background, #d1fe17);
+          color: var(--lemmo-text-on-brand, #131517);
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          font-family: var(--lemmo-font-body, inherit);
+          font-size: 0.8125rem;
+          font-weight: 700;
+          text-decoration: none;
+          box-shadow: 0 2px 10px rgba(209, 254, 23, 0.35);
+          transition: filter 0.15s ease, box-shadow 0.15s ease;
         }
 
-        .arrow-btn {
-          width: 32px;
-          height: 32px;
-          border-radius: var(--lemmo-radius-base, 8px);
-          background: rgba(0, 0, 0, 0.5);
-          backdrop-filter: blur(8px);
-          border: 1px solid var(--lemmo-border-subtle, rgba(255, 255, 255, 0.1));
-          color: var(--lemmo-text-primary, #e1e1e3);
-          cursor: pointer;
+        :global(.btn-primary-action:hover) {
+          filter: brightness(1.08);
+          box-shadow: 0 0 16px rgba(209, 254, 23, 0.55);
+        }
+
+        .action-arrow {
           display: flex;
           align-items: center;
-          justify-content: center;
-          transition: background 0.15s ease, border-color 0.15s ease;
+          line-height: 1;
         }
 
-        .arrow-btn:hover {
-          background: rgba(255, 255, 255, 0.15);
-          border-color: var(--lemmo-border-default, rgba(255, 255, 255, 0.25));
+        :global(.btn-tutorial-link) {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          height: 38px;
+          padding: 0 16px;
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(8px);
+          border: 1px solid var(--lemmo-border-default, rgba(255, 255, 255, 0.12));
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          color: var(--lemmo-text-primary, #e1e1e3);
+          font-family: var(--lemmo-font-body, inherit);
+          font-size: 0.8125rem;
+          font-weight: 500;
+          text-decoration: none;
+          transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
         }
 
-        .arrow-btn:focus-visible {
-          outline: 2px solid var(--lemmo-surface-brand-background, #d1fe17);
+        :global(.btn-tutorial-link:hover) {
+          background: rgba(255, 255, 255, 0.12);
+          border-color: rgba(255, 255, 255, 0.22);
+          color: #ffffff;
         }
 
-        /* ================= RESPONSIVE SCALING ================= */
-        @media (max-width: 900px) {
-          .slider-card {
-            height: 320px;
-            border-radius: var(--lemmo-radius-media, 16px);
+        .tutorial-icon {
+          display: flex;
+          align-items: center;
+          line-height: 1;
+          color: var(--lemmo-surface-brand-background, #d1fe17);
+        }
+
+        /* ================= MOBILE EXPERIENCE ================= */
+        @media (max-width: 640px) {
+          /* Ultra-clean on mobile: actions removed per user instruction */
+          .banner-actions-row {
+            display: none !important;
           }
 
-          .slide-content {
+          .hero-banner-card {
+            min-height: 155px;
+          }
+
+          .banner-inner-content {
             padding: var(--lemmo-space-400, 16px);
+            min-height: 155px;
           }
 
-          .slide-title {
-            font-size: 1.1875rem;
+          .ambient-backdrop {
+            width: 70%;
+            opacity: 0.32;
           }
 
-          .slide-prompt {
-            font-size: 0.8125rem;
+          .banner-dial-container {
+            inset-inline-end: 12px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            transform: translateY(-50%);
+          }
+
+          .banner-body {
+            max-width: calc(100% - 100px);
+          }
+
+          .feature-desc {
+            margin-bottom: 0;
+            display: -webkit-box;
             -webkit-line-clamp: 2;
-            margin-bottom: var(--lemmo-space-300, 12px);
-          }
-
-          .dots-track {
-            display: none;
-          }
-        }
-
-        @media (max-width: 600px) {
-          .slider-card {
-            height: 270px;
-          }
-
-          .slide-prompt {
-            display: none;
-          }
-
-          .slide-footer {
-            gap: 8px;
-          }
-
-          :global(.btn-remix) {
-            height: 34px;
-            padding: 0 12px;
-            font-size: 0.75rem;
-          }
-
-          :global(.btn-inspect) {
-            height: 34px;
-            padding: 0 10px;
-            font-size: 0.75rem;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 0.8125rem;
           }
         }
       `}</style>

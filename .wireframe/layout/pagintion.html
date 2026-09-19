@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dial pagination</title>
+<style>
+/* Demo page only */
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #231a1e; }
+
+/* ==========================================================================
+   DIAL PAGINATION: copy everything from here down to the end of this <style>
+   Theme:  --dial-accent (bracket)   --dial-color (ticks)   --dial-pitch (tick spacing)
+   ========================================================================== */
+.dial {
+  --pitch: var(--dial-pitch, 26px);
+  --pos: 0;
+  --dir: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  font-family: inherit;
+  user-select: none;
+  -webkit-user-select: none;
+}
+:where([dir="rtl"]) .dial { --dir: -1; }
+
+/* The scale fades out at both ends, like a tuning dial. */
+.dial-window {
+  position: relative;
+  width: calc(var(--pitch) * 13);
+  max-width: 100%;
+  height: 52px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24%, #000 76%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 24%, #000 76%, transparent 100%);
+}
+.dial-flip { position: absolute; inset: 0; }
+:where([dir="rtl"]) .dial-flip { transform: scaleX(-1); }   /* first page on the right in RTL */
+
+.dial-strip {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  display: flex;
+  direction: ltr;
+  /* Slides so the tick at --pos sits exactly under the bracket. */
+  transform: translateX(calc((var(--pos) + var(--g, 0) + 0.5) * var(--pitch) * -1));
+  will-change: transform;
+}
+.dial-tick {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--pitch);
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.dial-tick.is-ghost { cursor: default; pointer-events: none; }
+.dial-tick:focus-visible { outline: none; }
+.dial-tick:focus-visible .dial-mark { box-shadow: 0 0 0 3px var(--dial-accent, #d2ff2a); }
+
+/* --t: 0 at the centre → 1 at the edge.   --a: 1 only for the active tick. */
+.dial-mark {
+  display: block;
+  width: calc(3px + var(--a, 0) * 1px);
+  height: calc(14px + var(--a, 0) * 18px);
+  border-radius: 2px;
+  background: var(--dial-color, #fff);
+  opacity: calc((1 - var(--t, 1) * var(--t, 1) * 0.86) * (0.78 + var(--a, 0) * 0.22));
+  filter: blur(calc(var(--t, 1) * var(--t, 1) * 3px));
+  box-shadow: 0 0 calc(var(--a, 0) * 10px) rgb(255 255 255 / calc(var(--a, 0) * 0.55));
+}
+.dial-tick:not(.is-ghost):hover .dial-mark { opacity: 1; }
+
+/* Fixed frame around whichever tick is at the centre. */
+.dial-bracket {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 42px;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+.dial-bracket::before,
+.dial-bracket::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  border: 1.5px solid var(--dial-accent, #d2ff2a);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--dial-accent, #d2ff2a) 55%, transparent));
+}
+.dial-bracket::before { left: 0; border-right: 0; border-radius: 2px 0 0 2px; }
+.dial-bracket::after { right: 0; border-left: 0; border-radius: 0 2px 2px 0; }
+
+/* Arrows: slide out on hover or keyboard focus, one on each side. */
+.dial-arrow {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, translate 0.25s ease, background 0.15s ease;
+}
+.dial-prev { translate: calc(8px * var(--dir)) 0; }
+.dial-next { translate: calc(-8px * var(--dir)) 0; }
+.dial:hover .dial-arrow,
+.dial:focus-within .dial-arrow { opacity: 1; translate: 0 0; }
+.dial-arrow:hover { background: rgb(255 255 255 / 0.14); }
+.dial-arrow:focus-visible { outline: 2px solid var(--dial-accent, #d2ff2a); outline-offset: 0; }
+.dial-next svg { transform: scaleX(-1); }
+:where([dir="rtl"]) .dial-prev svg { transform: scaleX(-1); }
+:where([dir="rtl"]) .dial-next svg { transform: none; }
+
+/* No hover on touch screens: keep the arrows visible but quiet. */
+@media (hover: none) { .dial-arrow { opacity: 0.7; translate: 0 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .dial-arrow { transition: opacity 0.01s; }
+  .dial-prev, .dial-next { translate: 0 0; }
+}
+@media (max-width: 480px) { .dial-window { width: calc(var(--pitch) * 9); } }
+</style>
+</head>
+<body>
+
+<!-- ===== DIAL PAGINATION: markup =====
+     One .dial-tick button per page. Add or remove buttons freely.
+     Optional attributes on .dial:  data-ghosts="6"  data-loop="false"
+-->
+<div class="dial" id="dial">
+  <button type="button" class="dial-arrow dial-prev" aria-label="Previous">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+
+  <div class="dial-window">
+    <div class="dial-flip">
+      <div class="dial-strip" role="tablist" aria-label="Pagination">
+        <button type="button" class="dial-tick" role="tab" aria-selected="true"  aria-label="Page 1 of 7"><i class="dial-mark"></i></button>
+        <button type="button" class="dial-tick" role="tab" aria-selected="false" aria-label="Page 2 of 7"><i class="dial-mark"></i></button>
+        <button type="button" class="dial-tick" role="tab" aria-selected="false" aria-label="Page 3 of 7"><i class="dial-mark"></i></button>
+        <button type="button" class="dial-tick" role="tab" aria-selected="false" aria-label="Page 4 of 7"><i class="dial-mark"></i></button>
+        <button type="button" class="dial-tick" role="tab" aria-selected="false" aria-label="Page 5 of 7"><i class="dial-mark"></i></button>
+        <button type="button" class="dial-tick" role="tab" aria-selected="false" aria-label="Page 6 of 7"><i class="dial-mark"></i></button>
+        <button type="button" class="dial-tick" role="tab" aria-selected="false" aria-label="Page 7 of 7"><i class="dial-mark"></i></button>
+      </div>
+    </div>
+    <span class="dial-bracket" aria-hidden="true"></span>
+  </div>
+
+  <button type="button" class="dial-arrow dial-next" aria-label="Next">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+</div>
+
+<script>
+/* ===== DIAL PAGINATION: behaviour (about 60 lines) =====
+   Listen:  dial.addEventListener("dialchange", e => e.detail.index)
+   Control: dial.dial.set(3)   // go to page 4 (0-based)
+*/
+function initDial(root) {
+  var strip = root.querySelector(".dial-strip");
+  var pages = [].slice.call(strip.querySelectorAll(".dial-tick"));
+  var count = pages.length;
+  var ghosts = parseInt(root.dataset.ghosts || "6", 10);
+  var loop = root.dataset.loop !== "false";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var index = Math.max(0, pages.findIndex(function (p) { return p.getAttribute("aria-selected") === "true"; }));
+  var pos = index, raf = 0;
+
+  // Decorative ticks past both ends keep the analog look even with few pages.
+  function ghost() {
+    var s = document.createElement("span");
+    s.className = "dial-tick is-ghost";
+    s.setAttribute("aria-hidden", "true");
+    s.innerHTML = '<i class="dial-mark"></i>';
+    return s;
+  }
+  for (var g = 0; g < ghosts; g++) { strip.insertBefore(ghost(), strip.firstChild); strip.appendChild(ghost()); }
+  var all = [].slice.call(strip.children);
+  root.style.setProperty("--g", ghosts);
+
+  // Every tick's look depends only on its distance from the current position.
+  function paint(p) {
+    pos = p;
+    root.style.setProperty("--pos", p);
+    all.forEach(function (el, k) {
+      var d = Math.abs(k - ghosts - p);
+      el.style.setProperty("--t", Math.min(1, d / 5.5));
+      el.style.setProperty("--a", Math.max(0, 1 - d));
+    });
+  }
+
+  function set(i, silent) {
+    i = Math.max(0, Math.min(count - 1, i));
+    if (i === index) return;
+    index = i;
+    pages.forEach(function (p, n) {
+      p.setAttribute("aria-selected", n === i ? "true" : "false");
+      p.tabIndex = n === i ? 0 : -1;
+    });
+    cancelAnimationFrame(raf);
+    var from = pos;
+    if (reduce.matches) paint(i);
+    else {
+      var dur = Math.min(700, 320 + Math.abs(i - from) * 50), t0 = null;
+      raf = requestAnimationFrame(function step(t) {
+        if (t0 === null) t0 = t;
+        var k = Math.min(1, (t - t0) / dur);
+        paint(from + (i - from) * (1 - Math.pow(1 - k, 3)));   // ease-out, like a knob settling
+        if (k < 1) raf = requestAnimationFrame(step);
+      });
+    }
+    if (!silent) root.dispatchEvent(new CustomEvent("dialchange", { detail: { index: i } }));
+  }
+
+  function step(delta) {
+    var n = index + delta;
+    set(loop ? (n + count) % count : n);
+  }
+
+  pages.forEach(function (p, n) {
+    p.tabIndex = n === index ? 0 : -1;
+    p.addEventListener("click", function () { set(n); });
+  });
+  root.querySelector(".dial-prev").addEventListener("click", function () { step(-1); });
+  root.querySelector(".dial-next").addEventListener("click", function () { step(1); });
+
+  strip.addEventListener("keydown", function (e) {
+    var rtl = getComputedStyle(root).direction === "rtl";
+    var next = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[e.key];
+    var target = e.key === "Home" ? 0 : e.key === "End" ? count - 1 : next !== undefined ? index + next : null;
+    if (target === null) return;
+    e.preventDefault();
+    set(target);
+    pages[index].focus();
+  });
+
+  paint(index);
+  root.dial = { set: set, get index() { return index; } };
+}
+
+initDial(document.getElementById("dial"));
+</script>
+</body>
+</html>

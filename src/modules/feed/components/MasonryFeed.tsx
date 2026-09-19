@@ -16,7 +16,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search01, Heart, AiRobot01, Sparks } from 'synthline/react';
+import { Search01, Heart, AiRobot01, Sparks, Copy01, AiMagicWand01, Check01 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
 import { FEED_ITEMS, FeedItem } from '@/shared/data/feedData';
 
@@ -25,6 +25,7 @@ export default function MasonryFeed() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Category filter options
   const categories = [
@@ -34,6 +35,19 @@ export default function MasonryFeed() {
     { id: 'architecture', labelEn: 'Architecture & 3D', labelFa: 'معماری و سه‌بعدی' },
     { id: 'concept', labelEn: 'Concept Art', labelFa: 'کانسپت آرت' },
   ];
+
+  // Prompt copy handler with temporary feedback
+  const handleCopyPrompt = (e: React.MouseEvent, promptText: string, itemId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(promptText);
+    }
+    setCopiedId(itemId);
+    setTimeout(() => {
+      setCopiedId((curr) => (curr === itemId ? null : curr));
+    }, 2000);
+  };
 
   // Like toggle handler
   const toggleLike = (e: React.MouseEvent, itemId: string) => {
@@ -161,37 +175,87 @@ export default function MasonryFeed() {
 
             return (
               <article key={item.id} className="feed-card-item">
-                <Link
-                  href={`/app/feed/${item.id}`}
-                  className="card-media-wrap"
-                  title={locale === 'fa' ? item.titleFa : item.title}
-                  data-action={`view-item-${item.id}`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.image}
-                    alt={locale === 'fa' ? item.titleFa : item.title}
-                    className="card-img"
-                    loading="lazy"
-                  />
+                <div className="card-media-wrap">
+                  {/* Base Clickable Image with Scrim */}
+                  <Link
+                    href={`/app/feed/${item.id}`}
+                    className="card-media-link"
+                    title={locale === 'fa' ? item.titleFa : item.title}
+                    data-action={`view-item-${item.id}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.image}
+                      alt={locale === 'fa' ? item.titleFa : item.title}
+                      className="card-img"
+                      loading="lazy"
+                    />
 
-                  {/* Gradient Overlay on Hover */}
-                  <div className="card-gradient-scrim" />
+                    {/* Gradient Overlay for high-contrast text */}
+                    <div className="card-gradient-scrim" />
+                  </Link>
 
-                  {/* Top Badges Row: Aspect Ratio & Model Chip */}
-                  <div className="card-top-badges">
-                    <span className="ratio-tag" data-numeric>{item.aspectRatio}</span>
-                    <span className="card-model-chip">{item.model}</span>
+                  {/* Top Bar: Ratio & Model tags on left, Quick Actions on right */}
+                  <div className="card-top-bar">
+                    <div className="card-top-tags">
+                      <span className="ratio-tag" data-numeric>{item.aspectRatio}</span>
+                      <span className="card-model-chip">{item.model}</span>
+                    </div>
+
+                    {/* Quick Action Buttons revealed on hover */}
+                    <div className="card-quick-actions">
+                      <button
+                        type="button"
+                        className={`action-btn-copy ${copiedId === item.id ? 'copied' : ''}`}
+                        onClick={(e) => handleCopyPrompt(e, item.prompt, item.id)}
+                        title={copiedId === item.id ? (locale === 'fa' ? 'کپی شد!' : 'Copied!') : (locale === 'fa' ? 'کپی پرامپت' : 'Copy Prompt')}
+                        aria-label={locale === 'fa' ? 'کپی پرامپت' : 'Copy Prompt'}
+                      >
+                        {copiedId === item.id ? (
+                          <>
+                            <Check01 size={13} strokeWidth={2.5} color="currentColor" />
+                            <span className="action-label">{locale === 'fa' ? 'کپی شد' : 'Copied'}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy01 size={13} strokeWidth={2} color="currentColor" />
+                            <span className="action-label">{locale === 'fa' ? 'کپی' : 'Copy'}</span>
+                          </>
+                        )}
+                      </button>
+
+                      <Link
+                        href={`/app/agent?remix=${encodeURIComponent(item.prompt)}`}
+                        className="action-btn-remix"
+                        title={locale === 'fa' ? 'بازآفرینی پرامپت (Remix)' : 'Remix Prompt'}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <AiMagicWand01 size={13} strokeWidth={2} color="currentColor" />
+                        <span className="action-label">{locale === 'fa' ? 'ریمیکس' : 'Remix'}</span>
+                      </Link>
+                    </div>
                   </div>
 
-                  {/* Hover Meta Card info */}
+                  {/* Card Meta details */}
                   <div className="card-hover-meta">
-                    <h4 className="card-title">
-                      {locale === 'fa' ? item.titleFa : item.title}
-                    </h4>
+                    <Link
+                      href={`/app/feed/${item.id}`}
+                      className="card-title-link"
+                      title={locale === 'fa' ? item.titleFa : item.title}
+                    >
+                      <h4 className="card-title">
+                        {locale === 'fa' ? item.titleFa : item.title}
+                      </h4>
+                    </Link>
+
                     <p className="card-prompt-snippet">
                       &ldquo;{item.prompt}&rdquo;
                     </p>
+
+                    {/* Extra detail revealed on hover */}
+                    <div className="card-hover-extra">
+                      <span className="card-category-pill">#{item.category}</span>
+                    </div>
 
                     <div className="card-footer-row">
                       {/* Author */}
@@ -209,7 +273,7 @@ export default function MasonryFeed() {
                         aria-label={isLiked ? 'Unlike' : 'Like'}
                       >
                         <Heart
-                          size={15}
+                          size={14}
                           strokeWidth={isLiked ? 0 : 2}
                           color="currentColor"
                         />
@@ -219,7 +283,7 @@ export default function MasonryFeed() {
                       </button>
                     </div>
                   </div>
-                </Link>
+                </div>
               </article>
             );
           })}
@@ -358,12 +422,12 @@ export default function MasonryFeed() {
           font-weight: 700;
           text-decoration: none;
           box-shadow: 0 2px 10px rgba(209, 254, 23, 0.3);
-          transition: transform 0.15s ease, filter 0.15s ease;
+          transition: filter 0.15s ease, box-shadow 0.15s ease;
         }
 
         :global(.btn-create:hover) {
-          transform: translateY(-1px);
           filter: brightness(1.08);
+          box-shadow: 0 0 16px rgba(209, 254, 23, 0.45);
         }
 
         /* ================= CSS Multi-Column Masonry Grid ================= */
@@ -381,7 +445,7 @@ export default function MasonryFeed() {
           width: 100%;
         }
 
-        :global(.card-media-wrap) {
+        .card-media-wrap {
           position: relative;
           display: block;
           width: 100%;
@@ -389,22 +453,26 @@ export default function MasonryFeed() {
           overflow: hidden;
           background: var(--lemmo-surface-primary-background, #1c1e20);
           border: 1px solid var(--lemmo-border-default, rgba(255, 255, 255, 0.08));
-          text-decoration: none;
           box-sizing: border-box;
-          transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-                      border-color 0.2s ease,
+          transition: border-color 0.2s ease,
                       box-shadow 0.24s ease;
         }
 
-        :global(.card-media-wrap:hover) {
-          transform: translateY(-4px);
-          border-color: var(--lemmo-border-mid, rgba(255, 255, 255, 0.25));
-          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+        .card-media-wrap:hover {
+          border-color: var(--lemmo-border-mid, rgba(255, 255, 255, 0.28));
+          box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
         }
 
-        :global(.card-media-wrap:focus-visible) {
+        .card-media-wrap:focus-within {
           outline: 2px solid var(--lemmo-surface-brand-background, #d1fe17);
           outline-offset: 2px;
+        }
+
+        :global(.card-media-link) {
+          display: block;
+          width: 100%;
+          text-decoration: none;
+          cursor: pointer;
         }
 
         .card-img {
@@ -412,11 +480,6 @@ export default function MasonryFeed() {
           width: 100%;
           height: auto;
           object-fit: cover;
-          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        :global(.card-media-wrap:hover) .card-img {
-          transform: scale(1.035);
         }
 
         /* Scrim overlay: subtle dark fade at bottom */
@@ -432,22 +495,29 @@ export default function MasonryFeed() {
           );
           opacity: 0.85;
           transition: opacity 0.2s ease;
+          pointer-events: none;
         }
 
-        :global(.card-media-wrap:hover) .card-gradient-scrim {
+        .card-media-wrap:hover .card-gradient-scrim {
           opacity: 0.98;
         }
 
-        /* Top Badges */
-        .card-top-badges {
+        /* Top Bar: Ratio, Model & Quick Action Buttons */
+        .card-top-bar {
           position: absolute;
           top: 10px;
           inset-inline: 10px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          z-index: 3;
-          pointer-events: none;
+          z-index: 4;
+          gap: 8px;
+        }
+
+        .card-top-tags {
+          display: flex;
+          align-items: center;
+          gap: 6px;
         }
 
         .ratio-tag {
@@ -473,8 +543,77 @@ export default function MasonryFeed() {
           transition: opacity 0.2s ease;
         }
 
-        :global(.card-media-wrap:hover) .card-model-chip {
+        .card-media-wrap:hover .card-model-chip {
           opacity: 1;
+        }
+
+        /* Quick Action buttons revealed on hover */
+        .card-quick-actions {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+        }
+
+        .card-media-wrap:hover .card-quick-actions {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .action-btn-copy {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 8px;
+          background: rgba(0, 0, 0, 0.68);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          color: var(--lemmo-text-secondary, #e1e1e3);
+          cursor: pointer;
+          font-size: 0.6875rem;
+          font-weight: 500;
+          transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+
+        .action-btn-copy:hover {
+          background: rgba(255, 255, 255, 0.16);
+          border-color: rgba(255, 255, 255, 0.3);
+          color: #ffffff;
+        }
+
+        .action-btn-copy.copied {
+          background: var(--lemmo-surface-brand-background, #d1fe17);
+          color: var(--lemmo-text-on-brand, #131517);
+          border-color: var(--lemmo-surface-brand-background, #d1fe17);
+          font-weight: 700;
+        }
+
+        :global(.action-btn-remix) {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 10px;
+          background: var(--lemmo-surface-brand-background, #d1fe17);
+          color: var(--lemmo-text-on-brand, #131517);
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          font-size: 0.6875rem;
+          font-weight: 700;
+          text-decoration: none;
+          box-shadow: 0 0 10px rgba(209, 254, 23, 0.35);
+          transition: filter 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        :global(.action-btn-remix:hover) {
+          filter: brightness(1.08);
+          box-shadow: 0 0 16px rgba(209, 254, 23, 0.55);
+        }
+
+        .action-label {
+          font-size: 0.6875rem;
+          line-height: 1;
         }
 
         /* Bottom Content info */
@@ -483,11 +622,17 @@ export default function MasonryFeed() {
           bottom: 0;
           inset-inline: 0;
           padding: var(--lemmo-space-300, 12px) var(--lemmo-space-300, 12px);
-          z-index: 3;
+          z-index: 4;
           display: flex;
           flex-direction: column;
           gap: 6px;
           box-sizing: border-box;
+          pointer-events: none;
+        }
+
+        :global(.card-title-link) {
+          text-decoration: none;
+          pointer-events: auto;
         }
 
         .card-title {
@@ -498,18 +643,54 @@ export default function MasonryFeed() {
           margin: 0;
           line-height: 1.3;
           text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+          transition: color 0.15s ease;
+        }
+
+        :global(.card-title-link:hover) .card-title {
+          color: var(--lemmo-surface-brand-background, #d1fe17);
         }
 
         .card-prompt-snippet {
           font-size: 0.6875rem;
           line-height: 1.4;
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.75);
           margin: 0;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
           text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+          transition: color 0.18s ease;
+        }
+
+        .card-media-wrap:hover .card-prompt-snippet {
+          -webkit-line-clamp: 4;
+          color: rgba(255, 255, 255, 0.92);
+        }
+
+        .card-hover-extra {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          max-height: 0;
+          opacity: 0;
+          overflow: hidden;
+          transition: max-height 0.22s ease, opacity 0.2s ease;
+        }
+
+        .card-media-wrap:hover .card-hover-extra {
+          max-height: 24px;
+          opacity: 1;
+        }
+
+        .card-category-pill {
+          font-size: 0.625rem;
+          font-weight: 600;
+          color: var(--lemmo-surface-brand-background, #d1fe17);
+          background: rgba(209, 254, 23, 0.12);
+          border: 1px solid rgba(209, 254, 23, 0.25);
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          padding: 1px 6px;
         }
 
         .card-footer-row {
@@ -638,6 +819,15 @@ export default function MasonryFeed() {
         }
 
         @media (max-width: 960px) {
+          .card-quick-actions {
+            opacity: 1;
+            pointer-events: auto;
+          }
+
+          .card-model-chip {
+            opacity: 1;
+          }
+
           .masonry-columns {
             column-count: 2;
             column-gap: var(--lemmo-space-300, 12px);

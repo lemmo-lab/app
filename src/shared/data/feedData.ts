@@ -18,6 +18,24 @@ export interface BannerSlide {
   likes: number;
 }
 
+export interface FeatureAnnouncement {
+  id: string;
+  type: 'premium' | 'model' | 'workspace';
+  tag: string;
+  tagFa: string;
+  title: string;
+  titleFa: string;
+  description: string;
+  descriptionFa: string;
+  primaryActionLabel: string;
+  primaryActionLabelFa: string;
+  primaryActionHref: string;
+  secondaryActionLabel: string;
+  secondaryActionLabelFa: string;
+  secondaryActionHref: string;
+  image: string;
+}
+
 export interface QuickTool {
   id: string;
   name: string;
@@ -29,6 +47,7 @@ export interface QuickTool {
   image: string;
   href: string;
   badge: string;
+  isNew?: boolean;
 }
 
 export interface FeedItem {
@@ -92,6 +111,60 @@ export const FEATURED_SLIDES: BannerSlide[] = [
   },
 ];
 
+export const FEATURE_ANNOUNCEMENTS: FeatureAnnouncement[] = [
+  {
+    id: 'feat-1',
+    type: 'model',
+    tag: 'NEW ENGINE',
+    tagFa: 'موتور جدید',
+    title: 'Lemmo Diffusion 4.5 Turbo',
+    titleFa: 'موتور نسل جدید لمو توربو ۴.۵',
+    description: 'Ultra-fast 4K generation in under 3 seconds with native spatial lighting and character consistency across styles.',
+    descriptionFa: 'تولید فوق‌سریع تصاویر با کیفیت ۴K در کمتر از ۳ ثانیه همراه با پایداری کامل کاراکتر و نورپردازی طبیعی.',
+    primaryActionLabel: 'Try Turbo Engine',
+    primaryActionLabelFa: 'شروع با توربو',
+    primaryActionHref: '/app/agent',
+    secondaryActionLabel: 'Quick Demo',
+    secondaryActionLabelFa: 'مشاهده ویدیو',
+    secondaryActionHref: '/app/tools',
+    image: '/images/feed/futuristic-solarpunk-city-towering-mushroom-shaped.webp',
+  },
+  {
+    id: 'feat-2',
+    type: 'premium',
+    tag: 'PRO WORKSPACE',
+    tagFa: 'امکانات ویژه',
+    title: 'Infinite Multi-Layer Canvas',
+    titleFa: 'بوم طراحی چندلایه‌ای بی‌نهایت',
+    description: 'Outpaint, composite, and blend AI assets seamlessly on an expansive, non-destructive vector design workspace.',
+    descriptionFa: 'ترکیب، گسترش کادر و مدیریت لایه‌ها به صورت نامحدود در محیط طراحی تعاملی و برداری استودیو.',
+    primaryActionLabel: 'Launch Canvas',
+    primaryActionLabelFa: 'ورود به بوم',
+    primaryActionHref: '/app/canvas',
+    secondaryActionLabel: 'View Tutorial',
+    secondaryActionLabelFa: 'راهنمای کار',
+    secondaryActionHref: '/app/canvas',
+    image: '/images/feed/massive-cylindrical-spacecraft-wreckage-engulfed-by-dense.webp',
+  },
+  {
+    id: 'feat-3',
+    type: 'workspace',
+    tag: 'AI COPILOT',
+    tagFa: 'دستیار هوشمند',
+    title: 'Autonomous Creative Agent',
+    titleFa: 'دستیار هوشمند و خودکار طراحی',
+    description: 'Direct the studio copilot in conversational natural language to orchestrate multi-step image pipelines and variations.',
+    descriptionFa: 'هدایت هوش مصنوعی به زبان طبیعی برای اجرای سناریوهای چندمرحله‌ای، تولید مشتقات و بهینه‌سازی پروژه‌ها.',
+    primaryActionLabel: 'Chat with Agent',
+    primaryActionLabelFa: 'شروع گفتگو',
+    primaryActionHref: '/app/agent',
+    secondaryActionLabel: 'Learn More',
+    secondaryActionLabelFa: 'جزییات قابلیت‌ها',
+    secondaryActionHref: '/app/tools',
+    image: '/images/feed/aerial-photograph-of-a-steep-vibrant-green-island-surrounded.webp',
+  },
+];
+
 export const QUICK_TOOLS: QuickTool[] = [
   {
     id: 'tool-bg-remove',
@@ -104,6 +177,7 @@ export const QUICK_TOOLS: QuickTool[] = [
     image: '/images/feed/a-ripe-yellow-banana-wrapped-tightly-in-clear-bubble-wrap.webp',
     href: '/app/tools',
     badge: 'v2.4 Neural',
+    isNew: true,
   },
   {
     id: 'tool-upscale',
@@ -116,6 +190,7 @@ export const QUICK_TOOLS: QuickTool[] = [
     image: '/images/feed/a-stylized-vector-illustration-of-a-dense-metropolis-bathed.webp',
     href: '/app/tools',
     badge: '4x Detail',
+    isNew: false,
   },
   {
     id: 'tool-segmenter',
@@ -128,6 +203,7 @@ export const QUICK_TOOLS: QuickTool[] = [
     image: '/images/feed/a-layered-canape-rests-on-a-glossy-white-ceramic-surface-in.webp',
     href: '/app/tools',
     badge: 'SAM-2 Core',
+    isNew: true,
   },
   {
     id: 'tool-lighting',
@@ -140,6 +216,7 @@ export const QUICK_TOOLS: QuickTool[] = [
     image: '/images/feed/two-minimalist-wristwatches-laid-diagonally-on-a-smooth-off.webp',
     href: '/app/tools',
     badge: 'HDR Relight',
+    isNew: true,
   },
 ];
 
