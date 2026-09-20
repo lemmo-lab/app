@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000;
+      --line: #1c1c1c;
+      --text: #f5f5f5;
+      --muted: #8c8c8c;
+      --faint: #333;
+      --hover: #151515;
+      --active: #262626;
+      --btn: #f5f5f5;
+      --btn-hover: #dcdcdc;
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      --btn-text: #111;
+      --error: #ff7b7b;
+      --success: #6ee7a8;
+      --sidebar: 190px;
+      --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 400 14px/1.4 var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button { font: inherit; color: inherit; }
+
+    :focus-visible {
+      outline: 2px solid rgba(255, 255, 255, .55);
+      outline-offset: 2px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    /* ---------- Shell ---------- */
+
+    .shell {
+      display: grid;
+      grid-template-columns: var(--sidebar) minmax(0, 1fr);
+      height: 100dvh;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    /* ---------- Sidebar ---------- */
+
+    .sidebar {
+      padding: 14px 8px 24px;
+      overflow-y: auto;
+    }
+
+    .close {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin: 2px 0 22px;
+      margin-inline-start: 10px;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      background: none;
+      color: var(--text);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .close:hover { background: var(--hover); }
+
+    .group + .group { margin-top: 26px; }
+
+    .group-label {
+      margin: 0;
+      padding: 0 10px 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      height: 30px;
+      margin: 0 0 2px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 10px;
+      background: none;
+      font-weight: 500;
+      text-align: start;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .item:hover { background: var(--hover); }
+    .item[aria-current="page"] { background: var(--active); }
+
+    .icon {
+      flex: none;
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .item .icon { opacity: .85; }
+
+    /* ---------- Main ---------- */
+
+    .main {
+      min-width: 0;
+      overflow: auto;
+    }
+
+    .panel[hidden] { display: none; }
+
+    /* Promo */
+
+    .promo-panel {
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+      padding: 32px 32px 72px;
+    }
+
+    .promo {
+      display: grid;
+      justify-items: center;
+      gap: 20px;
+      width: min(640px, 100%);
+    }
+
+    .code {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #fff;
+      caret-color: #fff;
+      text-align: center;
+      text-transform: uppercase;
+      font: 800 clamp(28px, 4vw, 44px) / 1.1 var(--font);
+      letter-spacing: -.02em;
+    }
+    .code::placeholder { color: var(--faint); opacity: 1; }
+    .code.nudge { animation: nudge .3s; }
+
+    .claim {
+      min-width: 88px;
+      height: 40px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--btn);
+      color: var(--btn-text);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.005em;
+      box-shadow: 0 8px 28px rgba(255, 255, 255, .07);
+      cursor: pointer;
+      transition:
+        opacity .4s var(--ease),
+        transform .4s var(--ease),
+        filter .4s var(--ease),
+        background .15s,
+        visibility .4s;
+    }
+    .claim:hover { background: var(--btn-hover); }
+    .claim:active { transform: scale(.97); }
+    .claim:disabled { opacity: .55; cursor: default; }
+
+    /* Claim fades in (with a soft blur-to-sharp) once something is typed */
+    .promo:not(.has-value) .claim {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(.94);
+      filter: blur(6px);
+      pointer-events: none;
+    }
+
+    .status {
+      min-height: 20px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    .status[data-tone="error"]   { color: var(--error); }
+    .status[data-tone="success"] { color: var(--success); }
+
+    /* Other sections (stubs) */
+
+    .stub-panel { padding: 56px; }
+    .stub-panel h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .stub-panel p { margin: 0; color: var(--muted); }
+
+    @keyframes nudge {
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    /* ---------- Mobile ---------- */
+
+    @media (max-width: 760px) {
+      .shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
+        border: 0;
+        border-radius: 0;
+      }
+
+      .sidebar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-block-end: 1px solid var(--line);
+        scrollbar-width: none;
+      }
+      .sidebar::-webkit-scrollbar { display: none; }
+
+      .close { flex: none; margin: 0; }
+
+      .sidebar nav { display: flex; gap: 6px; }
+      .group { display: flex; gap: 2px; }
+      .group + .group { margin-top: 0; }
+      .group-label { display: none; }
+
+      .item {
+        flex: none;
+        width: auto;
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .stub-panel { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <button class="close" type="button" aria-label="Close settings">
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>
+      </button>
+
+      <nav aria-label="Settings">
+        <div class="group" role="group" aria-labelledby="g-account">
+          <h2 class="group-label" id="g-account">Account</h2>
+
+          <button class="item" type="button" data-panel="profile">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="6.5" r="2"/><path d="M3.9 12.6c.9-1.6 2.3-2.4 4.1-2.4s3.2.8 4.1 2.4"/></svg>
+            <span>Profile</span>
+          </button>
+          <button class="item" type="button" data-panel="account">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="2.5"/><path d="M3 13.5c0-2.4 2.2-4 5-4s5 1.6 5 4"/></svg>
+            <span>Account</span>
+          </button>
+          <button class="item" type="button" data-panel="appearance">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.75a6.25 6.25 0 1 0 0 12.5c1 0 1.4-.7 1.1-1.5-.3-.8.1-1.6 1-1.6h1.4a2.5 2.5 0 0 0 2.5-2.5C14 4.6 11.4 1.75 8 1.75z"/><circle cx="5" cy="7.5" r=".6"/><circle cx="7.2" cy="4.8" r=".6"/><circle cx="10.3" cy="5.2" r=".6"/></svg>
+            <span>Appearance</span>
+          </button>
+          <button class="item" type="button" data-panel="promo">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.6 2H13a1 1 0 0 1 1 1v4.4a1 1 0 0 1-.3.7l-5.6 5.6a1 1 0 0 1-1.4 0L2.3 9.3a1 1 0 0 1 0-1.4l5.6-5.6a1 1 0 0 1 .7-.3z"/><circle cx="11" cy="5" r=".8"/></svg>
+            <span>Promo</span>
+          </button>
+        </div>
+
+        <div class="group" role="group" aria-labelledby="g-workspace">
+          <h2 class="group-label" id="g-workspace">Workspace</h2>
+
+          <button class="item" type="button" data-panel="overview">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1.5"/><rect x="9" y="2" width="5" height="5" rx="1.5"/><rect x="2" y="9" width="5" height="5" rx="1.5"/><rect x="9" y="9" width="5" height="5" rx="1.5"/></svg>
+            <span>Overview</span>
+          </button>
+          <button class="item" type="button" data-panel="members">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5.5" r="2.2"/><path d="M2 13c0-2 1.8-3.3 4-3.3s4 1.3 4 3.3"/><circle cx="11.5" cy="6" r="1.7"/><path d="M11.5 9.6c1.6 0 2.7 1 2.7 2.6"/></svg>
+            <span>Members</span>
+          </button>
+          <button class="item" type="button" data-panel="settings">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2"/><path d="M8 1.5l1 1.6 1.9-.4.6 1.8 1.8.7-.4 1.9L14.5 8l-1.6 1 .4 1.9-1.8.7-.6 1.8-1.9-.4L8 14.5l-1-1.6-1.9.4-.6-1.8-1.8-.7.4-1.9L1.5 8l1.6-1-.4-1.9 1.8-.7.6-1.8 1.9.4z"/></svg>
+            <span>Settings</span>
+          </button>
+          <button class="item" type="button" data-panel="billing">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.75" y="3.5" width="12.5" height="9" rx="2"/><path d="M1.75 6.75h12.5M4 10h2"/></svg>
+            <span>Billing</span>
+          </button>
+          <button class="item" type="button" data-panel="compute-packs">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6 3-6 3-6-3z"/><path d="M2 8l6 3 6-3"/><path d="M2 11l6 3 6-3"/></svg>
+            <span>Compute Packs</span>
+          </button>
+        </div>
+
+        <div class="group" role="group" aria-labelledby="g-developer">
+          <h2 class="group-label" id="g-developer">Developer</h2>
+
+          <button class="item" type="button" data-panel="api-tokens">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 4.5L2 8l3.5 3.5M10.5 4.5L14 8l-3.5 3.5M9 3L7 13"/></svg>
+            <span>API Tokens</span>
+          </button>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Content -->
+    <main class="main">
+
+      <!-- Promo -->
+      <section class="panel promo-panel" id="panel-promo" aria-label="Promo">
+        <form class="promo" id="promo-form" novalidate>
+          <label class="sr-only" for="promo-code">Promo code</label>
+          <input
+            class="code"
+            id="promo-code"
+            name="code"
+            type="text"
+            placeholder="Enter promo code"
+            maxlength="32"
+            autocomplete="off"
+            autocapitalize="characters"
+            autocorrect="off"
+            spellcheck="false">
+
+          <button class="claim" id="claim" type="submit">Claim</button>
+          <p class="status" id="promo-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <!-- Placeholder for the remaining sections -->
+      <section class="panel stub-panel" id="panel-stub" hidden>
+        <h1 id="stub-title"></h1>
+        <p>Nothing here yet.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var items = Array.prototype.slice.call(document.querySelectorAll('.item'));
+      var promoPanel = document.getElementById('panel-promo');
+      var stubPanel = document.getElementById('panel-stub');
+      var stubTitle = document.getElementById('stub-title');
+
+      var form = document.getElementById('promo-form');
+      var input = document.getElementById('promo-code');
+      var claimBtn = document.getElementById('claim');
+      var status = document.getElementById('promo-status');
+      var canHover = window.matchMedia('(hover: hover)').matches;
+
+      /* ---------- Navigation ---------- */
+
+      function show(name, focusInput) {
+        var item = items.filter(function (i) { return i.dataset.panel === name; })[0]
+                || items.filter(function (i) { return i.dataset.panel === 'promo'; })[0];
+        var isPromo = item.dataset.panel === 'promo';
+
+        items.forEach(function (i) {
+          if (i === item) i.setAttribute('aria-current', 'page');
+          else i.removeAttribute('aria-current');
+        });
+
+        promoPanel.hidden = !isPromo;
+        stubPanel.hidden = isPromo;
+        stubTitle.textContent = item.textContent.trim();
+
+        // Sandboxed previews (iframes, blob/srcdoc pages) block the History API,
+        // so this must never be allowed to break the rest of the script.
+        try {
+          if (location.hash !== '#' + item.dataset.panel) {
+            history.replaceState(null, '', '#' + item.dataset.panel);
+          }
+        } catch (err) { /* ignore */ }
+        if (isPromo && focusInput && canHover) input.focus({ preventScroll: true });
+      }
+
+      items.forEach(function (item) {
+        item.addEventListener('click', function () { show(item.dataset.panel, true); });
+      });
+
+      document.querySelector('.close').addEventListener('click', function () {
+        // Hook this up to however you close settings in your app.
+        try { if (history.length > 1) history.back(); } catch (err) { /* ignore */ }
+      });
+
+      /* ---------- Promo code ---------- */
+
+      function setStatus(message, tone) {
+        status.textContent = message || '';
+        if (tone) status.dataset.tone = tone;
+        else delete status.dataset.tone;
+      }
+
+      // Replace with your real API call.
+      // Resolve with { message } on success, throw an Error(message) on failure.
+      function claimPromo(code) {
+        return new Promise(function (resolve, reject) {
+          setTimeout(function () {
+            if (code === 'WELCOME') resolve({ message: 'Code applied to your workspace.' });
+            else reject(new Error('This code isn\u2019t valid or has already been used.'));
+          }, 700);
+        });
+      }
+
+      input.addEventListener('input', function () {
+        form.classList.toggle('has-value', input.value.trim().length > 0);
+        setStatus('');
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var code = input.value.trim().toUpperCase();
+        if (!code || claimBtn.disabled) return;
+
+        claimBtn.disabled = true;
+        claimBtn.textContent = 'Claiming\u2026';
+        setStatus('');
+
+        claimPromo(code)
+          .then(function (res) {
+            input.value = '';
+            form.classList.remove('has-value');
+            setStatus(res && res.message ? res.message : 'Code claimed.', 'success');
+          })
+          .catch(function (err) {
+            setStatus(err && err.message ? err.message : 'Something went wrong. Try again.', 'error');
+            input.classList.remove('nudge');
+            void input.offsetWidth; // restart the animation
+            input.classList.add('nudge');
+          })
+          .then(function () {
+            claimBtn.disabled = false;
+            claimBtn.textContent = 'Claim';
+          });
+      });
+
+      var initial = 'promo';
+      try { initial = location.hash.slice(1) || 'promo'; } catch (err) { /* ignore */ }
+      show(initial, true);
+    })();
+  </script>
+</body>
+</html>

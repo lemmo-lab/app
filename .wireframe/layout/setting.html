@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000;
+      --line: #1c1c1c;
+      --text: #f5f5f5;
+      --muted: #8c8c8c;
+      --faint: #333;
+      --hover: #151515;
+      --active: #262626;
+      --btn: #f5f5f5;
+      --btn-hover: #dcdcdc;
+      --ease: cubic-bezier(.16, 1, .3, 1);
+      --btn-text: #111;
+      --error: #ff7b7b;
+      --success: #6ee7a8;
+      --sidebar: 190px;
+      --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 400 14px/1.4 var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button { font: inherit; color: inherit; }
+
+    :focus-visible {
+      outline: 2px solid rgba(255, 255, 255, .55);
+      outline-offset: 2px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    /* ---------- Shell ---------- */
+
+    .shell {
+      display: grid;
+      grid-template-columns: var(--sidebar) minmax(0, 1fr);
+      height: 100dvh;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    /* ---------- Sidebar ---------- */
+
+    .sidebar {
+      padding: 14px 8px 24px;
+      overflow-y: auto;
+    }
+
+    .close {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin: 2px 0 22px;
+      margin-inline-start: 10px;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      background: none;
+      color: var(--text);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .close:hover { background: var(--hover); }
+
+    .group + .group { margin-top: 26px; }
+
+    .group-label {
+      margin: 0;
+      padding: 0 10px 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      height: 30px;
+      margin: 0 0 2px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 10px;
+      background: none;
+      font-weight: 500;
+      text-align: start;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .item:hover { background: var(--hover); }
+    .item[aria-current="page"] { background: var(--active); }
+
+    .icon {
+      flex: none;
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .item .icon { opacity: .85; }
+
+    /* ---------- Main ---------- */
+
+    .main {
+      min-width: 0;
+      overflow: auto;
+    }
+
+    .panel[hidden] { display: none; }
+
+    /* Promo */
+
+    .promo-panel {
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+      padding: 32px 32px 72px;
+    }
+
+    .promo {
+      display: grid;
+      justify-items: center;
+      gap: 20px;
+      width: min(640px, 100%);
+    }
+
+    .code {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #fff;
+      caret-color: #fff;
+      text-align: center;
+      text-transform: uppercase;
+      font: 800 clamp(28px, 4vw, 44px) / 1.1 var(--font);
+      letter-spacing: -.02em;
+    }
+    .code::placeholder { color: var(--faint); opacity: 1; }
+    .code.nudge { animation: nudge .3s; }
+
+    .claim {
+      min-width: 88px;
+      height: 40px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--btn);
+      color: var(--btn-text);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.005em;
+      box-shadow: 0 8px 28px rgba(255, 255, 255, .07);
+      cursor: pointer;
+      transition:
+        opacity .4s var(--ease),
+        transform .4s var(--ease),
+        filter .4s var(--ease),
+        background .15s,
+        visibility .4s;
+    }
+    .claim:hover { background: var(--btn-hover); }
+    .claim:active { transform: scale(.97); }
+    .claim:disabled { opacity: .55; cursor: default; }
+
+    /* Claim fades in (with a soft blur-to-sharp) once something is typed */
+    .promo:not(.has-value) .claim {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(.94);
+      filter: blur(6px);
+      pointer-events: none;
+    }
+
+    .status {
+      min-height: 20px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    .status[data-tone="error"]   { color: var(--error); }
+    .status[data-tone="success"] { color: var(--success); }
+
+    /* ---------- Settings pages (Profile, Account) ---------- */
+
+    :root {
+      --field: #0a0a0a;
+      --field-line: #262626;
+      --dots: #2a2a2a;
+    }
+
+    .page {
+      width: min(680px, 100%);
+      margin-inline: auto;
+      padding: 56px 32px 96px;
+    }
+
+    .page-head h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .page-head p { margin: 6px 0 0; color: var(--muted); }
+
+    .section { margin-top: 44px; }
+
+    .section-title {
+      margin: 0;
+      padding-bottom: 12px;
+      border-block-end: 1px dotted var(--dots);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    /* A row is: label on one side, control on the other, dotted rule below */
+    .row {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      align-items: center;
+      gap: 8px 24px;
+      padding: 20px 0;
+      border-block-end: 1px dotted var(--dots);
+    }
+    .row.stack { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .row.row-verify { row-gap: 0; }
+
+    .label { font-weight: 500; }
+    .req { margin-inline-start: 2px; color: var(--muted); }
+    .hint {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.45;
+    }
+
+    .label-line { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .counter { color: var(--muted); font-size: 13px; }
+
+    .control {
+      justify-self: end;
+      width: 100%;
+      max-width: 340px;
+      min-width: 0;
+    }
+    .control.end { display: flex; justify-content: flex-end; }
+
+    /* Fields */
+
+    .field {
+      display: block;
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--field-line);
+      border-radius: 10px;
+      background: var(--field);
+      color: var(--text);
+      font: inherit;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .field::placeholder { color: #555; opacity: 1; }
+    .field:hover { border-color: #363636; }
+    .field:focus,
+    .field:focus-visible {
+      outline: 0;
+      border-color: #5c5c5c;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, .07);
+    }
+    .field[aria-invalid="true"] { border-color: rgba(255, 123, 123, .65); }
+
+    textarea.field {
+      height: auto;
+      min-height: 132px;
+      padding: 10px 12px;
+      line-height: 1.55;
+      resize: vertical;
+    }
+
+    select.field {
+      appearance: none;
+      padding-inline-end: 36px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%238c8c8c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      cursor: pointer;
+    }
+    :root[dir="rtl"] select.field { background-position: left 12px center; }
+    select.field option { background: #111; color: #fff; }
+
+    .input-icon { position: relative; }
+    .input-icon > .icon,
+    .input-icon > .affix {
+      position: absolute;
+      inset-inline-start: 12px;
+      top: 50%;
+      translate: 0 -50%;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .input-icon > .icon { width: 16px; height: 16px; }
+    .input-icon > .affix { font-weight: 500; }
+    .input-icon > .icon ~ .field,
+    .input-icon > .affix ~ .field { padding-inline-start: 34px; }
+    .icon-fill { fill: currentColor; stroke: none; }
+
+    /* Buttons */
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid var(--field-line);
+      border-radius: 10px;
+      background: #101010;
+      color: var(--text);
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, opacity .15s, transform .15s;
+    }
+    .btn:hover { background: #181818; border-color: #363636; }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .4; cursor: default; transform: none; }
+    .btn:disabled:hover { background: #101010; border-color: var(--field-line); }
+    .btn .icon { width: 14px; height: 14px; }
+
+    .btn[hidden] { display: none; }
+
+    .btn-ghost { border-color: transparent; background: none; color: var(--muted); }
+    .btn-ghost:hover { background: var(--hover); border-color: transparent; color: var(--text); }
+
+    .btn-primary { border-color: transparent; background: var(--btn); color: var(--btn-text); font-weight: 600; }
+    .btn-primary:hover { background: var(--btn-hover); border-color: transparent; }
+    .btn-primary:disabled:hover { background: var(--btn); border-color: transparent; }
+
+    .btn-danger { color: var(--error); border-color: rgba(255, 123, 123, .28); }
+    .btn-danger:hover { background: rgba(255, 123, 123, .08); border-color: rgba(255, 123, 123, .45); }
+    .btn-danger.armed { background: var(--error); border-color: transparent; color: #1a0606; }
+    .btn-danger.armed:hover { background: #ff9393; }
+
+    .link-btn {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--muted);
+      font: inherit;
+      font-size: 13px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      transition: color .15s;
+    }
+    .link-btn:hover { color: var(--text); }
+    .link-btn:disabled { text-decoration: none; color: #666; cursor: default; }
+
+    .page-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 28px; }
+
+    /* Avatar */
+
+    .avatar-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .btn-group { display: flex; gap: 6px; }
+
+    .avatar {
+      display: grid;
+      place-items: center;
+      flex: none;
+      width: 56px;
+      height: 56px;
+      overflow: hidden;
+      border: 1px solid var(--field-line);
+      border-radius: 50%;
+      background: #161616;
+      color: #cfcfcf;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Email verification */
+
+    .badge {
+      display: none;
+      position: absolute;
+      inset-inline-end: 12px;
+      top: 50%;
+      translate: 0 -50%;
+      align-items: center;
+      gap: 4px;
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 500;
+      pointer-events: none;
+    }
+    .badge .icon { width: 12px; height: 12px; stroke-width: 2; }
+    .control.verified .badge { display: inline-flex; }
+    .control.verified .field { padding-inline-end: 84px; }
+
+    .verify {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      visibility: hidden;
+      transition: grid-template-rows .45s var(--ease), opacity .3s, visibility 0s .45s;
+    }
+    .verify.open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+    .verify-clip { min-height: 0; overflow: hidden; }
+
+    .verify-card {
+      display: grid;
+      grid-template-columns: 16px minmax(0, 1fr) auto;
+      grid-template-areas:
+        "icon text otp"
+        ".    link action";
+      align-items: center;
+      gap: 18px 14px;
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid var(--field-line);
+      border-radius: 14px;
+      background: #070707;
+    }
+    .verify-icon { grid-area: icon; align-self: start; margin-top: 2px; color: var(--muted); }
+    .verify-text { grid-area: text; min-width: 0; }
+    .verify-title { margin: 0; font-weight: 500; }
+    .verify-sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .verify-sub strong { color: var(--text); font-weight: 500; overflow-wrap: anywhere; }
+    .verify-sub[data-tone="error"] { color: var(--error); }
+    #otp { grid-area: otp; }
+    .verify-link { grid-area: link; justify-self: start; }
+    .verify-action { grid-area: action; justify-self: end; }
+
+    .otp {
+      display: flex;
+      overflow: hidden;
+      border: 1px solid var(--field-line);
+      border-radius: 10px;
+      background: var(--field);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .otp:focus-within { border-color: #5c5c5c; box-shadow: 0 0 0 3px rgba(255, 255, 255, .07); }
+    .otp.invalid { border-color: rgba(255, 123, 123, .65); animation: nudge .3s; }
+
+    .otp input {
+      width: 34px;
+      height: 40px;
+      padding: 0;
+      border: 0;
+      border-inline-start: 1px solid var(--field-line);
+      background: transparent;
+      color: var(--text);
+      caret-color: #fff;
+      text-align: center;
+      font: 500 15px var(--font);
+      font-variant-numeric: tabular-nums;
+    }
+    .otp input:first-child { border-inline-start: 0; }
+    .otp input::placeholder { color: #3a3a3a; opacity: 1; }
+    .otp input:focus,
+    .otp input:focus-visible { outline: 0; background: #171717; }
+
+    /* Toast */
+
+    .toast {
+      position: fixed;
+      inset-block-end: 24px;
+      inset-inline: 0;
+      z-index: 10;
+      width: max-content;
+      max-width: calc(100% - 32px);
+      margin-inline: auto;
+      padding: 10px 16px;
+      border: 1px solid var(--field-line);
+      border-radius: 12px;
+      background: #121212;
+      color: var(--text);
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity .3s var(--ease), transform .3s var(--ease);
+    }
+    .toast.show { opacity: 1; transform: none; }
+
+    @media (max-width: 760px) {
+      .page { padding: 32px 20px 80px; }
+      .row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+      .row.row-verify { row-gap: 10px; }
+      .control { justify-self: stretch; max-width: none; }
+      .control.end { justify-content: flex-start; }
+
+      .verify-card {
+        grid-template-areas:
+          "icon text text"
+          "otp  otp  otp"
+          "link link action";
+      }
+      #otp { width: 100%; }
+      .otp input { flex: 1; width: auto; min-width: 0; }
+    }
+
+    /* Other sections (stubs) */
+
+    .stub-panel { padding: 56px; }
+    .stub-panel h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+    .stub-panel p { margin: 0; color: var(--muted); }
+
+    @keyframes nudge {
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    /* ---------- Mobile ---------- */
+
+    @media (max-width: 760px) {
+      .shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
+        border: 0;
+        border-radius: 0;
+      }
+
+      .sidebar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-block-end: 1px solid var(--line);
+        scrollbar-width: none;
+      }
+      .sidebar::-webkit-scrollbar { display: none; }
+
+      .close { flex: none; margin: 0; }
+
+      .sidebar nav { display: flex; gap: 6px; }
+      .group { display: flex; gap: 2px; }
+      .group + .group { margin-top: 0; }
+      .group-label { display: none; }
+
+      .item {
+        flex: none;
+        width: auto;
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      .stub-panel { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <button class="close" type="button" aria-label="Close settings">
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>
+      </button>
+
+      <nav aria-label="Settings">
+        <div class="group" role="group" aria-labelledby="g-account">
+          <h2 class="group-label" id="g-account">Account</h2>
+
+          <button class="item" type="button" data-panel="profile">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="6.5" r="2"/><path d="M3.9 12.6c.9-1.6 2.3-2.4 4.1-2.4s3.2.8 4.1 2.4"/></svg>
+            <span>Profile</span>
+          </button>
+          <button class="item" type="button" data-panel="account">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="2.5"/><path d="M3 13.5c0-2.4 2.2-4 5-4s5 1.6 5 4"/></svg>
+            <span>Account</span>
+          </button>
+          <button class="item" type="button" data-panel="appearance">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.75a6.25 6.25 0 1 0 0 12.5c1 0 1.4-.7 1.1-1.5-.3-.8.1-1.6 1-1.6h1.4a2.5 2.5 0 0 0 2.5-2.5C14 4.6 11.4 1.75 8 1.75z"/><circle cx="5" cy="7.5" r=".6"/><circle cx="7.2" cy="4.8" r=".6"/><circle cx="10.3" cy="5.2" r=".6"/></svg>
+            <span>Appearance</span>
+          </button>
+          <button class="item" type="button" data-panel="promo">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8.6 2H13a1 1 0 0 1 1 1v4.4a1 1 0 0 1-.3.7l-5.6 5.6a1 1 0 0 1-1.4 0L2.3 9.3a1 1 0 0 1 0-1.4l5.6-5.6a1 1 0 0 1 .7-.3z"/><circle cx="11" cy="5" r=".8"/></svg>
+            <span>Promo</span>
+          </button>
+        </div>
+
+        <div class="group" role="group" aria-labelledby="g-workspace">
+          <h2 class="group-label" id="g-workspace">Workspace</h2>
+
+          <button class="item" type="button" data-panel="overview">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1.5"/><rect x="9" y="2" width="5" height="5" rx="1.5"/><rect x="2" y="9" width="5" height="5" rx="1.5"/><rect x="9" y="9" width="5" height="5" rx="1.5"/></svg>
+            <span>Overview</span>
+          </button>
+          <button class="item" type="button" data-panel="members">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6" cy="5.5" r="2.2"/><path d="M2 13c0-2 1.8-3.3 4-3.3s4 1.3 4 3.3"/><circle cx="11.5" cy="6" r="1.7"/><path d="M11.5 9.6c1.6 0 2.7 1 2.7 2.6"/></svg>
+            <span>Members</span>
+          </button>
+          <button class="item" type="button" data-panel="settings">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2"/><path d="M8 1.5l1 1.6 1.9-.4.6 1.8 1.8.7-.4 1.9L14.5 8l-1.6 1 .4 1.9-1.8.7-.6 1.8-1.9-.4L8 14.5l-1-1.6-1.9.4-.6-1.8-1.8-.7.4-1.9L1.5 8l1.6-1-.4-1.9 1.8-.7.6-1.8 1.9.4z"/></svg>
+            <span>Settings</span>
+          </button>
+          <button class="item" type="button" data-panel="billing">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.75" y="3.5" width="12.5" height="9" rx="2"/><path d="M1.75 6.75h12.5M4 10h2"/></svg>
+            <span>Billing</span>
+          </button>
+          <button class="item" type="button" data-panel="compute-packs">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6 3-6 3-6-3z"/><path d="M2 8l6 3 6-3"/><path d="M2 11l6 3 6-3"/></svg>
+            <span>Compute Packs</span>
+          </button>
+        </div>
+
+        <div class="group" role="group" aria-labelledby="g-developer">
+          <h2 class="group-label" id="g-developer">Developer</h2>
+
+          <button class="item" type="button" data-panel="api-tokens">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 4.5L2 8l3.5 3.5M10.5 4.5L14 8l-3.5 3.5M9 3L7 13"/></svg>
+            <span>API Tokens</span>
+          </button>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Content -->
+    <main class="main">
+
+      <!-- Profile -->
+      <section class="panel" id="panel-profile" aria-labelledby="profile-title">
+        <div class="page">
+          <header class="page-head">
+            <h1 id="profile-title">Profile</h1>
+            <p>Manage how you appear across the workspace.</p>
+          </header>
+
+          <form id="profile-form" autocomplete="off">
+            <section class="section" aria-labelledby="s-public">
+              <h2 class="section-title" id="s-public">Public profile</h2>
+
+              <div class="row">
+                <span class="label">Photo</span>
+                <div class="control avatar-line">
+                  <div class="avatar" id="p-avatar" aria-hidden="true"></div>
+                  <div class="btn-group">
+                    <input type="file" id="p-file" accept="image/*" hidden>
+                    <button class="btn" type="button" id="p-upload">
+                      <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10.5v-8M5 5l3-3 3 3M2.5 10.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2"/></svg>
+                      Upload
+                    </button>
+                    <button class="btn btn-ghost" type="button" id="p-remove" hidden>Remove</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <label class="label" for="p-name">Display name<span class="req" aria-hidden="true">*</span></label>
+                <div class="control">
+                  <input class="field" id="p-name" name="name" type="text" value="Alex Morgan" maxlength="50" required>
+                </div>
+              </div>
+
+              <div class="row">
+                <label class="label" for="p-user">Username<span class="req" aria-hidden="true">*</span></label>
+                <div class="control input-icon">
+                  <span class="affix" aria-hidden="true">@</span>
+                  <input class="field" id="p-user" name="username" type="text" value="alexmorgan" minlength="3" maxlength="24" pattern="[a-z0-9_.]+" title="Lowercase letters, numbers, dots and underscores" autocapitalize="none" spellcheck="false" required>
+                </div>
+              </div>
+
+              <div class="row stack">
+                <div class="label-line">
+                  <label class="label" for="p-bio">Bio</label>
+                  <span class="counter" id="bio-count" aria-live="polite"></span>
+                </div>
+                <textarea class="field" id="p-bio" name="bio" rows="5" maxlength="200">Product designer building calm, considered tools. Currently exploring generative imagery and interface craft.</textarea>
+              </div>
+            </section>
+
+            <section class="section" aria-labelledby="s-social">
+              <h2 class="section-title" id="s-social">Social profiles</h2>
+
+              <div class="row">
+                <label class="label" for="p-x">x.com/</label>
+                <div class="control input-icon">
+                  <svg class="icon icon-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M12.2 1.5h2.2L9.6 7l5.6 7.5h-4.4L7.4 10l-3.9 4.5H1.3l5.2-5.9L1.1 1.5h4.5l3.1 4.1 3.5-4.1zm-.8 11.7h1.2L4.9 2.7H3.6l7.8 10.5z"/></svg>
+                  <input class="field" id="p-x" name="x" type="text" value="alexmorgan" placeholder="username" autocapitalize="none" spellcheck="false">
+                </div>
+              </div>
+
+              <div class="row">
+                <label class="label" for="p-gh">github.com/</label>
+                <div class="control input-icon">
+                  <svg class="icon icon-fill" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                  <input class="field" id="p-gh" name="github" type="text" placeholder="username" autocapitalize="none" spellcheck="false">
+                </div>
+              </div>
+
+              <div class="row">
+                <label class="label" for="p-ig">instagram.com/</label>
+                <div class="control input-icon">
+                  <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3.5"/><circle cx="8" cy="8" r="2.8"/><circle cx="11.6" cy="4.4" r=".5"/></svg>
+                  <input class="field" id="p-ig" name="instagram" type="text" placeholder="username" autocapitalize="none" spellcheck="false">
+                </div>
+              </div>
+            </section>
+
+            <div class="page-actions">
+              <button class="btn" type="button" id="p-cancel" disabled>Cancel</button>
+              <button class="btn btn-primary" type="submit" id="p-save" disabled>Save changes</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Account -->
+      <section class="panel" id="panel-account" aria-labelledby="account-title" hidden>
+        <div class="page">
+          <header class="page-head">
+            <h1 id="account-title">Account</h1>
+            <p>Manage your sign-in details and preferences.</p>
+          </header>
+
+          <section class="section" aria-labelledby="s-signin">
+            <h2 class="section-title" id="s-signin">Sign-in</h2>
+
+            <div class="row row-verify">
+              <label class="label" for="acc-email">Email address<span class="req" aria-hidden="true">*</span></label>
+              <div class="control input-icon" id="email-control">
+                <input class="field" id="acc-email" type="email" value="alex@example.com" autocomplete="email" autocapitalize="none" spellcheck="false">
+                <span class="badge">
+                  <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>
+                  Verified
+                </span>
+              </div>
+
+              <div class="verify open" id="verify">
+                <div class="verify-clip">
+                  <div class="verify-card">
+                    <svg class="icon verify-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M14 2L7 9M14 2l-4.5 12-2.5-5.5L1.5 6z"/></svg>
+                    <div class="verify-text">
+                      <p class="verify-title">Please verify your email</p>
+                      <p class="verify-sub" id="verify-sub" role="status" aria-live="polite">We sent a 6-digit code to <strong>alex@example.com</strong></p>
+                    </div>
+                    <div class="otp" id="otp" role="group" aria-label="6-digit verification code" dir="ltr">
+                      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" placeholder="0" autocomplete="one-time-code" aria-label="Digit 1">
+                      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" placeholder="0" autocomplete="off" aria-label="Digit 2">
+                      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" placeholder="0" autocomplete="off" aria-label="Digit 3">
+                      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" placeholder="0" autocomplete="off" aria-label="Digit 4">
+                      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" placeholder="0" autocomplete="off" aria-label="Digit 5">
+                      <input inputmode="numeric" pattern="[0-9]*" maxlength="1" placeholder="0" autocomplete="off" aria-label="Digit 6">
+                    </div>
+                    <button class="link-btn verify-link" id="resend" type="button">Didn’t get the email?</button>
+                    <button class="btn verify-action" id="verify-btn" type="button" disabled>Verify email</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">
+                Password
+                <span class="hint">Set a new password for signing in.</span>
+              </div>
+              <div class="control end">
+                <button class="btn" type="button" id="pw-btn">Change password</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" aria-labelledby="s-prefs">
+            <h2 class="section-title" id="s-prefs">Preferences</h2>
+
+            <div class="row">
+              <label class="label" for="acc-lang">Language</label>
+              <div class="control">
+                <select class="field" id="acc-lang">
+                  <option value="en" selected>English</option>
+                  <option value="fa">فارسی</option>
+                  <option value="de">Deutsch</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <label class="label" for="acc-tz">Time zone</label>
+              <div class="control">
+                <select class="field" id="acc-tz">
+                  <option value="UTC" selected>(UTC+00:00) UTC</option>
+                  <option value="Europe/London">(UTC+00:00) London</option>
+                  <option value="Europe/Berlin">(UTC+01:00) Berlin</option>
+                  <option value="Asia/Tehran">(UTC+03:30) Tehran</option>
+                  <option value="Asia/Dubai">(UTC+04:00) Dubai</option>
+                  <option value="America/New_York">(UTC−05:00) New York</option>
+                  <option value="America/Los_Angeles">(UTC−08:00) Los Angeles</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" aria-labelledby="s-danger">
+            <h2 class="section-title" id="s-danger">Danger zone</h2>
+
+            <div class="row">
+              <div class="label">
+                Delete account
+                <span class="hint">Permanently remove your account and all its data.</span>
+              </div>
+              <div class="control end">
+                <button class="btn btn-danger" type="button" id="del-btn">Delete account</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- Promo -->
+      <section class="panel promo-panel" id="panel-promo" aria-label="Promo">
+        <form class="promo" id="promo-form" novalidate>
+          <label class="sr-only" for="promo-code">Promo code</label>
+          <input
+            class="code"
+            id="promo-code"
+            name="code"
+            type="text"
+            placeholder="Enter promo code"
+            maxlength="32"
+            autocomplete="off"
+            autocapitalize="characters"
+            autocorrect="off"
+            spellcheck="false">
+
+          <button class="claim" id="claim" type="submit">Claim</button>
+          <p class="status" id="promo-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <!-- Placeholder for the remaining sections -->
+      <section class="panel stub-panel" id="panel-stub" hidden>
+        <h1 id="stub-title"></h1>
+        <p>Nothing here yet.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var items = Array.prototype.slice.call(document.querySelectorAll('.item'));
+      var views = {
+        profile: document.getElementById('panel-profile'),
+        account: document.getElementById('panel-account'),
+        promo: document.getElementById('panel-promo')
+      };
+      var stubPanel = document.getElementById('panel-stub');
+      var stubTitle = document.getElementById('stub-title');
+      var mainEl = document.querySelector('.main');
+
+      var form = document.getElementById('promo-form');
+      var input = document.getElementById('promo-code');
+      var claimBtn = document.getElementById('claim');
+      var status = document.getElementById('promo-status');
+      var canHover = window.matchMedia('(hover: hover)').matches;
+
+      /* ---------- Navigation ---------- */
+
+      function show(name, focusInput) {
+        var item = items.filter(function (i) { return i.dataset.panel === name; })[0]
+                || items.filter(function (i) { return i.dataset.panel === 'profile'; })[0];
+        var key = item.dataset.panel;
+
+        items.forEach(function (i) {
+          if (i === item) i.setAttribute('aria-current', 'page');
+          else i.removeAttribute('aria-current');
+        });
+
+        Object.keys(views).forEach(function (k) { views[k].hidden = (k !== key); });
+        stubPanel.hidden = !!views[key];
+        stubTitle.textContent = item.textContent.trim();
+        mainEl.scrollTop = 0;
+
+        // Sandboxed previews (iframes, blob/srcdoc pages) block the History API,
+        // so this must never be allowed to break the rest of the script.
+        try {
+          if (location.hash !== '#' + item.dataset.panel) {
+            history.replaceState(null, '', '#' + item.dataset.panel);
+          }
+        } catch (err) { /* ignore */ }
+        if (key === 'promo' && focusInput && canHover) input.focus({ preventScroll: true });
+      }
+
+      items.forEach(function (item) {
+        item.addEventListener('click', function () { show(item.dataset.panel, true); });
+      });
+
+      document.querySelector('.close').addEventListener('click', function () {
+        // Hook this up to however you close settings in your app.
+        try { if (history.length > 1) history.back(); } catch (err) { /* ignore */ }
+      });
+
+      /* ---------- Promo code ---------- */
+
+      function setStatus(message, tone) {
+        status.textContent = message || '';
+        if (tone) status.dataset.tone = tone;
+        else delete status.dataset.tone;
+      }
+
+      // Replace with your real API call.
+      // Resolve with { message } on success, throw an Error(message) on failure.
+      function claimPromo(code) {
+        return new Promise(function (resolve, reject) {
+          setTimeout(function () {
+            if (code === 'WELCOME') resolve({ message: 'Code applied to your workspace.' });
+            else reject(new Error('This code isn\u2019t valid or has already been used.'));
+          }, 700);
+        });
+      }
+
+      input.addEventListener('input', function () {
+        form.classList.toggle('has-value', input.value.trim().length > 0);
+        setStatus('');
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var code = input.value.trim().toUpperCase();
+        if (!code || claimBtn.disabled) return;
+
+        claimBtn.disabled = true;
+        claimBtn.textContent = 'Claiming\u2026';
+        setStatus('');
+
+        claimPromo(code)
+          .then(function (res) {
+            input.value = '';
+            form.classList.remove('has-value');
+            setStatus(res && res.message ? res.message : 'Code claimed.', 'success');
+          })
+          .catch(function (err) {
+            setStatus(err && err.message ? err.message : 'Something went wrong. Try again.', 'error');
+            input.classList.remove('nudge');
+            void input.offsetWidth; // restart the animation
+            input.classList.add('nudge');
+          })
+          .then(function () {
+            claimBtn.disabled = false;
+            claimBtn.textContent = 'Claim';
+          });
+      });
+
+      var initial = 'profile';
+      try { initial = location.hash.slice(1) || 'profile'; } catch (err) { /* ignore */ }
+      show(initial, true);
+    })();
+  </script>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* Profile + Account behavior */
+    (function () {
+      var $ = function (s, r) { return (r || document).querySelector(s); };
+
+      /* ---------- Toast ---------- */
+
+      var toastEl = $('#toast');
+      var toastTimer;
+      function toast(message) {
+        toastEl.textContent = message;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+      }
+
+      /* ---------- Profile ---------- */
+
+      var form = $('#profile-form');
+      var nameInput = $('#p-name');
+      var userInput = $('#p-user');
+      var bio = $('#p-bio');
+      var count = $('#bio-count');
+      var saveBtn = $('#p-save');
+      var cancelBtn = $('#p-cancel');
+      var avatar = $('#p-avatar');
+      var fileInput = $('#p-file');
+      var uploadBtn = $('#p-upload');
+      var removeBtn = $('#p-remove');
+
+      var avatarUrl = null;
+      var savedAvatarUrl = null;
+      var savedState = '';
+
+      function initials() {
+        var parts = nameInput.value.trim().split(/\s+/).filter(Boolean);
+        var s = (parts[0] ? parts[0][0] : '') + (parts[1] ? parts[1][0] : '');
+        return s.toUpperCase() || '?';
+      }
+
+      function renderAvatar() {
+        avatar.textContent = '';
+        if (avatarUrl) {
+          var img = document.createElement('img');
+          img.alt = '';
+          img.src = avatarUrl;
+          avatar.appendChild(img);
+        } else {
+          avatar.textContent = initials();
+        }
+        removeBtn.hidden = !avatarUrl;
+      }
+
+      function renderCount() {
+        var left = bio.maxLength - bio.value.length;
+        count.textContent = left + (left === 1 ? ' character left' : ' characters left');
+      }
+
+      function currentState() {
+        var values = Array.prototype.map.call(form.elements, function (el) {
+          return el.name ? el.value : '';
+        });
+        return JSON.stringify(values) + '|' + (avatarUrl || '');
+      }
+
+      function syncDirty() {
+        var dirty = currentState() !== savedState;
+        saveBtn.disabled = !dirty;
+        cancelBtn.disabled = !dirty;
+      }
+
+      form.addEventListener('input', function (e) {
+        if (e.target === userInput) {
+          var clean = userInput.value.toLowerCase().replace(/[^a-z0-9_.]/g, '');
+          if (clean !== userInput.value) userInput.value = clean;
+        }
+        if (e.target === nameInput && !avatarUrl) renderAvatar();
+        if (e.target === bio) renderCount();
+        syncDirty();
+      });
+
+      uploadBtn.addEventListener('click', function () { fileInput.click(); });
+
+      fileInput.addEventListener('change', function () {
+        var file = fileInput.files && fileInput.files[0];
+        fileInput.value = '';
+        if (!file) return;
+        if (!/^image\//.test(file.type)) { toast('Choose an image file.'); return; }
+        if (file.size > 2 * 1024 * 1024) { toast('Choose an image under 2 MB.'); return; }
+        if (avatarUrl && avatarUrl !== savedAvatarUrl) URL.revokeObjectURL(avatarUrl);
+        avatarUrl = URL.createObjectURL(file);
+        renderAvatar();
+        syncDirty();
+      });
+
+      removeBtn.addEventListener('click', function () {
+        avatarUrl = null;
+        renderAvatar();
+        syncDirty();
+      });
+
+      cancelBtn.addEventListener('click', function () {
+        form.reset();
+        avatarUrl = savedAvatarUrl;
+        renderAvatar();
+        renderCount();
+        syncDirty();
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
+        // TODO: send the form values (and the selected image) to your API.
+        savedState = currentState();
+        savedAvatarUrl = avatarUrl;
+        syncDirty();
+        toast('Profile saved');
+      });
+
+      renderAvatar();
+      renderCount();
+      savedState = currentState();
+      syncDirty();
+
+      /* ---------- Account: email verification ---------- */
+
+      var email = $('#acc-email');
+      var emailCtl = $('#email-control');
+      var verify = $('#verify');
+      var sub = $('#verify-sub');
+      var otp = $('#otp');
+      var digits = Array.prototype.slice.call(otp.querySelectorAll('input'));
+      var verifyBtn = $('#verify-btn');
+      var resend = $('#resend');
+
+      var verifiedEmail = null;   // nothing verified yet, so the box starts open
+      var cooldown = 0;
+      var cooldownTimer;
+
+      function getCode() {
+        return digits.map(function (d) { return d.value; }).join('');
+      }
+      function clearDigits() {
+        digits.forEach(function (d) { d.value = ''; });
+        syncVerifyBtn();
+      }
+      function syncVerifyBtn() {
+        verifyBtn.disabled = getCode().length !== 6;
+      }
+
+      function showSent(addr) {
+        sub.removeAttribute('data-tone');
+        sub.textContent = 'We sent a 6-digit code to ';
+        var b = document.createElement('strong');
+        b.textContent = addr;
+        sub.appendChild(b);
+      }
+      function showError(message) {
+        sub.setAttribute('data-tone', 'error');
+        sub.textContent = message;
+      }
+
+      function openBox(addr) {
+        showSent(addr);
+        clearDigits();
+        otp.classList.remove('invalid');
+        verify.classList.add('open');
+      }
+      function closeBox() {
+        verify.classList.remove('open');
+        clearDigits();
+      }
+
+      // TODO: replace with your API call that emails a 6-digit code.
+      function sendCode(addr) { /* request a code for addr */ }
+
+      // TODO: replace with your API call. Resolve on success, reject with an Error on failure.
+      // Demo: the code 123456 is accepted.
+      function verifyCode(addr, code) {
+        return new Promise(function (resolve, reject) {
+          setTimeout(function () {
+            if (code === '123456') resolve();
+            else reject(new Error('That code isn\u2019t right. Check it and try again.'));
+          }, 700);
+        });
+      }
+
+      function renderResend() {
+        if (cooldown > 0) {
+          resend.disabled = true;
+          resend.textContent = 'Resend in ' + cooldown + 's';
+        } else {
+          resend.disabled = false;
+          resend.textContent = 'Didn\u2019t get the email?';
+        }
+      }
+      function startCooldown(seconds) {
+        clearInterval(cooldownTimer);
+        cooldown = seconds || 30;
+        renderResend();
+        cooldownTimer = setInterval(function () {
+          cooldown -= 1;
+          renderResend();
+          if (cooldown <= 0) clearInterval(cooldownTimer);
+        }, 1000);
+      }
+
+      // Six-box code entry
+      digits.forEach(function (box, i) {
+        box.addEventListener('input', function () {
+          box.value = box.value.replace(/\D/g, '').slice(-1);
+          otp.classList.remove('invalid');
+          if (sub.getAttribute('data-tone') === 'error') showSent(email.value.trim());
+          if (box.value && digits[i + 1]) digits[i + 1].focus();
+          syncVerifyBtn();
+        });
+
+        box.addEventListener('keydown', function (e) {
+          if (e.key === 'Backspace' && !box.value && digits[i - 1]) {
+            digits[i - 1].value = '';
+            digits[i - 1].focus();
+            syncVerifyBtn();
+            e.preventDefault();
+          } else if (e.key === 'ArrowLeft' && digits[i - 1]) {
+            digits[i - 1].focus();
+            e.preventDefault();
+          } else if (e.key === 'ArrowRight' && digits[i + 1]) {
+            digits[i + 1].focus();
+            e.preventDefault();
+          } else if (e.key === 'Enter') {
+            verifyBtn.click();
+          }
+        });
+
+        box.addEventListener('focus', function () { box.select(); });
+
+        box.addEventListener('paste', function (e) {
+          var text = (e.clipboardData || window.clipboardData).getData('text') || '';
+          var pasted = text.replace(/\D/g, '').slice(0, 6);
+          if (!pasted) return;
+          e.preventDefault();
+          for (var k = 0; k < pasted.length; k++) digits[k].value = pasted[k];
+          digits[Math.min(pasted.length, 5)].focus();
+          syncVerifyBtn();
+        });
+      });
+
+      verifyBtn.addEventListener('click', function () {
+        var code = getCode();
+        if (code.length !== 6 || verifyBtn.dataset.busy) return;
+
+        verifyBtn.dataset.busy = '1';
+        verifyBtn.disabled = true;
+        verifyBtn.textContent = 'Verifying\u2026';
+
+        var addr = email.value.trim();
+        verifyCode(addr, code)
+          .then(function () {
+            verifiedEmail = addr;
+            emailCtl.classList.add('verified');
+            closeBox();
+            toast('Email verified');
+          })
+          .catch(function (err) {
+            showError(err && err.message ? err.message : 'Something went wrong. Try again.');
+            otp.classList.remove('invalid');
+            void otp.offsetWidth; // restart the animation
+            otp.classList.add('invalid');
+            clearDigits();
+            digits[0].focus();
+          })
+          .then(function () {
+            delete verifyBtn.dataset.busy;
+            verifyBtn.textContent = 'Verify email';
+            syncVerifyBtn();
+          });
+      });
+
+      resend.addEventListener('click', function () {
+        if (cooldown > 0) return;
+        sendCode(email.value.trim());
+        showSent(email.value.trim());
+        clearDigits();
+        otp.classList.remove('invalid');
+        digits[0].focus();
+        startCooldown(30);
+        toast('New code sent');
+      });
+
+      // Editing the address drops the verified state; committing a new one sends a fresh code
+      email.addEventListener('input', function () {
+        email.removeAttribute('aria-invalid');
+        if (emailCtl.classList.contains('verified') && email.value.trim() !== verifiedEmail) {
+          emailCtl.classList.remove('verified');
+        }
+      });
+
+      email.addEventListener('change', function () {
+        var value = email.value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          email.setAttribute('aria-invalid', 'true');
+          return;
+        }
+        if (value === verifiedEmail) {
+          emailCtl.classList.add('verified');
+          closeBox();
+          return;
+        }
+        emailCtl.classList.remove('verified');
+        openBox(value);
+        sendCode(value);
+        startCooldown(30);
+      });
+
+      email.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') email.blur();
+      });
+
+      /* ---------- Account: password, preferences, delete ---------- */
+
+      $('#pw-btn').addEventListener('click', function () {
+        // TODO: open your change-password flow.
+        toast('We emailed you a link to set a new password.');
+      });
+
+      ['#acc-lang', '#acc-tz'].forEach(function (sel) {
+        $(sel).addEventListener('change', function () {
+          // TODO: persist the preference.
+          toast('Preferences saved');
+        });
+      });
+
+      var delBtn = $('#del-btn');
+      var armed = false;
+      var armTimer;
+      function disarm() {
+        armed = false;
+        delBtn.classList.remove('armed');
+        delBtn.textContent = 'Delete account';
+      }
+      delBtn.addEventListener('click', function () {
+        if (!armed) {
+          armed = true;
+          delBtn.classList.add('armed');
+          delBtn.textContent = 'Click again to confirm';
+          armTimer = setTimeout(disarm, 4000);
+        } else {
+          clearTimeout(armTimer);
+          disarm();
+          // TODO: call your delete-account endpoint.
+          toast('Account deletion requested');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
