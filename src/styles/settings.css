@@ -1,0 +1,710 @@
+/**
+ * settings.css — Unified Styles for Lemmo Studio Settings Module.
+ * 100% Design Token Adherence (@lemmo-lab/tokens).
+ * Strict CSS Logical Properties for seamless LTR & RTL support.
+ */
+
+/* ========================================================================== */
+/* 1. SETTINGS MAIN LAYOUT                                                    */
+/* ========================================================================== */
+
+.settings-page-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  background: var(--lemmo-page-background, #131517);
+  color: var(--lemmo-text-primary, #e1e1e3);
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.settings-content-viewport {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--lemmo-page-background, #131517);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.settings-content-shell {
+  width: min(720px, 100%);
+  padding: var(--lemmo-space-800, 32px) var(--lemmo-space-600, 24px) var(--lemmo-space-1600, 64px);
+  box-sizing: border-box;
+}
+
+/* ========================================================================== */
+/* 2. SUB-NAVIGATION SIDEBAR                                                  */
+/* ========================================================================== */
+
+.settings-nav-aside {
+  width: 220px;
+  min-width: 220px;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--lemmo-surface-tertiary-background, #0a0c0e);
+  border-inline-end: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-subtle, rgba(255, 255, 255, 0.06));
+  padding: var(--lemmo-space-500, 20px) var(--lemmo-space-300, 12px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lemmo-gap-4, 16px);
+}
+
+.nav-header-badge {
+  padding: 0 var(--lemmo-space-200, 8px) var(--lemmo-space-300, 12px);
+  border-bottom: 1px dotted var(--lemmo-border-subtle, rgba(255, 255, 255, 0.08));
+}
+
+.nav-settings-title {
+  font-family: var(--lemmo-font-heading, inherit);
+  font-size: var(--lemmo-type-size-200, 0.875rem);
+  font-weight: var(--lemmo-font-weight-semi-bold, 600);
+  color: var(--lemmo-text-primary, #ffffff);
+  letter-spacing: -0.01em;
+}
+
+.settings-nav-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lemmo-space-600, 24px);
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lemmo-space-050, 2px);
+}
+
+.group-heading {
+  margin: 0;
+  padding: 0 var(--lemmo-space-200, 8px) var(--lemmo-space-150, 6px);
+  color: var(--lemmo-text-muted, #898a8b);
+  font-size: var(--lemmo-type-size-050, 0.6875rem);
+  font-weight: var(--lemmo-font-weight-semi-bold, 600);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.settings-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--lemmo-gap-2-5, 10px);
+  width: 100%;
+  height: 34px;
+  padding: 0 var(--lemmo-space-250, 10px);
+  border: 0;
+  border-radius: var(--lemmo-radius-200, 8px);
+  background: transparent;
+  color: var(--lemmo-text-secondary, #a1a1a5);
+  font-family: inherit;
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+  font-weight: var(--lemmo-font-weight-medium, 500);
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  transition: background var(--lemmo-duration-fast, 120ms) ease,
+    color var(--lemmo-duration-fast, 120ms) ease;
+}
+
+.settings-nav-item:hover {
+  background: var(--lemmo-border-subtle, rgba(255, 255, 255, 0.06));
+  color: var(--lemmo-text-primary, #ffffff);
+}
+
+.settings-nav-item.active {
+  background: color-mix(in srgb, var(--lemmo-surface-brand-background, #d1fe17) 12%, transparent);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+  font-weight: var(--lemmo-font-weight-semi-bold, 600);
+}
+
+.nav-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.75;
+  transition: opacity var(--lemmo-duration-fast, 120ms) ease;
+}
+
+.settings-nav-item:hover .nav-item-icon,
+.settings-nav-item.active .nav-item-icon {
+  opacity: 1;
+}
+
+.nav-item-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========================================================================== */
+/* 3. SETTINGS HEADER, SECTION & ROWS                                         */
+/* ========================================================================== */
+
+.settings-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--lemmo-gap-4, 16px);
+  margin-bottom: var(--lemmo-space-600, 24px);
+  padding-bottom: var(--lemmo-space-400, 16px);
+  border-bottom: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-subtle, rgba(255, 255, 255, 0.06));
+}
+
+.header-meta {
+  flex: 1;
+}
+
+.header-title {
+  margin: 0;
+  font-family: var(--lemmo-font-heading, inherit);
+  font-size: var(--lemmo-type-size-500, 1.25rem);
+  font-weight: var(--lemmo-font-weight-bold, 700);
+  color: var(--lemmo-text-primary, #ffffff);
+  letter-spacing: -0.01em;
+}
+
+.header-description {
+  margin: var(--lemmo-space-150, 6px) 0 0;
+  color: var(--lemmo-text-muted, #898a8b);
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+  line-height: var(--lemmo-type-leading-600, 1.5);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--lemmo-gap-2, 8px);
+}
+
+.settings-section {
+  margin-top: var(--lemmo-space-800, 32px);
+}
+
+.settings-section:first-child {
+  margin-top: 0;
+}
+
+.section-title {
+  margin: 0;
+  padding-bottom: var(--lemmo-space-300, 12px);
+  border-bottom: 1px dotted var(--lemmo-border-subtle, rgba(255, 255, 255, 0.12));
+  color: var(--lemmo-text-muted, #898a8b);
+  font-size: var(--lemmo-type-size-050, 0.6875rem);
+  font-weight: var(--lemmo-font-weight-bold, 700);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-row {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--lemmo-gap-2, 8px) var(--lemmo-space-600, 24px);
+  padding: var(--lemmo-space-400, 16px) 0;
+  border-bottom: 1px dotted var(--lemmo-border-subtle, rgba(255, 255, 255, 0.08));
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-row.row-stacked {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--lemmo-gap-2, 8px);
+}
+
+.row-label-side {
+  display: flex;
+  flex-direction: column;
+}
+
+.row-label {
+  font-weight: var(--lemmo-font-weight-medium, 500);
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+  color: var(--lemmo-text-primary, #e1e1e3);
+}
+
+.required-star {
+  margin-inline-start: var(--lemmo-space-050, 2px);
+  color: var(--lemmo-text-muted, #898a8b);
+}
+
+.row-hint {
+  display: block;
+  margin-top: var(--lemmo-space-050, 2px);
+  color: var(--lemmo-text-muted, #898a8b);
+  font-size: var(--lemmo-type-size-050, 0.75rem);
+  line-height: 1.45;
+}
+
+.row-control-side {
+  justify-self: end;
+  width: 100%;
+  max-width: 360px;
+  min-width: 0;
+}
+
+.row-control-side.full-width,
+.row-stacked .row-control-side {
+  justify-self: stretch;
+  max-width: 100%;
+}
+
+.row-control-side.control-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--lemmo-gap-2, 8px);
+}
+
+/* ========================================================================== */
+/* 4. LEMMO PRIMITIVE CONTROLS (Input, Select, Button, Toggle)                */
+/* ========================================================================== */
+
+.lemmo-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.lemmo-input-affix {
+  position: absolute;
+  inset-inline-start: var(--lemmo-space-300, 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--lemmo-text-muted, #898a8b);
+  font-weight: var(--lemmo-font-weight-medium, 500);
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+  pointer-events: none;
+  font-family: var(--lemmo-font-mono, monospace);
+}
+
+.lemmo-input-field {
+  display: block;
+  width: 100%;
+  height: 38px;
+  padding: 0 var(--lemmo-space-300, 12px);
+  border: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.08));
+  border-radius: var(--lemmo-radius-200, 8px);
+  background: var(--lemmo-surface-tertiary-background, #0a0c0e);
+  color: var(--lemmo-text-primary, #ffffff);
+  font-family: inherit;
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color var(--lemmo-duration-fast, 150ms) var(--lemmo-ease-out, ease-out),
+    box-shadow var(--lemmo-duration-fast, 150ms) var(--lemmo-ease-out, ease-out);
+}
+
+.lemmo-input-field.has-affix {
+  padding-inline-start: 74px;
+}
+
+.lemmo-input-field.ltr-field {
+  direction: ltr;
+  text-align: left;
+}
+
+.lemmo-input-field::placeholder {
+  color: var(--lemmo-text-faint, #737475);
+}
+
+.lemmo-input-field:hover:not(:disabled) {
+  border-color: var(--lemmo-border-default, rgba(255, 255, 255, 0.15));
+}
+
+.lemmo-input-field:focus {
+  border-color: var(--lemmo-surface-brand-background, #d1fe17);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lemmo-surface-brand-background, #d1fe17) 20%, transparent);
+}
+
+.lemmo-input-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lemmo-textarea {
+  width: 100%;
+  padding: var(--lemmo-space-250, 10px) var(--lemmo-space-300, 12px);
+  border: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.08));
+  border-radius: var(--lemmo-radius-200, 8px);
+  background: var(--lemmo-surface-tertiary-background, #0a0c0e);
+  color: var(--lemmo-text-primary, #ffffff);
+  font-family: inherit;
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+  line-height: var(--lemmo-type-leading-600, 1.5);
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color var(--lemmo-duration-fast, 150ms) ease;
+}
+
+.lemmo-textarea:focus {
+  border-color: var(--lemmo-surface-brand-background, #d1fe17);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lemmo-surface-brand-background, #d1fe17) 20%, transparent);
+}
+
+/* Lemmo Select */
+.lemmo-select-container {
+  position: relative;
+  width: 100%;
+  font-family: inherit;
+}
+
+.lemmo-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 38px;
+  padding: 0 var(--lemmo-space-300, 12px);
+  border: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.08));
+  border-radius: var(--lemmo-radius-200, 8px);
+  background: var(--lemmo-surface-tertiary-background, #0a0c0e);
+  color: var(--lemmo-text-primary, #e1e1e3);
+  font-family: inherit;
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+  box-sizing: border-box;
+  cursor: pointer;
+  text-align: start;
+  outline: none;
+  transition: border-color var(--lemmo-duration-fast, 150ms) var(--lemmo-ease-out, ease-out),
+    box-shadow var(--lemmo-duration-fast, 150ms) var(--lemmo-ease-out, ease-out);
+}
+
+.lemmo-select-trigger:hover:not(:disabled) {
+  border-color: var(--lemmo-border-default, rgba(255, 255, 255, 0.15));
+}
+
+.lemmo-select-trigger:focus,
+.lemmo-select-trigger.open {
+  border-color: var(--lemmo-surface-brand-background, #d1fe17);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lemmo-surface-brand-background, #d1fe17) 20%, transparent);
+}
+
+.selected-label-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lemmo-text-muted, #898a8b);
+  transition: transform var(--lemmo-duration-normal, 200ms) var(--lemmo-ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+  flex-shrink: 0;
+  margin-inline-start: var(--lemmo-space-200, 8px);
+}
+
+.select-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.lemmo-select-menu {
+  position: absolute;
+  top: calc(100% + var(--lemmo-space-100, 4px));
+  inset-inline-start: 0;
+  width: 100%;
+  min-width: 180px;
+  background: var(--lemmo-surface-elevated-background, #18191c);
+  border: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-default, rgba(255, 255, 255, 0.15));
+  border-radius: var(--lemmo-radius-250, 10px);
+  padding: var(--lemmo-space-100, 4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
+  z-index: 60;
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lemmo-gap-1, 2px);
+  animation: selectMenuIn var(--lemmo-duration-fast, 120ms) var(--lemmo-ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+@keyframes selectMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.lemmo-select-menu.open-upwards {
+  top: auto;
+  bottom: calc(100% + var(--lemmo-space-100, 4px));
+  animation: selectMenuInUp var(--lemmo-duration-fast, 120ms) var(--lemmo-ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+@keyframes selectMenuInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.lemmo-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--lemmo-space-200, 8px) var(--lemmo-space-250, 10px);
+  border-radius: var(--lemmo-radius-150, 6px);
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--lemmo-text-secondary, #a1a1a5);
+  font-family: inherit;
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+  cursor: pointer;
+  text-align: start;
+  transition: background var(--lemmo-duration-fast, 100ms) ease,
+    color var(--lemmo-duration-fast, 100ms) ease;
+}
+
+.lemmo-select-option:hover {
+  background: var(--lemmo-border-subtle, rgba(255, 255, 255, 0.06));
+  color: var(--lemmo-text-primary, #ffffff);
+}
+
+.lemmo-select-option.selected {
+  background: color-mix(in srgb, var(--lemmo-surface-brand-background, #d1fe17) 12%, transparent);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+  font-weight: var(--lemmo-font-weight-medium, 500);
+}
+
+.option-check-icon {
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+  flex-shrink: 0;
+  margin-inline-start: var(--lemmo-space-200, 8px);
+}
+
+/* Lemmo Button */
+.lemmo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lemmo-gap-2, 6px);
+  font-family: inherit;
+  font-weight: var(--lemmo-font-weight-medium, 500);
+  border-radius: var(--lemmo-radius-200, 8px);
+  box-sizing: border-box;
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background var(--lemmo-duration-fast, 120ms) ease,
+    border-color var(--lemmo-duration-fast, 120ms) ease,
+    color var(--lemmo-duration-fast, 120ms) ease,
+    opacity var(--lemmo-duration-fast, 120ms) ease;
+}
+
+.lemmo-btn-md {
+  height: 36px;
+  padding: 0 var(--lemmo-space-300, 14px);
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+}
+
+.lemmo-btn-sm {
+  height: 30px;
+  padding: 0 var(--lemmo-space-250, 10px);
+  font-size: var(--lemmo-type-size-050, 0.75rem);
+}
+
+.lemmo-btn-primary {
+  background: var(--lemmo-surface-brand-background, #d1fe17);
+  color: var(--lemmo-surface-brand-foreground, #131517);
+  border: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-surface-brand-background, #d1fe17);
+  font-weight: var(--lemmo-font-weight-semi-bold, 600);
+}
+
+.lemmo-btn-primary:hover:not(:disabled) {
+  background: var(--lemmo-interactive-primary-hover, #c4ee0b);
+  border-color: var(--lemmo-interactive-primary-hover, #c4ee0b);
+}
+
+.lemmo-btn-secondary {
+  background: var(--lemmo-surface-tertiary-background, #0a0c0e);
+  color: var(--lemmo-text-primary, #e1e1e3);
+  border: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-default, rgba(255, 255, 255, 0.12));
+}
+
+.lemmo-btn-secondary:hover:not(:disabled) {
+  background: var(--lemmo-surface-secondary-background, #23262a);
+  border-color: var(--lemmo-text-muted, #898a8b);
+  color: #ffffff;
+}
+
+.lemmo-btn-ghost {
+  background: transparent;
+  color: var(--lemmo-text-secondary, #a1a1a5);
+  border: var(--lemmo-stroke-thin, 1px) solid transparent;
+}
+
+.lemmo-btn-ghost:hover:not(:disabled) {
+  background: var(--lemmo-border-subtle, rgba(255, 255, 255, 0.06));
+  color: var(--lemmo-text-primary, #ffffff);
+}
+
+.lemmo-btn-danger {
+  background: color-mix(in srgb, var(--lemmo-text-danger, #ff5462) 12%, transparent);
+  color: var(--lemmo-text-danger, #ff5462);
+  border: var(--lemmo-stroke-thin, 1px) solid color-mix(in srgb, var(--lemmo-text-danger, #ff5462) 30%, transparent);
+}
+
+.lemmo-btn-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--lemmo-text-danger, #ff5462) 20%, transparent);
+  border-color: var(--lemmo-text-danger, #ff5462);
+}
+
+.lemmo-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lemmo-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Lemmo Toggle */
+.lemmo-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  padding: 2px;
+  border: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-default, rgba(255, 255, 255, 0.15));
+  border-radius: var(--lemmo-radius-pill, 9999px);
+  background: var(--lemmo-surface-secondary-background, #23262a);
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  transition: background var(--lemmo-duration-fast, 150ms) ease,
+    border-color var(--lemmo-duration-fast, 150ms) ease;
+}
+
+.lemmo-toggle.checked {
+  background: var(--lemmo-surface-brand-background, #d1fe17);
+  border-color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+.lemmo-toggle-knob {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--lemmo-radius-full, 9999px);
+  background: #ffffff;
+  transition: transform var(--lemmo-duration-normal, 180ms) var(--lemmo-ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.lemmo-toggle.checked .lemmo-toggle-knob {
+  transform: translateX(20px);
+  background: var(--lemmo-surface-brand-foreground, #131517);
+}
+
+[dir='rtl'] .lemmo-toggle.checked .lemmo-toggle-knob {
+  transform: translateX(-20px);
+}
+
+.lemmo-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Toast Notification */
+.settings-toast {
+  position: fixed;
+  bottom: var(--lemmo-space-600, 24px);
+  inset-inline-end: var(--lemmo-space-600, 24px);
+  padding: var(--lemmo-space-250, 10px) var(--lemmo-space-400, 16px);
+  border-radius: var(--lemmo-radius-pill, 9999px);
+  background: var(--lemmo-surface-brand-background, #d1fe17);
+  color: var(--lemmo-surface-brand-foreground, #131517);
+  font-family: inherit;
+  font-size: var(--lemmo-type-size-100, 0.8125rem);
+  font-weight: var(--lemmo-font-weight-semi-bold, 600);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  pointer-events: none;
+  transition: opacity var(--lemmo-duration-normal, 180ms) ease,
+    transform var(--lemmo-duration-normal, 180ms) var(--lemmo-ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.settings-toast.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ========================================================================== */
+/* 5. RESPONSIVE BREAKPOINTS                                                  */
+/* ========================================================================== */
+
+@media (max-width: 768px) {
+  .settings-page-wrapper {
+    flex-direction: column;
+  }
+
+  .settings-nav-aside {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    border-inline-end: none;
+    border-bottom: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-subtle, rgba(255, 255, 255, 0.06));
+    padding: var(--lemmo-space-300, 12px);
+  }
+
+  .settings-nav-body {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: var(--lemmo-space-300, 12px);
+  }
+
+  .nav-group {
+    flex-direction: row;
+    gap: var(--lemmo-space-100, 4px);
+  }
+
+  .group-heading {
+    display: none;
+  }
+
+  .settings-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--lemmo-gap-2, 8px);
+  }
+
+  .row-control-side {
+    justify-self: stretch;
+    max-width: 100%;
+  }
+
+  .row-control-side.control-end {
+    justify-content: flex-start;
+  }
+}

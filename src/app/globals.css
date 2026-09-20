@@ -5,6 +5,7 @@
 
 /* Lemmo Design System tokens — local copy from @lemmo-lab/tokens */
 @import "../styles/lemmo-tokens.css";
+@import "../styles/settings.css";
 
 @tailwind base;
 @tailwind components;
