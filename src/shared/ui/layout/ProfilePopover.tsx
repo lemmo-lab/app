@@ -367,12 +367,6 @@ export default function ProfilePopover({
                 aria-label={locale === 'fa' ? 'انتخاب زبان سیستم' : 'Select System Language'}
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="floating-menu-header">
-                  <span className="header-label">
-                    {locale === 'fa' ? 'زبان سیستم' : 'System Language'}
-                  </span>
-                </div>
-
                 <div className="floating-lang-list">
                   {AVAILABLE_LANGUAGES.map((lang) => {
                     const isSelected = locale === lang.code;
@@ -389,26 +383,15 @@ export default function ProfilePopover({
                         aria-selected={isSelected}
                         data-action={`select-locale-${lang.code}`}
                       >
-                        <div className="lang-meta-info">
-                          <span className="lang-title">{lang.nativeName}</span>
-                          <span className="lang-subtitle">
-                            {locale === 'fa' ? lang.nameFa : lang.nameEn} • {lang.dir.toUpperCase()}
-                          </span>
-                        </div>
+                        <span className="lang-title">{lang.nativeName}</span>
                         {isSelected && (
                           <span className="lang-check" aria-hidden="true">
-                            <Check01 size={14} strokeWidth={2.4} color="var(--lemmo-surface-brand-background, #d1fe17)" />
+                            <Check01 size={13} strokeWidth={2.4} color="var(--lemmo-surface-brand-background, #d1fe17)" />
                           </span>
                         )}
                       </button>
                     );
                   })}
-                </div>
-
-                <div className="floating-menu-footer">
-                  <span>
-                    {locale === 'fa' ? '+ زبان‌های بیشتر به‌زودی' : '+ More languages coming soon'}
-                  </span>
                 </div>
               </div>
             )}
@@ -861,43 +844,28 @@ export default function ProfilePopover({
             position: absolute;
             bottom: calc(100% + 6px);
             inset-inline-end: 0;
-            width: 210px;
-            background: rgba(22, 24, 27, 0.98);
-            backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            border-radius: var(--lemmo-radius-lg, 12px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 2px 10px rgba(0, 0, 0, 0.4);
-            padding: 6px;
+            width: 140px;
+            background: var(--lemmo-surface-tertiary-background, #0c0e11);
+            border: 1px solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.12));
+            border-radius: var(--lemmo-radius-200, 10px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75), 0 2px 8px rgba(0, 0, 0, 0.4);
+            padding: 4px;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
             z-index: 250;
-            animation: floatMenuIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: floatMenuIn 0.14s cubic-bezier(0.16, 1, 0.3, 1);
           }
 
           @keyframes floatMenuIn {
             from {
               opacity: 0;
-              transform: translateY(6px) scale(0.96);
+              transform: translateY(4px) scale(0.97);
             }
             to {
               opacity: 1;
               transform: translateY(0) scale(1);
             }
-          }
-
-          .floating-menu-header {
-            padding: 6px 10px 4px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            margin-bottom: 2px;
-          }
-
-          .header-label {
-            font-size: 0.6875rem;
-            font-weight: 700;
-            color: var(--lemmo-text-muted, #898a8b);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
           }
 
           .floating-lang-list {
@@ -910,8 +878,8 @@ export default function ProfilePopover({
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 7px 10px;
-            border-radius: var(--lemmo-radius-md, 8px);
+            padding: 8px 10px;
+            border-radius: var(--lemmo-radius-100, 6px);
             background: transparent;
             border: none;
             cursor: pointer;
@@ -927,40 +895,21 @@ export default function ProfilePopover({
           }
 
           .floating-lang-btn.active {
-            background: rgba(209, 254, 23, 0.1);
+            background: rgba(209, 254, 23, 0.08);
             color: var(--lemmo-surface-brand-background, #d1fe17);
             font-weight: 600;
           }
 
-          .lang-meta-info {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-          }
-
           .lang-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-          }
-
-          .lang-subtitle {
-            font-size: 0.625rem;
-            color: var(--lemmo-text-muted, #7c7e80);
+            font-size: 0.8125rem;
+            font-weight: 500;
           }
 
           .lang-check {
             display: flex;
             align-items: center;
             justify-content: center;
-          }
-
-          .floating-menu-footer {
-            padding: 6px 10px 2px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 2px;
-            font-size: 0.625rem;
-            color: var(--lemmo-text-muted, #707275);
-            font-style: italic;
+            flex-shrink: 0;
           }
 
           :global(.menu-item-btn.logout:hover) {
