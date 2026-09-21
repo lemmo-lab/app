@@ -108,7 +108,7 @@ export const MOCK_CONVERSATIONS: Record<string, AgentConversation> = {
         sender: 'user',
         timestamp: '14:23',
         prompt:
-          'Create a cinematic editorial portrait of an elegant futuristic model in a sunlit retro space. Natural sunlight shafts, delicate grain, high fashion studio aesthetic.',
+          'Create a cinematic editorial portrait /relight of an elegant futuristic model in a sunlit retro space. Natural sunlight shafts, delicate grain, high fashion studio aesthetic.',
         references: [
           {
             id: 'ref-1',

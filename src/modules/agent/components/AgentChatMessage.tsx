@@ -13,12 +13,48 @@ import {
   InfoCircle,
 } from 'synthline/react';
 import { AgentChatMessageItem } from '../types';
+import { AGENT_COMMANDS, getCommandsFromPrompt, cleanPromptText } from '../data/agentCommands';
+import { AgentCommandIcon } from './AgentCommandPalette';
 
 interface AgentChatMessageProps {
   message: AgentChatMessageItem;
   onRemix?: (prompt: string) => void;
   locale: string;
   isRtl: boolean;
+}
+
+function PromptWithCommands({ prompt }: { prompt?: string }) {
+  if (!prompt) return null;
+
+  // Match slash commands like /remove_background, /upscale, etc.
+  const regex = /(\/[a-zA-Z0-9_\u0600-\u06FF]+)/g;
+  const parts = prompt.split(regex);
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith('/')) {
+          const matchedCmd = AGENT_COMMANDS.find(
+            (c) =>
+              c.command.toLowerCase() === part.toLowerCase() ||
+              c.aliases?.some((a) => a.toLowerCase() === part.toLowerCase())
+          );
+          return (
+            <span key={index} className="chat-command-chip">
+              <AgentCommandIcon
+                iconName={matchedCmd ? matchedCmd.iconName : 'Sparks'}
+                size={12}
+                strokeWidth={2.2}
+                color="var(--lemmo-surface-brand-background, #d1fe17)"
+              />
+              <span className="command-chip-text">{part}</span>
+            </span>
+          );
+        }
+        return <span key={index}>{part}</span>;
+      })}
+    </>
+  );
 }
 
 export function AgentChatMessage({
@@ -40,28 +76,55 @@ export function AgentChatMessage({
 
   // 1. User Prompt Message Row
   if (message.sender === 'user') {
+    // Check if prompt uses any tools
+    const toolsUsed = getCommandsFromPrompt(message.prompt);
+    const cleanedText = cleanPromptText(message.prompt);
+
     return (
       <div className="agent-chat-row user-row">
-        <div className="user-prompt-card">
-          {/* Reference Thumbnails directly above prompt text */}
-          {message.references && message.references.length > 0 && (
-            <div className="user-prompt-references-top">
-              {message.references.map((ref) => (
-                <div key={ref.id} className="user-ref-box" title={ref.name || 'Reference'}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={ref.url} alt="Reference" className="ref-img" />
-                </div>
-              ))}
-            </div>
-          )}
+        {/* 1. Reference images OUTSIDE and directly ABOVE the message bubble */}
+        {message.references && message.references.length > 0 && (
+          <div className="user-prompt-references-top">
+            {message.references.map((ref) => (
+              <div key={ref.id} className="user-ref-box" title={ref.name || 'Reference'}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={ref.url} alt="Reference" className="ref-img" />
+              </div>
+            ))}
+          </div>
+        )}
 
-          <p className="user-prompt-text">{message.prompt}</p>
+        {/* 2. Pure User Prompt Bubble (ONLY text) */}
+        <div className="user-prompt-bubble">
+          <p className="user-prompt-text">
+            {cleanedText || message.prompt}
+          </p>
         </div>
 
-        {/* Ghost Action Toolbar below user card — matching assistant result toolbar */}
+        {/* 3. Actions Row below the bubble: Copy action & subtle informational tool indicator */}
         <div className="user-prompt-toolbar">
           <span className="user-toolbar-time">{message.timestamp}</span>
 
+          {/* Subtle Informative Tool Indicator (No heavy styling, pure quiet info) */}
+          {toolsUsed && toolsUsed.map((tool) => (
+            <div
+              key={tool.id}
+              className="user-toolbar-tool-tag"
+              title={`${locale === 'fa' ? tool.nameFa : tool.name} (${tool.command})`}
+            >
+              <AgentCommandIcon
+                iconName={tool.iconName}
+                size={13}
+                strokeWidth={2}
+                color="currentColor"
+              />
+              <span className="user-toolbar-tool-label">
+                {locale === 'fa' ? tool.nameFa : tool.name}
+              </span>
+            </div>
+          ))}
+
+          {/* Copy Prompt Action */}
           {message.prompt && (
             <button
               type="button"
@@ -71,9 +134,9 @@ export function AgentChatMessage({
               aria-label="Copy prompt"
             >
               {isCopied ? (
-                <Check01 size={15} strokeWidth={2.4} color="var(--lemmo-surface-brand-background, #d1fe17)" />
+                <Check01 size={14} strokeWidth={2.4} color="var(--lemmo-surface-brand-background, #d1fe17)" />
               ) : (
-                <Copy01 size={15} strokeWidth={1.8} color="currentColor" />
+                <Copy01 size={14} strokeWidth={1.8} color="currentColor" />
               )}
             </button>
           )}

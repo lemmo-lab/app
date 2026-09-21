@@ -1,10 +1,15 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
-import { Image03, VideoCamera, Check01, Sparks } from 'synthline/react';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Image03,
+  VideoCamera,
+  Check01,
+  Sparks,
+  ChevronSelectorVertical,
+} from 'synthline/react';
 import {
   AgentGenerationConfig,
-  AgentContentType,
   AgentAspectRatio,
 } from '../types';
 import { AGENT_MODELS } from '../data/mockAgentData';
@@ -18,11 +23,11 @@ interface AgentConfigPopoverProps {
 }
 
 const ASPECT_RATIOS: { ratio: AgentAspectRatio; label: string; iconW: number; iconH: number }[] = [
-  { ratio: '1:1', label: '1:1', iconW: 20, iconH: 20 },
+  { ratio: '1:1', label: '1:1', iconW: 18, iconH: 18 },
   { ratio: '16:9', label: '16:9', iconW: 24, iconH: 14 },
   { ratio: '9:16', label: '9:16', iconW: 14, iconH: 24 },
-  { ratio: '4:3', label: '4:3', iconW: 22, iconH: 17 },
-  { ratio: '3:4', label: '3:4', iconW: 17, iconH: 22 },
+  { ratio: '4:3', label: '4:3', iconW: 21, iconH: 16 },
+  { ratio: '3:4', label: '3:4', iconW: 16, iconH: 21 },
 ];
 
 export function AgentConfigPopover({
@@ -33,9 +38,14 @@ export function AgentConfigPopover({
   locale,
 }: AgentConfigPopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
+  const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
 
+  // Close when clicked outside
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setIsModelDropdownOpen(false);
+      return;
+    }
 
     const handleClickOutside = (e: MouseEvent) => {
       if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
@@ -44,7 +54,13 @@ export function AgentConfigPopover({
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (isModelDropdownOpen) {
+          setIsModelDropdownOpen(false);
+        } else {
+          onClose();
+        }
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -53,9 +69,12 @@ export function AgentConfigPopover({
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, isModelDropdownOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const currentModel =
+    AGENT_MODELS.find((m) => m.id === config.modelId) || AGENT_MODELS[0];
 
   return (
     <div
@@ -90,11 +109,14 @@ export function AgentConfigPopover({
         </div>
       </div>
 
-      {/* 2. Aspect Ratio Selector */}
+      {/* 2. Aspect Ratio Selector (5 frames matching wireframe .frame-choice) */}
       <div className="config-section">
-        <span className="config-section-label">
-          {locale === 'fa' ? 'نسبت ابعاد تصویر' : 'Aspect Ratio'}
-        </span>
+        <div className="config-section-header">
+          <span className="config-section-label">
+            {locale === 'fa' ? 'نسبت ابعاد' : 'Aspect Ratio'}
+          </span>
+          <span className="config-active-pill">{config.aspectRatio}</span>
+        </div>
         <div className="ratio-options-row">
           {ASPECT_RATIOS.map((item) => {
             const isSelected = config.aspectRatio === item.ratio;
@@ -119,68 +141,113 @@ export function AgentConfigPopover({
         </div>
       </div>
 
-      {/* 3. AI Model Selector */}
+      {/* 3. AI Model Selector (Dropdown Menu matching wireframe .model-dropdown) */}
+      <div className="config-section model-section">
+        <div className="config-section-header">
+          <span className="config-section-label">
+            {locale === 'fa' ? 'مدل هوش مصنوعی' : 'AI Model'}
+          </span>
+        </div>
+
+        {/* Dropdown Trigger */}
+        <div className="model-dropdown-container">
+          <button
+            type="button"
+            className={`model-dropdown-trigger ${isModelDropdownOpen ? 'open' : ''}`}
+            onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+            aria-haspopup="listbox"
+            aria-expanded={isModelDropdownOpen}
+          >
+            <div className="model-trigger-start">
+              <Sparks
+                size={14}
+                strokeWidth={2.2}
+                color="var(--lemmo-surface-brand-background, #d1fe17)"
+              />
+              <span className="model-trigger-name">{currentModel.name}</span>
+            </div>
+
+            <div className="model-trigger-end">
+              {currentModel.badge && (
+                <span className="model-badge">{currentModel.badge}</span>
+              )}
+              <ChevronSelectorVertical
+                size={14}
+                strokeWidth={2}
+                color="var(--lemmo-text-muted, #898a8b)"
+              />
+            </div>
+          </button>
+
+          {/* Dropdown Popover List */}
+          {isModelDropdownOpen && (
+            <div className="model-dropdown-menu" role="listbox">
+              {AGENT_MODELS.map((model) => {
+                const isSelected = config.modelId === model.id;
+                return (
+                  <button
+                    key={model.id}
+                    type="button"
+                    className={`model-dropdown-item ${isSelected ? 'selected' : ''}`}
+                    onClick={() => {
+                      onChangeConfig((prev) => ({ ...prev, modelId: model.id }));
+                      setIsModelDropdownOpen(false);
+                    }}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <div className="model-item-details">
+                      <span className="model-item-name">{model.name}</span>
+                      <span className="model-item-provider">{model.provider}</span>
+                    </div>
+
+                    <div className="model-item-trailing">
+                      {model.badge && (
+                        <span className="model-badge">{model.badge}</span>
+                      )}
+                      {isSelected && (
+                        <Check01
+                          size={14}
+                          strokeWidth={2.4}
+                          color="var(--lemmo-surface-brand-background, #d1fe17)"
+                        />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 4. Batch Count (1, 2, 3, 4 matching wireframe .number-result) */}
       <div className="config-section">
-        <span className="config-section-label">
-          {locale === 'fa' ? 'موتور هوش مصنوعی' : 'AI Model Engine'}
-        </span>
-        <div className="model-options-list">
-          {AGENT_MODELS.map((model) => {
-            const isSelected = config.modelId === model.id;
+        <div className="config-section-header">
+          <span className="config-section-label">
+            {locale === 'fa' ? 'تعداد خروجی' : 'Outputs'}
+          </span>
+        </div>
+        <div className="batch-options-track">
+          {([1, 2, 3, 4] as const).map((count) => {
+            const isSelected = config.batchCount === count;
             return (
               <button
-                key={model.id}
+                key={count}
                 type="button"
-                className={`model-option-btn ${isSelected ? 'active' : ''}`}
+                className={`batch-count-btn ${isSelected ? 'active' : ''}`}
                 onClick={() =>
-                  onChangeConfig((prev) => ({ ...prev, modelId: model.id }))
+                  onChangeConfig((prev) => ({ ...prev, batchCount: count }))
                 }
               >
-                <div className="model-name-group">
-                  <span className="model-name">{model.name}</span>
-                  <span className="model-provider">{model.provider}</span>
-                </div>
-                {model.badge && (
-                  <span className="model-badge">{model.badge}</span>
-                )}
-                {isSelected && (
-                  <Check01
-                    size={14}
-                    strokeWidth={2.4}
-                    color="var(--lemmo-surface-brand-background, #d1fe17)"
-                    className="model-check-icon"
-                  />
-                )}
+                {count}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* 4. Batch Count */}
-      <div className="config-section">
-        <div className="batch-row">
-          <span className="config-section-label">
-            {locale === 'fa' ? 'تعداد خروجی' : 'Batch Outputs'}
-          </span>
-          <div className="batch-buttons-group">
-            {([1, 2, 4] as const).map((count) => (
-              <button
-                key={count}
-                type="button"
-                className={`batch-count-btn ${config.batchCount === count ? 'active' : ''}`}
-                onClick={() =>
-                  onChangeConfig((prev) => ({ ...prev, batchCount: count }))
-                }
-              >
-                {count}×
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 5. Credit Cost Footer */}
+      {/* 5. Credit Cost Footer (matching wireframe .creadit) */}
       <div className="config-footer">
         <div className="credits-badge">
           <Sparks

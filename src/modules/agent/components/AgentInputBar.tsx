@@ -13,6 +13,9 @@ import {
   AgentGenerationConfig,
 } from '../types';
 import { AgentConfigPopover } from './AgentConfigPopover';
+import { AgentCommandPalette } from './AgentCommandPalette';
+import { AgentActiveToolStrip } from './AgentActiveToolStrip';
+import { useAgentSlashCommands } from '../hooks/useAgentSlashCommands';
 import { AGENT_MODELS } from '../data/mockAgentData';
 
 interface AgentInputBarProps {
@@ -48,6 +51,21 @@ export function AgentInputBar({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const {
+    isOpen: isCommandMenuOpen,
+    filteredCommands,
+    selectedIndex,
+    setSelectedIndex,
+    handleKeyDown: handleCommandKeyDown,
+    handleSelectCommand,
+    activeTool,
+    handleRemoveActiveTool,
+  } = useAgentSlashCommands({
+    prompt,
+    onChangePrompt,
+    textareaRef,
+  });
+
   // Auto-resize textarea based on content
   useEffect(() => {
     if (textareaRef.current) {
@@ -57,12 +75,39 @@ export function AgentInputBar({
     }
   }, [prompt]);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const canSubmit = (prompt.trim().length > 0 || references.length > 0 || activeTool !== null) && !isSubmitting;
+  const isButtonDisabled = !mounted ? true : !canSubmit;
+
+  const handleTriggerSubmit = () => {
+    if (!canSubmit) return;
+
+    if (activeTool) {
+      const fullPrompt = prompt.trim() ? `${activeTool.command} ${prompt.trim()}` : activeTool.command;
+      onChangePrompt(fullPrompt);
+      handleRemoveActiveTool();
+      setTimeout(() => {
+        onSubmit();
+      }, 0);
+    } else {
+      onSubmit();
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // 1. Let command palette handle arrow navigation / selection if open
+    if (handleCommandKeyDown(e)) {
+      return;
+    }
+
+    // 2. Default Enter to submit
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if ((prompt.trim() || references.length > 0) && !isSubmitting) {
-        onSubmit();
-      }
+      handleTriggerSubmit();
     }
   };
 
@@ -83,17 +128,40 @@ export function AgentInputBar({
 
   const currentModel = AGENT_MODELS.find((m) => m.id === config.modelId) || AGENT_MODELS[0];
 
-  const defaultPlaceholder =
-    locale === 'fa'
-      ? 'ایده، صحنه یا کاراکتر مورد نظر خود را توصیف کنید... (Enter برای ارسال)'
-      : 'Describe the scene, style, or lighting you want to create... (Enter to generate)';
-
-  const canSubmit = (prompt.trim().length > 0 || references.length > 0) && !isSubmitting;
+  const defaultPlaceholder = activeTool
+    ? locale === 'fa'
+      ? `دستورات یا تنظیمات مربوط به ${activeTool.nameFa} را بنویسید (اختیاری)...`
+      : `Describe instructions for ${activeTool.name} (optional)...`
+    : locale === 'fa'
+      ? 'ایده، صحنه یا کاراکتر مورد نظر خود را توصیف کنید... (تایپ / برای ابزارها)'
+      : 'Describe scene or prompt... (type / for tool commands)';
 
   return (
     <div className="agent-floating-input-wrapper">
       <div className="agent-input-bar">
-        {/* 1. Reference Thumbnails Row (Visible only when references exist) */}
+        {/* Hidden Slash Command Palette Popup (Docked directly above the input bar) */}
+        {isCommandMenuOpen && (
+          <AgentCommandPalette
+            commands={filteredCommands}
+            selectedIndex={selectedIndex}
+            onSelectCommand={handleSelectCommand}
+            onHoverIndex={setSelectedIndex}
+            locale={locale}
+          />
+        )}
+
+        {/* Floating Active Tool Pill (Docked cleanly above the input bar) */}
+        {activeTool && (
+          <div className="agent-floating-tool-anchor">
+            <AgentActiveToolStrip
+              tool={activeTool}
+              onRemove={handleRemoveActiveTool}
+              locale={locale}
+            />
+          </div>
+        )}
+
+        {/* 2. Reference Thumbnails Row (Visible strictly only when reference files exist) */}
         {references.length > 0 && (
           <div className="input-references-tray">
             {references.map((item) => (
@@ -126,7 +194,7 @@ export function AgentInputBar({
           </div>
         )}
 
-        {/* 2. Textarea Prompt Input */}
+        {/* 3. Textarea Prompt Input */}
         <div className="input-textarea-area">
           <textarea
             ref={textareaRef}
@@ -202,8 +270,9 @@ export function AgentInputBar({
             <button
               type="button"
               className={`agent-send-btn ${canSubmit ? 'ready' : 'disabled'}`}
-              onClick={onSubmit}
-              disabled={!canSubmit}
+              onClick={handleTriggerSubmit}
+              disabled={isButtonDisabled}
+              suppressHydrationWarning
               title={locale === 'fa' ? 'تولید محتوا' : 'Generate'}
               aria-label="Generate"
             >

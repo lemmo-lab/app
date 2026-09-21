@@ -33,7 +33,7 @@ export interface AgentGenerationConfig {
   contentType: AgentContentType;
   aspectRatio: AgentAspectRatio;
   modelId: string;
-  batchCount: 1 | 2 | 4;
+  batchCount: 1 | 2 | 3 | 4;
 }
 
 export interface AgentChatMessageItem {
