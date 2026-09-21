@@ -59,40 +59,39 @@
   50% { opacity: 0.25; }
 }
 
-/* Toast Floating Alert */
+/* Toast Floating Alert (Discreet top corner notification) */
 .canvas-toast-alert {
   position: fixed;
-  bottom: 24px;
-  inset-inline-start: 50%;
-  transform: translateX(-50%);
+  top: 24px;
+  inset-inline-end: 24px;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
+  gap: 8px;
+  padding: 8px 16px;
   background: rgba(24, 27, 30, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 9999px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(16px);
   color: #ffffff;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 500;
   z-index: 1000;
-  animation: canvasSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: canvasSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [dir="rtl"] .canvas-toast-alert {
-  transform: translateX(50%);
+  transform: none;
 }
 
-@keyframes canvasSlideUp {
+@keyframes canvasSlideIn {
   from {
     opacity: 0;
-    transform: translate(-50%, 8px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
 }
 
@@ -1591,80 +1590,72 @@
   flex-direction: column;
 }
 
-/* Top Center: Solo vs Team Mode Switcher (.team-solo) */
-.canvas-top-mode-switcher {
+/* Top Center: Viewport Zoom Controls Widget */
+.canvas-top-zoom-widget {
   position: absolute;
   top: 20px;
   inset-inline-start: 50%;
   transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
-  padding: 4px;
-  background: rgba(24, 27, 30, 0.88);
+  padding: 4px 6px;
+  gap: 3px;
+  background: rgba(24, 27, 30, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
   backdrop-filter: blur(16px);
   z-index: 30;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  user-select: none;
 }
 
-[dir="rtl"] .canvas-top-mode-switcher {
+[dir="rtl"] .canvas-top-zoom-widget {
   transform: translateX(50%);
 }
 
-.mode-switch-btn {
+.zoom-widget-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.zoom-widget-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.zoom-widget-value-btn {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 3px 8px;
   border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
+  color: #ffffff;
   background: transparent;
   border: none;
   cursor: pointer;
   transition: all 0.15s ease;
+  user-select: none;
 }
 
-.mode-switch-btn:hover {
-  color: #ffffff;
+.zoom-widget-value-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
 }
 
-.mode-switch-btn.active {
+.zoom-widget-divider {
+  width: 1px;
+  height: 16px;
   background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-}
-
-.team-live-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-inline-start: 4px;
-  padding: 1px 6px;
-  background: rgba(16, 185, 129, 0.15);
-  border-radius: 9999px;
-}
-
-.live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 9999px;
-  background: #10b981;
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
-  animation: livePulse 1.8s infinite ease-in-out;
-}
-
-@keyframes livePulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
-}
-
-.live-count {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #10b981;
+  margin: 0 2px;
 }
 
 /* Central Infinite 2D Board Surface (.canvas-area) */
@@ -2142,108 +2133,197 @@
   color: var(--lemmo-text-secondary, rgba(255, 255, 255, 0.6));
 }
 
+/* ================================================================== */
+/* FIGMA-STYLE FLOATING BOTTOM TOOLBAR (.canvas-bottom-dock)         */
+/* Concentric squircle radii: outer 14px -> buttons 8px -> track 8px  */
+/* ================================================================== */
 .canvas-bottom-dock {
   display: inline-flex;
   align-items: center;
-  padding: 6px 10px;
-  gap: 6px;
-  background: rgba(24, 27, 30, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 9999px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(20px);
+  padding: 4px 6px;
+  gap: 4px;
+  background: rgba(26, 28, 32, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), 0 2px 6px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(24px);
+  box-sizing: border-box;
 }
 
+/* Dynamic Tools Group */
+.dock-tools-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  animation: dockToolsFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dockToolsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Single Tool Buttons — Figma Squircle (34x34px, radius: 8px) */
 .dock-action-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 9999px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.75);
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.72);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.14s ease;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .dock-action-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
 }
 
 .dock-action-btn.active {
-  background: var(--lemmo-surface-brand-background, #d1fe17);
-  color: #0d0f11;
-  box-shadow: 0 0 12px rgba(209, 254, 23, 0.4);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
+/* Dropdown Tool Button with delicate Caret (34px height, radius: 8px) */
+.dock-dropdown-tool-btn {
+  height: 34px;
+  padding: 0 6px 0 8px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  transition: all 0.14s ease;
+  flex-shrink: 0;
+}
+
+.dock-dropdown-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.dock-dropdown-tool-btn.active {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.dock-dropdown-tool-btn.open {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.dropdown-caret-arrow {
+  display: inline-flex;
+  align-items: center;
+  transform: rotate(90deg);
+  opacity: 0.5;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
+}
+
+.dock-dropdown-tool-btn:hover .dropdown-caret-arrow,
+.dock-dropdown-tool-btn.active .dropdown-caret-arrow,
+.dock-dropdown-tool-btn.open .dropdown-caret-arrow {
+  opacity: 0.9;
+}
+
+.dock-dropdown-tool-btn.open .dropdown-caret-arrow {
+  transform: rotate(-90deg);
+}
+
+/* Thin Vertical Divider */
 .dock-divider {
   width: 1px;
   height: 20px;
   background: rgba(255, 255, 255, 0.12);
   margin: 0 4px;
+  flex-shrink: 0;
 }
 
-.dock-zoom-group {
+/* ================================================================== */
+/* FIGMA RECESSED MODE SWITCHER TRACK (.dock-mode-track)              */
+/* Dark inset container holding icon-only mode buttons               */
+/* ================================================================== */
+.dock-mode-track {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  background: rgba(0, 0, 0, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
-.dock-zoom-btn {
-  width: 28px;
-  height: 28px;
+.dock-mode-icon-btn {
+  width: 30px;
+  height: 30px;
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: all 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  padding: 0;
 }
 
-.dock-zoom-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+.dock-mode-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
 }
 
-.dock-zoom-btn.fit-btn {
-  margin-inline-start: 2px;
+.dock-mode-icon-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
-.dock-zoom-value {
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 0 6px;
-  color: #ffffff;
-  cursor: pointer;
-  user-select: none;
-}
-
+/* Primary CTA Run Button (Workflow / Video) */
 .dock-run-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 18px;
-  margin-inline-start: 4px;
+  height: 34px;
+  padding: 0 13px;
+  border-radius: 8px;
   background: var(--lemmo-surface-brand-background, #d1fe17);
-  color: #0d0f11;
-  border: none;
-  border-radius: 9999px;
-  font-size: 0.82rem;
-  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #121417;
+  font-size: 0.8rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 2px 12px rgba(209, 254, 23, 0.4);
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 10px rgba(209, 254, 23, 0.3);
+  flex-shrink: 0;
 }
 
 .dock-run-btn:hover:not(:disabled) {
-  background: #d8ff2b;
-  box-shadow: 0 4px 16px rgba(209, 254, 23, 0.6);
+  background: #dcff38;
+  box-shadow: 0 3px 14px rgba(209, 254, 23, 0.45);
+  transform: translateY(-0.5px);
 }
 
 .dock-run-btn.running {
@@ -2254,4 +2334,1657 @@
 .run-btn-label {
   white-space: nowrap;
 }
+
+/* ================================================================== */
+/* Anchored Popover Menus (Figma-Style, Header-Free, Strict UX Flow)  */
+/* Order: [Checkmark Slot] -> [Shape Icon] -> [Label] -> [Shortcut]   */
+/* ================================================================== */
+.dock-popover-anchor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.dock-popover-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 215px;
+  padding: 4px;
+  background: var(--lemmo-surface-elevated-background, #16181b);
+  border: 1px solid var(--lemmo-border-default, rgba(255, 255, 255, 0.14));
+  border-radius: var(--lemmo-radius-250, 12px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.72), 0 2px 8px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(24px) saturate(180%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: popoverFadeInUp 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: bottom center;
+  box-sizing: border-box;
+}
+
+.dock-popover-menu.node-popover-menu {
+  min-width: 260px;
+}
+
+@keyframes popoverFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(5px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes popoverFadeInEnd {
+  from {
+    opacity: 0;
+    transform: translateY(5px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Individual Popover Item */
+.dock-popover-item {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: var(--lemmo-radius-150, 8px);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--lemmo-text-primary, rgba(255, 255, 255, 0.85));
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: background var(--lemmo-duration-fast, 120ms) ease,
+    color var(--lemmo-duration-fast, 120ms) ease,
+    border-color var(--lemmo-duration-fast, 120ms) ease;
+  width: 100%;
+  box-sizing: border-box;
+  user-select: none;
+  text-align: start;
+}
+
+.dock-popover-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.dock-popover-item.active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+/* 1. First: Checkmark Slot (Maintains 18px column spacing so unselected rows align) */
+.popover-item-check-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-inline-end: 6px;
+  flex-shrink: 0;
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+/* 2. Second: Shape / Tool Icon */
+.popover-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-inline-end: 8px;
+  flex-shrink: 0;
+  color: currentColor;
+  opacity: 0.85;
+}
+
+.dock-popover-item:hover .popover-item-icon,
+.dock-popover-item.active .popover-item-icon {
+  opacity: 1;
+}
+
+/* Label text */
+.popover-item-label {
+  flex: 1;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: inherit;
+  text-align: start;
+}
+
+/* 3. Third: Keyboard Shortcut Key Badge */
+.popover-item-shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--lemmo-text-muted, rgba(255, 255, 255, 0.5));
+  margin-inline-start: 12px;
+  flex-shrink: 0;
+  transition: all 0.12s ease;
+}
+
+.dock-popover-item:hover .popover-item-shortcut,
+.dock-popover-item.active .popover-item-shortcut {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* AI Tool Node Items (Workflow Popover) */
+.dock-popover-item.node-item {
+  height: 48px;
+  padding: 6px 10px;
+  gap: 10px;
+}
+
+.node-item-badge {
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+
+.node-item-badge.brand {
+  background: rgba(209, 254, 23, 0.14);
+  border-color: rgba(209, 254, 23, 0.32);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+.node-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: start;
+  min-width: 0;
+}
+
+.node-item-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.node-item-sub {
+  font-size: 0.7rem;
+  color: var(--lemmo-text-muted, rgba(255, 255, 255, 0.5));
+  white-space: nowrap;
+}
+
+/* ================================================================== */
+/* 10. CANVAS PROPERTIES INSPECTOR PANEL (Figma-Style image copy.png) */
+/* ================================================================== */
+
+/* Inline-End Properties Inspector Panel */
+.canvas-properties-panel {
+  width: clamp(285px, 21vw, 325px);
+  min-width: 280px;
+  max-width: 340px;
+  height: 100%;
+  background: #16181b;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+  position: relative;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  user-select: none;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), width 0.2s ease;
+}
+
+@media (max-width: 1024px) {
+  .canvas-properties-panel {
+    position: absolute;
+    inset-inline-end: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 40;
+    box-shadow: -16px 0 40px rgba(0, 0, 0, 0.7);
+    width: 300px;
+  }
+}
+
+@media (max-width: 640px) {
+  .canvas-properties-panel {
+    width: 100%;
+    max-width: 100%;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+  }
+}
+
+/* Collapsed Toggle Bar / Tab */
+.canvas-properties-collapsed-bar {
+  position: absolute;
+  inset-inline-end: 16px;
+  top: 16px;
+  z-index: 30;
+  pointer-events: auto;
+}
+
+.properties-expand-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  background: rgba(24, 27, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  transition: all 0.15s ease;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.properties-expand-tab-btn:hover {
+  background: rgba(32, 36, 40, 0.98);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.expand-tab-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* 1. Header: Design / Prototype Tabs & Collapse Button */
+.inspector-header-bar {
+  height: 48px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.inspector-tabs-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 3px;
+  border-radius: 6px;
+}
+
+.inspector-tab-btn {
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.inspector-tab-btn:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.inspector-tab-btn.active {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.inspector-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inspector-mini-action-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.inspector-mini-action-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* 2. Element Title & Quick Type Switcher Row */
+.inspector-element-title-row {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  gap: 8px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.element-badge-and-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.element-type-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+.element-name-input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  outline: none;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+  box-sizing: border-box;
+}
+
+.element-name-input:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.element-name-input:focus {
+  background: rgba(14, 16, 18, 0.95);
+  border-color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+.quick-type-switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.type-chip {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.12s ease;
+}
+
+.type-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.type-chip.active {
+  background: rgba(209, 254, 23, 0.14);
+  border-color: rgba(209, 254, 23, 0.35);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+/* 3. Scroll Area for Inspector Sections */
+.inspector-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px 28px;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.inspector-scroll-area::-webkit-scrollbar {
+  width: 4px;
+}
+
+.inspector-scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+/* Inspector Section generic */
+.inspector-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-sizing: border-box;
+}
+
+.inspector-section:last-child {
+  border-bottom: none;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 20px;
+}
+
+.section-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.section-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.section-action-icon {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.12s ease;
+}
+
+.section-action-icon:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.plus-sign {
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+/* Sub-labels matching Figma image copy.png */
+.property-sublabel {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.property-sublabel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+/* 4. Alignment Toolbar (6-way grid modeled on Figma image copy.png) */
+.alignment-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  height: 28px;
+  padding: 2px;
+  box-sizing: border-box;
+  direction: ltr;
+}
+
+.align-btn {
+  flex: 1;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+  transition: all 0.12s ease;
+}
+
+.align-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.align-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0 1px;
+}
+
+/* 5. Inputs & Two-column layout */
+.property-two-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  direction: ltr;
+}
+
+.property-two-cols.layout-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 28px;
+  align-items: center;
+}
+
+.property-two-cols > * {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.property-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.property-input-field {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0 6px;
+  gap: 4px;
+  box-sizing: border-box;
+  direction: ltr;
+  min-width: 0;
+  width: 100%;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.property-input-field:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.property-input-field:focus-within {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(18, 20, 23, 0.98);
+}
+
+.field-prefix {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+}
+
+.field-suffix {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.property-input-field input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.76rem;
+  font-weight: 500;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
+  direction: ltr;
+  box-sizing: border-box;
+}
+
+.property-input-field input::-webkit-inner-spin-button,
+.property-input-field input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.property-input-field input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Flip controls */
+.flip-controls-wrap {
+  display: flex;
+  gap: 4px;
+  direction: ltr;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.flip-btn {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.12s ease;
+  box-sizing: border-box;
+}
+
+.flip-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.flip-btn.active {
+  background: rgba(209, 254, 23, 0.14);
+  border-color: rgba(209, 254, 23, 0.32);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+/* Aspect Lock */
+.aspect-lock-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.12s ease;
+}
+
+.aspect-lock-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.aspect-lock-btn.active {
+  border-color: rgba(209, 254, 23, 0.3);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+/* Corner Radius expand button */
+.corner-expand-btn {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 3px;
+  transition: all 0.12s ease;
+}
+
+.corner-expand-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.corner-expand-btn.active {
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+/* Polygon & Star rows */
+.polygon-props-row {
+  margin-top: 2px;
+}
+
+/* 6. Fill Section Rows (Unified Box matching Figma image copy.png) */
+.fill-item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  width: 100%;
+  direction: ltr;
+}
+
+.fill-unified-control {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  padding: 0 4px;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  direction: ltr;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.fill-unified-control:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.fill-unified-control:focus-within {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(18, 20, 23, 0.95);
+}
+
+.fill-swatch-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.1s ease;
+}
+
+.fill-swatch-box:hover {
+  transform: scale(1.06);
+}
+
+.fill-hex-input {
+  width: 66px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: monospace;
+  text-transform: uppercase;
+  padding: 0 2px;
+  outline: none;
+  box-sizing: border-box;
+  text-align: start;
+  direction: ltr;
+}
+
+.fill-opacity-col {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  background: transparent;
+  border: none;
+  padding: 0 2px;
+  gap: 1px;
+  width: 48px;
+  box-sizing: border-box;
+  direction: ltr;
+}
+
+.fill-opacity-col input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.78rem;
+  outline: none;
+  padding: 0;
+  text-align: end;
+  direction: ltr;
+}
+
+.fill-pct-sign {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+  user-select: none;
+}
+
+.fill-toggle-vis-btn {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.12s ease;
+}
+
+.fill-toggle-vis-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.fill-remove-btn {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  transition: all 0.12s ease;
+}
+
+.fill-remove-btn:hover {
+  color: #ff5c5c;
+  background: rgba(255, 92, 92, 0.1);
+}
+
+/* Popover Palette & Gradient Controls */
+.color-picker-popover-box {
+  background: rgba(20, 23, 26, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.gradient-mode-switcher {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.gradient-tab {
+  flex: 1;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.gradient-tab:hover {
+  color: #ffffff;
+}
+
+.gradient-tab.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+}
+
+.palette-swatch-btn {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s ease;
+}
+
+.palette-swatch-btn:hover {
+  transform: scale(1.1);
+}
+
+.palette-swatch-btn.selected {
+  outline: 2px solid var(--lemmo-surface-brand-background, #d1fe17);
+  outline-offset: 1px;
+}
+
+/* 7. Stroke Section */
+.stroke-details-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.mini-num {
+  width: 58px;
+}
+
+.stroke-meta-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.stroke-style-select {
+  height: 28px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.76rem;
+  padding: 0 6px;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.stroke-style-select:focus {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* 8. Effects Section */
+.effects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.effect-item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  width: 100%;
+}
+
+.effect-type-select {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.74rem;
+  padding: 0 6px;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.effect-blur-input {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  padding: 0 6px;
+  gap: 2px;
+  width: 58px;
+  box-sizing: border-box;
+}
+
+.effect-blur-input input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.78rem;
+  outline: none;
+  padding: 0;
+  text-align: end;
+}
+
+.effect-remove-btn {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+  transition: all 0.12s ease;
+}
+
+.effect-remove-btn:hover {
+  color: #ff5c5c;
+  background: rgba(255, 92, 92, 0.1);
+}
+
+/* 9. Export Section */
+.export-action-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.export-format-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.export-format-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.export-scale-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.inspector-export-btn {
+  flex: 1;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.76rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.inspector-export-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* 10. Help Circle Button (Bottom Corner matching Figma image copy.png) */
+.inspector-help-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 4px 4px;
+  margin-top: auto;
+}
+
+.inspector-help-circle-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.inspector-help-circle-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* ================================================================== */
+/* 11. ENGINEERED LEMMO STUDIO INSPECTOR PANELS                      */
+/* ================================================================== */
+
+/* 2. Context Navigation Chips (Top of Inspector) */
+.inspector-context-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(18, 20, 23, 0.5);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.context-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 25px;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.68rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 0;
+  box-sizing: border-box;
+  transition: all 0.12s ease;
+}
+
+.context-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.context-pill.active {
+  background: rgba(209, 254, 23, 0.14);
+  border-color: rgba(209, 254, 23, 0.35);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+  font-weight: 600;
+}
+
+.context-pill span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* AI Tool Node Inspector Hero */
+.node-inspector-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 6px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.node-hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  width: 100%;
+}
+
+.node-hero-lead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.node-hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.node-hero-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.node-hero-badge {
+  font-size: 0.64rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(209, 254, 23, 0.14);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+  border: 1px solid rgba(209, 254, 23, 0.28);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.node-hero-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.node-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.node-status-dot.running {
+  background: var(--lemmo-surface-brand-background, #d1fe17);
+  box-shadow: 0 0 8px #d1fe17;
+  animation: canvasPulse 1.2s infinite ease-in-out;
+}
+
+.node-status-dot.success {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+.node-status-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* AI Action Chip */
+.section-action-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 4px;
+  background: rgba(209, 254, 23, 0.1);
+  border: 1px solid rgba(209, 254, 23, 0.25);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  flex-shrink: 0;
+}
+
+.section-action-chip:hover {
+  background: rgba(209, 254, 23, 0.2);
+}
+
+/* Prompt Textarea */
+.inspector-prompt-textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #ffffff;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  outline: none;
+  resize: vertical;
+  min-height: 68px;
+  max-height: 180px;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.inspector-prompt-textarea:focus {
+  border-color: rgba(209, 254, 23, 0.4);
+  background: rgba(18, 20, 23, 0.95);
+}
+
+/* Ratio Chips Track */
+.ratio-chips-track {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  direction: ltr;
+}
+
+.ratio-chip {
+  height: 26px;
+  min-width: 0;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  transition: all 0.12s ease;
+}
+
+.ratio-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.ratio-chip.active {
+  background: rgba(209, 254, 23, 0.14);
+  border-color: rgba(209, 254, 23, 0.35);
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+  font-weight: 600;
+}
+
+/* Range Slider */
+.inspector-range-slider {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  accent-color: var(--lemmo-surface-brand-background, #d1fe17);
+  cursor: pointer;
+  margin: 2px 0 6px;
+}
+
+/* Run Node CTA */
+.node-exec-section {
+  padding-top: 4px;
+  border-bottom: none;
+}
+
+.inspector-run-node-btn {
+  width: 100%;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--lemmo-surface-brand-background, #d1fe17);
+  border: none;
+  color: #0b0d0e;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(209, 254, 23, 0.25);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.inspector-run-node-btn:hover:not(:disabled) {
+  background: #d8ff28;
+}
+
+.inspector-run-node-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.inspector-run-node-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.run-cost-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #0b0d0e;
+}
+
+/* Frame Presets Grid */
+.frame-presets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+}
+
+.frame-preset-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  gap: 2px;
+  transition: all 0.12s ease;
+}
+
+.frame-preset-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.frame-preset-card.active {
+  background: rgba(209, 254, 23, 0.12);
+  border-color: rgba(209, 254, 23, 0.3);
+}
+
+.frame-preset-card.active .preset-name {
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+.preset-name {
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.preset-dim {
+  font-size: 0.66rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Toggle Checkbox Row */
+.inspector-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.inspector-toggle-row input[type="checkbox"] {
+  accent-color: var(--lemmo-surface-brand-background, #d1fe17);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+/* Canvas Hero */
+.canvas-hero {
+  border-color: rgba(209, 254, 23, 0.18);
+}
+
+.canvas-meta-note {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+/* AI Engine Tab & Model Architecture Cards */
+.engine-hero {
+  border-color: rgba(209, 254, 23, 0.25);
+  background: linear-gradient(180deg, rgba(209, 254, 23, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+.engine-hero-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.engine-models-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.engine-model-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  text-align: start;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.engine-model-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.engine-model-card.active {
+  background: rgba(209, 254, 23, 0.08);
+  border-color: rgba(209, 254, 23, 0.4);
+}
+
+.engine-model-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.engine-model-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.engine-model-card.active .engine-model-name {
+  color: var(--lemmo-surface-brand-background, #d1fe17);
+}
+
+.engine-model-tag {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.engine-model-tag.fast {
+  background: rgba(0, 200, 255, 0.15);
+  color: #00c8ff;
+}
+
+.engine-model-desc {
+  font-size: 0.69rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.engine-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.engine-tag-chip {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.67rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.engine-tag-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+
 

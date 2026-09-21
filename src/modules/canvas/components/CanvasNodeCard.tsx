@@ -99,6 +99,7 @@ export function CanvasNodeCard({
         transform: `translate(${node.x}px, ${node.y}px)`,
       }}
       onPointerDown={handlePointerDown}
+      onClick={() => onSelect(node.id)}
       role="region"
       aria-label={`${title} (${node.status})`}
     >

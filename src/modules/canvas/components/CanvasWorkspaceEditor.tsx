@@ -22,15 +22,22 @@ import { useUiStore } from '@/stores/uiStore';
 import {
   CanvasLayer,
   CanvasNode,
-  CanvasMode,
+  CanvasDockMode,
   CanvasActiveTool,
   CanvasViewport,
 } from '../types';
 import { MOCK_CANVAS_PROJECTS } from '../data/mockCanvasProjects';
 import { CanvasWorkspaceSidePanel } from './CanvasWorkspaceSidePanel';
-import { CanvasTopModeSwitcher } from './CanvasTopModeSwitcher';
+import { CanvasZoomWidget } from './CanvasZoomWidget';
 import { CanvasBottomToolbar } from './CanvasBottomToolbar';
 import { CanvasBoardSurface } from './CanvasBoardSurface';
+import {
+  CanvasPropertiesPanel,
+  InspectorSelectionType,
+  CanvasShapeElement,
+  CanvasFrameElement,
+  CanvasWorkspaceSettings,
+} from './CanvasPropertiesPanel';
 
 interface CanvasWorkspaceEditorProps {
   projectId: string;
@@ -62,13 +69,93 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
 
   // State Management
   const [sideWidth, setSideWidth] = useState(286);
-  const [mode, setMode] = useState<CanvasMode>('solo');
+  const [dockMode, setDockMode] = useState<CanvasDockMode>('workflow');
   const [activeTool, setActiveTool] = useState<CanvasActiveTool>('select');
+
+  const handleDockModeChange = (newMode: CanvasDockMode) => {
+    setDockMode(newMode);
+    if (newMode === 'design' && (activeTool === 'node' || activeTool === 'media')) {
+      setActiveTool('select');
+    } else if (newMode === 'workflow' && (activeTool === 'shape' || activeTool === 'comment')) {
+      setActiveTool('select');
+    }
+  };
   const [viewport, setViewport] = useState<CanvasViewport>({ x: 60, y: 80, zoom: 1 });
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>('node-1');
   const [activeLayerId, setActiveLayerId] = useState<string>('layer-1');
   const [isRunningPipeline, setIsRunningPipeline] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Engineered Canvas Properties Inspector State
+  const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+  const [selectionType, setSelectionType] = useState<InspectorSelectionType>('node');
+
+  const [shapeElement, setShapeElement] = useState<CanvasShapeElement>({
+    id: 'shape-poly-1',
+    name: isFa ? 'چندضلعی و ستاره' : 'Polygon 1',
+    type: 'polygon',
+    x: 180,
+    y: 140,
+    rotation: 0,
+    isFlippedH: false,
+    isFlippedV: false,
+    width: 240,
+    height: 240,
+    isAspectLocked: true,
+    opacity: 100,
+    cornerRadius: 8,
+    sides: 5,
+    starInset: 48,
+    fill: {
+      type: 'linear-gradient',
+      color: '#d1fe17',
+      opacity: 100,
+      isVisible: true,
+      gradient: {
+        from: '#d1fe17',
+        to: '#00c8ff',
+        angle: 135,
+      },
+    },
+    stroke: {
+      enabled: true,
+      color: '#ffffff',
+      width: 2,
+      style: 'solid',
+      position: 'inside',
+    },
+    effects: [
+      {
+        id: 'fx-1',
+        type: 'neon-glow',
+        blur: 24,
+        x: 0,
+        y: 8,
+        color: 'rgba(209, 254, 23, 0.28)',
+        enabled: true,
+      },
+    ],
+  });
+
+  const [frameElement, setFrameElement] = useState<CanvasFrameElement>({
+    id: 'frame-1',
+    name: isFa ? 'پست اینستاگرام (1:1)' : 'Instagram Post (1:1)',
+    preset: 'instagram-square',
+    width: 1080,
+    height: 1080,
+    x: 80,
+    y: 80,
+    bgColor: '#181b1e',
+    clipContent: true,
+    fillOpacity: 100,
+  });
+
+  const [canvasSettings, setCanvasSettings] = useState<CanvasWorkspaceSettings>({
+    gridStyle: 'dots',
+    snapToGrid: true,
+    bgColor: '#131517',
+    renderEngine: 'FLUX.1 [dev]',
+  });
 
   // Auto-dismiss toast
   useEffect(() => {
@@ -112,6 +199,49 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
       },
     ];
   });
+
+  // Selected Node (Memoized & Synced with Inspector)
+  const selectedNode = useMemo(() => {
+    return nodes.find((n) => n.id === selectedNodeId) || nodes[0] || null;
+  }, [nodes, selectedNodeId]);
+
+  const handleUpdateNode = (nodeId: string, updates: Partial<CanvasNode>) => {
+    setNodes((prev) =>
+      prev.map((n) => (n.id === nodeId ? { ...n, ...updates } : n))
+    );
+  };
+
+  const handleRunSingleNode = (nodeId: string) => {
+    setNodes((prev) =>
+      prev.map((n) => (n.id === nodeId ? { ...n, status: 'running' } : n))
+    );
+    setToastMessage(isFa ? 'پردازش هوش مصنوعی نود آغاز گردید...' : 'Generating node with AI...');
+    setTimeout(() => {
+      setNodes((prev) =>
+        prev.map((n) =>
+          n.id === nodeId
+            ? {
+                ...n,
+                status: 'success',
+                previewUrl:
+                  n.previewUrl ||
+                  '/images/feed/kneeling-knight-in-full-plate-armor-holding-glowing-sword.webp',
+              }
+            : n
+        )
+      );
+      setToastMessage(isFa ? 'نود با موفقیت تولید شد' : 'Node generated successfully');
+    }, 1400);
+  };
+
+  const handleSelectNode = (nodeId: string | null) => {
+    setSelectedNodeId(nodeId);
+    if (nodeId) {
+      setSelectionType('node');
+    } else {
+      setSelectionType('canvas');
+    }
+  };
 
   // Initial Hierarchical Layers (Figma-Style folders + stacking order: Foreground at top, Background at bottom)
   const [layers, setLayers] = useState<CanvasLayer[]>(() => {
@@ -499,10 +629,12 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
 
       {/* 2. Main Canvas Viewport Container */}
       <div className="canvas-viewport-container">
-        {/* Top Center: Solo vs Team Mode Switcher (.team-solo) */}
-        <CanvasTopModeSwitcher
-          mode={mode}
-          onChangeMode={setMode}
+        {/* Top Center: Viewport Zoom Controls (Replaces solo/team) */}
+        <CanvasZoomWidget
+          zoom={viewport.zoom}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onResetZoom={handleResetZoom}
           locale={locale}
         />
 
@@ -513,7 +645,7 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
           onChangeViewport={setViewport}
           activeTool={activeTool}
           selectedNodeId={selectedNodeId}
-          onSelectNode={setSelectedNodeId}
+          onSelectNode={handleSelectNode}
           onDeleteNode={handleDeleteNode}
           onUpdateNodePosition={handleUpdateNodePosition}
           onUpdatePrompt={handleUpdatePrompt}
@@ -523,14 +655,12 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
           isRtl={isRtl}
         />
 
-        {/* Bottom Center: Floating Action Toolbar (.nav-menu) */}
+        {/* Bottom Center: Floating Action Toolbar (.canvas-bottom-dock) */}
         <CanvasBottomToolbar
+          dockMode={dockMode}
+          onChangeDockMode={handleDockModeChange}
           activeTool={activeTool}
           onChangeTool={setActiveTool}
-          zoom={viewport.zoom}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onResetZoom={handleResetZoom}
           onAddToolNode={handleAddToolNode}
           onUploadImage={handleUploadImage}
           onRunPipeline={handleRunPipeline}
@@ -538,6 +668,27 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
           locale={locale}
         />
       </div>
+
+      {/* 3. Inline-End Canvas Properties Inspector (Engineered for Lemmo Studio) */}
+      <CanvasPropertiesPanel
+        selectionType={selectionType}
+        onChangeSelectionType={setSelectionType}
+        selectedNode={selectedNode}
+        onUpdateNode={handleUpdateNode}
+        onRunNode={handleRunSingleNode}
+        shapeElement={shapeElement}
+        onChangeShape={setShapeElement}
+        frameElement={frameElement}
+        onChangeFrame={setFrameElement}
+        canvasSettings={canvasSettings}
+        onChangeCanvasSettings={setCanvasSettings}
+        onRunGlobalPipeline={handleRunPipeline}
+        isRunningPipeline={isRunningPipeline}
+        isOpen={isInspectorOpen}
+        onToggleOpen={() => setIsInspectorOpen((prev) => !prev)}
+        locale={locale}
+        isRtl={isRtl}
+      />
     </div>
   );
 }

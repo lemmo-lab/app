@@ -36,13 +36,18 @@ export interface CanvasStarterTemplate {
 
 export type CanvasMode = 'solo' | 'team';
 
+export type CanvasDockMode = 'workflow' | 'design' | 'video';
+
 export type CanvasActiveTool =
   | 'select'
   | 'hand'
   | 'node'
   | 'media'
   | 'frame'
-  | 'text';
+  | 'text'
+  | 'shape'
+  | 'comment'
+  | 'draw';
 
 export interface CanvasLayer {
   id: string;
