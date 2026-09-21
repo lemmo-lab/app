@@ -8,6 +8,7 @@
 @import "../styles/settings.css";
 @import "../styles/tools.css";
 @import "../styles/agent.css";
+@import "../styles/canvas.css";
 
 @tailwind base;
 @tailwind components;
