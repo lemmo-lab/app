@@ -86,7 +86,7 @@ export function CanvasProjectCard({
     <div className="canvas-project-card">
       {/* Workspace Preview Thumbnail */}
       <Link
-        href={`/app/tools`}
+        href={`/app/canvas/${project.id}`}
         className="canvas-card-cover-link"
         title={title}
       >
@@ -158,7 +158,7 @@ export function CanvasProjectCard({
       {/* Metadata Section: Only Project Title + Last Updated Date */}
       <div className="canvas-card-meta">
         <Link
-          href={`/app/tools`}
+          href={`/app/canvas/${project.id}`}
           className="canvas-card-title-link"
           title={title}
         >

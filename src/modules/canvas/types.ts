@@ -33,3 +33,58 @@ export interface CanvasStarterTemplate {
   tag: string;
   tagFa: string;
 }
+
+export type CanvasMode = 'solo' | 'team';
+
+export type CanvasActiveTool =
+  | 'select'
+  | 'hand'
+  | 'node'
+  | 'media'
+  | 'frame'
+  | 'text';
+
+export interface CanvasLayer {
+  id: string;
+  name: string;
+  nameFa: string;
+  type: 'image' | 'prompt' | 'tool' | 'mask' | 'group' | 'text';
+  isVisible: boolean;
+  isLocked?: boolean;
+  isExpanded?: boolean;
+  children?: CanvasLayer[];
+  nodeId?: string;
+  thumbnail?: string;
+}
+
+export interface CanvasNodeSocket {
+  id: string;
+  name: string;
+  nameFa: string;
+  type: 'image' | 'text' | 'mask' | 'model';
+}
+
+export interface CanvasNode {
+  id: string;
+  title: string;
+  titleFa: string;
+  toolType: 'flux-dev' | 'remove-bg' | 'upscale' | 'prompt' | 'image' | 'relight';
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  status: 'idle' | 'running' | 'success' | 'error';
+  prompt?: string;
+  aspectRatio?: string;
+  steps?: number;
+  previewUrl?: string;
+  inputs?: CanvasNodeSocket[];
+  outputs?: CanvasNodeSocket[];
+}
+
+export interface CanvasViewport {
+  x: number;
+  y: number;
+  zoom: number;
+}
+

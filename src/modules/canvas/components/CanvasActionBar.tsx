@@ -41,12 +41,16 @@ export function CanvasActionBar({
   sortOption,
   onChangeSort,
   locale,
-  isRtl,
 }: CanvasActionBarProps) {
   const isFa = locale === 'fa';
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
 
-  const tabs: Array<{ id: CanvasTab; labelEn: string; labelFa: string; icon: React.ComponentType<any> }> = [
+  const tabs: Array<{
+    id: CanvasTab;
+    labelEn: string;
+    labelFa: string;
+    icon: React.ComponentType<{ size?: number; strokeWidth?: number; color?: string; className?: string }>;
+  }> = [
     { id: 'all', labelEn: 'All Projects', labelFa: 'همه پروژه‌ها', icon: FolderCopy },
     { id: 'recent', labelEn: 'Recent', labelFa: 'اخیراً ویرایش‌شده', icon: Clock03 },
     { id: 'starred', labelEn: 'Starred', labelFa: 'نشان‌شده‌ها', icon: Heart },

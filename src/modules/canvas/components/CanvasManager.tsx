@@ -11,7 +11,8 @@
 
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useSyncExternalStore } from 'react';
+import { useRouter } from 'next/navigation';
 import { useUiStore } from '@/stores/uiStore';
 import {
   CanvasProject,
@@ -31,15 +32,17 @@ import { CanvasEmptyState } from './CanvasEmptyState';
 import { CanvasVideoModal } from './CanvasVideoModal';
 
 export default function CanvasManager() {
+  const router = useRouter();
   const { dir, locale } = useUiStore();
   const isRtl = dir === 'rtl';
   const isFa = locale === 'fa';
 
   // Hydration guard
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   // Main State
   const [projects, setProjects] = useState<CanvasProject[]>(MOCK_CANVAS_PROJECTS);
@@ -132,6 +135,7 @@ export default function CanvasManager() {
         ? 'پروژه بوم جدید ایجاد شد و آماده کار است'
         : 'New canvas project created successfully'
     );
+    router.push(`/app/canvas/${newProject.id}`);
   };
 
   // 1-Click Instant Clone from Starter Template
@@ -157,6 +161,7 @@ export default function CanvasManager() {
         ? `قالب «${template.titleFa}» به پروژه‌های شما اضافه شد`
         : `Template "${template.title}" initialized as active workspace`
     );
+    router.push(`/app/canvas/${templateProject.id}`);
   };
 
   // Action Handlers
