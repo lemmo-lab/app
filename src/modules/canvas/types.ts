@@ -62,6 +62,13 @@ export interface CanvasLayer {
   thumbnail?: string;
 }
 
+import type { NodeSocket as SdkNodeSocket, CanvasNodeContract } from '@/sdk';
+export type { SdkNodeSocket, CanvasNodeContract };
+
+/**
+ * CanvasNodeSocket — UI Socket representation.
+ * Migrating toward canonical NodeSocket in @/sdk per ADR-007.
+ */
 export interface CanvasNodeSocket {
   id: string;
   name: string;
@@ -69,6 +76,10 @@ export interface CanvasNodeSocket {
   type: 'image' | 'text' | 'mask' | 'model';
 }
 
+/**
+ * CanvasNode — UI Node representation.
+ * Migrating toward canonical CanvasNodeContract in @/sdk per ADR-007.
+ */
 export interface CanvasNode {
   id: string;
   title: string;

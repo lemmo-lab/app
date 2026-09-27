@@ -27,3 +27,5 @@ export const sdk: SdkClient = isLiveMode
   : mockSdkAdapter;
 
 export type { SdkClient } from './types';
+export * from './errors';
+export * from './node';
