@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { X01 } from 'synthline/react';
-import { AgentCommandItem } from '../data/agentCommands';
+import { AgentCommandItem } from '../constants/agentCommands';
 import { AgentCommandIcon } from './AgentCommandPalette';
 
 interface AgentActiveToolStripProps {

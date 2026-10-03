@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Eye, RefreshCw } from 'synthline/react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { sdk, Message } from '@/sdk';
 import {
   AgentChatMessageItem,
-  AgentConversation,
   AgentGenerationConfig,
   AgentReferenceItem,
+  AgentAspectRatio,
 } from '../types';
 import { AgentChatMessage } from './AgentChatMessage';
 import { AgentInputBar } from './AgentInputBar';
@@ -18,48 +20,89 @@ interface AgentChatViewProps {
   isRtl: boolean;
 }
 
-const DEFAULT_CONVERSATION: AgentConversation = {
-  id: 'chat-01',
-  title: 'Neon Tokyo & Studio Portrait',
-  updatedAt: 'Just now',
-  messages: [
-    {
-      id: 'msg-1',
+/**
+ * Maps SDK Message domain model to AgentChatMessageItem UI presentation model.
+ */
+function mapSdkMessageToAgentMessage(
+  msg: Message,
+  config?: AgentGenerationConfig
+): AgentChatMessageItem {
+  if (msg.role === 'user') {
+    const refs: AgentReferenceItem[] = (msg.attachments || []).map((att) => ({
+      id: att.id,
+      url: att.url,
+      name: att.name,
+    }));
+    return {
+      id: msg.id,
       sender: 'user',
-      timestamp: '14:23',
-      prompt:
-        'Create a cinematic editorial portrait /relight of an elegant futuristic model in a sunlit retro space. Natural sunlight shafts, delicate grain, high fashion studio aesthetic.',
-      references: [
-        {
-          id: 'ref-1',
-          url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
-          name: 'lighting-ref.jpg',
-        },
-      ],
-    },
-    {
-      id: 'msg-2',
-      sender: 'assistant',
-      timestamp: '14:24',
-      resultMediaUrl:
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
-      contentType: 'image',
-      aspectRatio: '3:4',
-      modelUsed: 'FLUX.1 [dev]',
-      seed: 849204812,
-      generationDurationSec: 3.4,
-      creditsUsed: 5,
-      isFavorite: false,
-    },
-  ],
-};
+      timestamp: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      prompt: msg.content,
+      references: refs.length > 0 ? refs : undefined,
+    };
+  }
+
+  // Assistant response
+  const mediaUrl =
+    msg.attachments?.[0]?.url ||
+    'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80';
+  const aspect =
+    (msg.attachments?.[0]?.aspectRatio as AgentAspectRatio) ||
+    config?.aspectRatio ||
+    '3:4';
+
+  return {
+    id: msg.id,
+    sender: 'assistant',
+    timestamp: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    resultMediaUrl: mediaUrl,
+    contentType: config?.contentType || 'image',
+    aspectRatio: aspect,
+    modelUsed: config?.modelId === 'flux-1-dev' ? 'FLUX.1 [dev]' : 'Lemmo Realism v2',
+    seed: Math.floor(Math.random() * 900000000) + 100000000,
+    generationDurationSec: 2.8,
+    creditsUsed: (config?.batchCount || 1) * 5,
+    isFavorite: false,
+  };
+}
 
 export function AgentChatView({
+  currentId,
   locale,
   isRtl,
 }: AgentChatViewProps) {
-  const initialConv = DEFAULT_CONVERSATION;
-  const [messages, setMessages] = useState<AgentChatMessageItem[]>(initialConv.messages);
+  const queryClient = useQueryClient();
+
+  // 1. Fetch available chat threads to identify active thread ID
+  const { data: threads = [] } = useQuery({
+    queryKey: ['chat-threads'],
+    queryFn: () => sdk.chat.getThreads(),
+  });
+
+  const activeThreadId = currentId || threads[0]?.id || 'thread-001';
+
+  // 2. Fetch messages for active thread from SDK
+  const { data: threadData } = useQuery({
+    queryKey: ['chat-thread', activeThreadId],
+    queryFn: () => sdk.chat.getThread(activeThreadId),
+    enabled: Boolean(activeThreadId),
+  });
+
+  // Local session messages per thread
+  const [localMessages, setLocalMessages] = useState<Record<string, AgentChatMessageItem[]>>({});
+  const sessionMessages = useMemo(() => localMessages[activeThreadId] || [], [localMessages, activeThreadId]);
+
+  // Messages loaded from SDK query
+  const initialMessages = useMemo(() => {
+    if (!threadData?.messages || threadData.messages.length === 0) return [];
+    return threadData.messages.map((m) => mapSdkMessageToAgentMessage(m));
+  }, [threadData]);
+
+  // Combined messages sequence (server history + session messages)
+  const messages: AgentChatMessageItem[] = useMemo(() => {
+    return [...initialMessages, ...sessionMessages];
+  }, [initialMessages, sessionMessages]);
+
   const [prompt, setPrompt] = useState('');
   const [references, setReferences] = useState<AgentReferenceItem[]>([]);
   const [config, setConfig] = useState<AgentGenerationConfig>({
@@ -68,7 +111,6 @@ export function AgentChatView({
     modelId: 'flux-1-dev',
     batchCount: 1,
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -87,13 +129,30 @@ export function AgentChatView({
     setReferences((prev) => prev.filter((r) => r.id !== id));
   };
 
+  // 3. Send message mutation via sdk.chat.sendMessage
+  const sendMessageMutation = useMutation({
+    mutationFn: async ({ threadId, content }: { threadId: string | null; content: string }) => {
+      return sdk.chat.sendMessage(threadId, content);
+    },
+    onSuccess: (assistantMsg) => {
+      const assistantItem = mapSdkMessageToAgentMessage(assistantMsg, config);
+      setLocalMessages((prev) => ({
+        ...prev,
+        [activeThreadId]: [...(prev[activeThreadId] || []), assistantItem],
+      }));
+      queryClient.invalidateQueries({ queryKey: ['chat-thread', activeThreadId] });
+    },
+  });
+
+  const isSubmitting = sendMessageMutation.isPending;
+
   const handleSubmit = () => {
     if (!prompt.trim() && references.length === 0) return;
 
     const newPromptText = prompt.trim();
     const currentRefs = [...references];
 
-    // Add user message
+    // Optimistically add user message to conversation list
     const userMsg: AgentChatMessageItem = {
       id: `msg-${Date.now()}`,
       sender: 'user',
@@ -102,32 +161,23 @@ export function AgentChatView({
       references: currentRefs,
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    setLocalMessages((prev) => ({
+      ...prev,
+      [activeThreadId]: [...(prev[activeThreadId] || []), userMsg],
+    }));
     setPrompt('');
     setReferences([]);
-    setIsSubmitting(true);
 
-    // Simulate generation output
-    setTimeout(() => {
-      const assistantMsg: AgentChatMessageItem = {
-        id: `msg-res-${Date.now()}`,
-        sender: 'assistant',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        resultMediaUrl:
-          currentRefs[0]?.url ||
-          'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
-        contentType: config.contentType,
-        aspectRatio: config.aspectRatio,
-        modelUsed: config.modelId === 'flux-1-dev' ? 'FLUX.1 [dev]' : 'Lemmo Realism v2',
-        seed: Math.floor(Math.random() * 900000000) + 100000000,
-        generationDurationSec: 2.8,
-        creditsUsed: config.batchCount * 5,
-        isFavorite: false,
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
-      setIsSubmitting(false);
-    }, 1200);
+    // Dispatch via SDK chat client
+    sendMessageMutation.mutate({
+      threadId: activeThreadId,
+      content: newPromptText,
+    });
   };
+
+  const threadTitle =
+    threadData?.title ||
+    (locale === 'fa' ? 'مکالمه جاری ایجنت استودیو' : 'Studio Creative Thread');
 
   return (
     <div className="agent-chat-view-root">
@@ -147,7 +197,7 @@ export function AgentChatView({
             <span>{locale === 'fa' ? 'ایجنت استودیو' : 'Agent Studio'}</span>
           </Link>
           <span className="chat-thread-badge">
-            {initialConv.title}
+            {threadTitle}
           </span>
         </div>
 
@@ -166,6 +216,16 @@ export function AgentChatView({
       {/* Scrollable Conversation Thread */}
       <div className="chat-messages-container">
         <div className="chat-messages-inner">
+          {messages.length === 0 && !isSubmitting && (
+            <div className="agent-empty-thread-notice">
+              <p>
+                {locale === 'fa'
+                  ? 'مکالمه جدید آماده است. پرامپت یا دستور مد نظرتان را در کادر زیر وارد کنید.'
+                  : 'New thread ready. Enter your prompt or creative command below.'}
+              </p>
+            </div>
+          )}
+
           {messages.map((msg) => (
             <AgentChatMessage
               key={msg.id}
@@ -186,7 +246,7 @@ export function AgentChatView({
                 />
                 <span>
                   {locale === 'fa'
-                    ? 'در حال پردازش پرامپت و تولید رسانه...'
+                    ? 'در حال پردازش پرامپت و تولید رسانه از طریق SDK...'
                     : 'Synthesizing creative output via neural pipeline...'}
                 </span>
               </div>

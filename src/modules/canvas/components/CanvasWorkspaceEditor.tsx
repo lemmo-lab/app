@@ -49,15 +49,12 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
   const isRtl = dir === 'rtl';
   const isFa = locale === 'fa';
 
-  // Fetch project details from SDK via TanStack Query
-  const { data: serverProjects } = useQuery({
-    queryKey: ['projects'],
-    queryFn: () => sdk.projects.list(),
+  // Fetch single project details from SDK via TanStack Query
+  const { data: existingProject } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: () => sdk.projects.get(projectId),
+    enabled: Boolean(projectId),
   });
-
-  const existingProject = useMemo(() => {
-    return serverProjects?.find((p) => p.id === projectId);
-  }, [serverProjects, projectId]);
 
   const [customTitle, setCustomTitle] = useState<string | null>(null);
   const projectTitle =

@@ -85,6 +85,21 @@ export const mockSdkAdapter: SdkClient = {
         },
       ];
     },
+    get: async (id: string) => {
+      await delay(150);
+      const projects = await mockSdkAdapter.projects.list();
+      const found = projects.find((p) => p.id === id);
+      if (!found) {
+        return {
+          id,
+          name: 'Demo Project',
+          description: 'A mock project for development',
+          version: 1,
+          createdAt: Date.now() - 3600000,
+        };
+      }
+      return found;
+    },
     create: async (input) => {
       await delay(300);
       return {
@@ -211,7 +226,7 @@ export const mockSdkAdapter: SdkClient = {
   // ================================================================ //
   chat: {
     sendMessage: async (threadId, content) => {
-      await delay(300);
+      await delay(400);
 
       const thread: Thread = threadId
         ? (MOCK_THREADS.find((t) => t.id === threadId) ?? MOCK_THREADS[0])
@@ -224,21 +239,27 @@ export const mockSdkAdapter: SdkClient = {
         createdAt: Date.now(),
       };
 
-      thread.messages.push(userMessage);
+      const assistantMessage: Message = {
+        id: generateId('msg'),
+        role: 'assistant',
+        content: `Creative synthesis completed for: "${content.slice(0, 60)}"`,
+        createdAt: Date.now() + 100,
+        attachments: [
+          {
+            id: generateId('ast'),
+            type: 'image',
+            name: 'Generated Creative Output',
+            url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
+            aspectRatio: '3:4',
+            createdAt: Date.now(),
+          },
+        ],
+      };
+
+      thread.messages.push(userMessage, assistantMessage);
       thread.updatedAt = Date.now();
 
-      // Simulate an assistant reply after a short delay
-      setTimeout(() => {
-        const assistantMessage: Message = {
-          id: generateId('msg'),
-          role: 'assistant',
-          content: `(Mock) Received: "${content.slice(0, 50)}..."`,
-          createdAt: Date.now(),
-        };
-        thread.messages.push(assistantMessage);
-      }, 1000);
-
-      return userMessage;
+      return assistantMessage;
     },
 
     getThreads: async () => {

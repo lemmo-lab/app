@@ -130,6 +130,15 @@ export const liveSdkAdapter: SdkClient = {
       }));
     },
 
+    get: async (id: string): Promise<Project> => {
+      const projects = await liveSdkAdapter.projects.list();
+      const found = projects.find((p) => p.id === id);
+      if (!found) {
+        throw new Error(`Project ${id} not found`);
+      }
+      return found;
+    },
+
     create: async (input: { name: string; description?: string }): Promise<Project> => {
       const response = await createProject({
         name: input.name,

@@ -33,9 +33,11 @@ import {
   Check01,
   X01,
 } from 'synthline/react';
+import { useQuery } from '@tanstack/react-query';
+import { sdk } from '@/sdk';
 import { useUiStore } from '@/stores/uiStore';
-import { ASSET_ITEMS } from '@/modules/assets/data/assetsData';
 import { AssetItem } from '@/modules/assets/types';
+import { mapAssetToItem } from '@/modules/assets/utils/assetMapper';
 
 export default function SingleAssetDetailsPage() {
   const params = useParams();
@@ -45,13 +47,54 @@ export default function SingleAssetDetailsPage() {
 
   const assetId = (params?.['file-name'] || params?.filename || 'asset-1') as string;
 
-  // Lookup matching asset or fallback to first item
-  const initialAsset = useMemo(() => {
-    return ASSET_ITEMS.find((a) => a.id === assetId) || ASSET_ITEMS[0];
-  }, [assetId]);
+  // Fetch asset from SDK via TanStack Query
+  const { data: serverAsset } = useQuery({
+    queryKey: ['asset', assetId],
+    queryFn: async () => {
+      try {
+        return await sdk.assets.get(assetId);
+      } catch {
+        // Fallback to list match if direct get by ID/slug fails
+        const list = await sdk.assets.list();
+        const found = list.find((a) => a.id === assetId || a.name === assetId);
+        if (found) return found;
+        return list[0];
+      }
+    },
+    enabled: Boolean(assetId),
+  });
 
-  const [asset] = useState<AssetItem>(initialAsset);
-  const [isFavorite, setIsFavorite] = useState(initialAsset.isFavorite);
+  const asset: AssetItem = useMemo(() => {
+    if (serverAsset) {
+      return mapAssetToItem(serverAsset);
+    }
+    return {
+      id: assetId,
+      title: 'Loading asset...',
+      titleFa: 'در حال بارگذاری...',
+      type: 'image',
+      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+      thumbnail: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      prompt: 'Loading prompt details...',
+      model: 'FLUX.1 [dev]',
+      aspectRatio: '3:4',
+      dimensions: '2048 × 2048',
+      fileSize: '3.2 MB',
+      createdAt: 'Just now',
+      createdAtFa: 'همین الان',
+      dateGroup: 'today',
+      dateGroupLabel: 'Today',
+      dateGroupLabelFa: 'امروز',
+      isFavorite: false,
+      category: 'photoreal',
+      categoryFa: 'واقع‌گرایانه',
+      tags: ['ai', 'asset'],
+    };
+  }, [serverAsset, assetId]);
+
+  const [favoriteOverride, setFavoriteOverride] = useState<boolean | null>(null);
+  const isFavorite = favoriteOverride ?? asset.isFavorite;
+  const setIsFavorite = (val: boolean) => setFavoriteOverride(val);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);

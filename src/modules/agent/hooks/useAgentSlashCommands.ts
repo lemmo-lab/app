@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { AGENT_COMMANDS, AgentCommandItem } from '../data/agentCommands';
+import { AGENT_COMMANDS, AgentCommandItem } from '../constants/agentCommands';
 
 interface UseAgentSlashCommandsProps {
   prompt: string;

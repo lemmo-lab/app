@@ -41,9 +41,11 @@ import {
   Copy01,
   AiCpu,
 } from 'synthline/react';
+import { useQuery } from '@tanstack/react-query';
+import { sdk } from '@/sdk';
 import { useUiStore } from '@/stores/uiStore';
 import { AssetItem, AssetFilterCategory, AssetSubFilter, DateGroupKey } from '../types';
-import { ASSET_ITEMS } from '../data/assetsData';
+import { mapAssetToItem } from '../utils/assetMapper';
 
 interface AssetsManagerProps {
   initialEmpty?: boolean;
@@ -53,8 +55,21 @@ export default function AssetsManager({ initialEmpty = false }: AssetsManagerPro
   const { locale, dir } = useUiStore();
   const isRtl = dir === 'rtl';
 
-  // State management
-  const [items, setItems] = useState<AssetItem[]>(ASSET_ITEMS);
+  // Fetch assets from SDK via TanStack Query
+  const { data: serverAssets = [] } = useQuery({
+    queryKey: ['assets'],
+    queryFn: () => sdk.assets.list(),
+  });
+
+  const [localOverrides, setLocalOverrides] = useState<Record<string, Partial<AssetItem>>>({});
+
+  const items = useMemo(() => {
+    return serverAssets.map(mapAssetToItem).map((item) => {
+      const overrides = localOverrides[item.id];
+      return overrides ? { ...item, ...overrides } : item;
+    });
+  }, [serverAssets, localOverrides]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<AssetFilterCategory>('all');
   const [activeSubFilter, setActiveSubFilter] = useState<AssetSubFilter>('all');
@@ -82,9 +97,17 @@ export default function AssetsManager({ initialEmpty = false }: AssetsManagerPro
   const handleToggleFavorite = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     e.stopPropagation();
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, isFavorite: !item.isFavorite } : item))
-    );
+    setLocalOverrides((prev) => {
+      const current = items.find((it) => it.id === id);
+      const isFav = current ? !current.isFavorite : true;
+      return {
+        ...prev,
+        [id]: { ...(prev[id] || {}), isFavorite: isFav },
+      };
+    });
+    if (previewItem && previewItem.id === id) {
+      setPreviewItem((prev) => (prev ? { ...prev, isFavorite: !prev.isFavorite } : null));
+    }
   };
 
   // Delete an asset from the list

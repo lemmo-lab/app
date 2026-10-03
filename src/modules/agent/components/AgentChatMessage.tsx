@@ -13,7 +13,7 @@ import {
   InfoCircle,
 } from 'synthline/react';
 import { AgentChatMessageItem } from '../types';
-import { getCommandsFromPrompt, cleanPromptText } from '../data/agentCommands';
+import { getCommandsFromPrompt, cleanPromptText } from '../constants/agentCommands';
 import { AgentCommandIcon } from './AgentCommandPalette';
 
 interface AgentChatMessageProps {

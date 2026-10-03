@@ -67,9 +67,12 @@ const eslintConfig = defineConfig([
                 "**/sdk/mock*",
                 "@/sdk/live/generated*",
                 "**/sdk/live/generated*",
+                "**/data/*",
+                "**/data/**",
+                "*Data*",
               ],
               message:
-                "Importing in-memory mocks, mock files, or internal SDK implementations inside src/modules or src/app is strictly prohibited. All data fetching must route through '@/sdk' (ADR-016).",
+                "Importing in-memory mocks, module data files, or internal SDK implementations inside src/modules or src/app is strictly prohibited. All runtime entity data must flow through '@/sdk' (ADR-016, DOC-FE-002).",
             },
           ],
         },

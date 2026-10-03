@@ -41,6 +41,16 @@ export interface Asset {
   aspectRatio?: string;
   width?: number;
   height?: number;
+  title?: string;
+  titleFa?: string;
+  prompt?: string;
+  model?: string;
+  dimensions?: string;
+  fileSize?: string;
+  isFavorite?: boolean;
+  category?: string;
+  categoryFa?: string;
+  tags?: string[];
 }
 
 // ================================================================== //
@@ -274,6 +284,7 @@ export interface SdkClient {
   };
   projects: {
     list: () => Promise<Project[]>;
+    get: (id: string) => Promise<Project>;
     create: (input: { name: string; description?: string }) => Promise<Project>;
   };
   workspaces: {

@@ -10,7 +10,7 @@ import {
   Crop01,
   Sparks,
 } from 'synthline/react';
-import { AgentCommandItem } from '../data/agentCommands';
+import { AgentCommandItem } from '../constants/agentCommands';
 
 interface AgentCommandPaletteProps {
   commands: AgentCommandItem[];
