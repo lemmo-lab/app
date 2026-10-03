@@ -26,7 +26,8 @@ import {
   CanvasActiveTool,
   CanvasViewport,
 } from '../types';
-import { MOCK_CANVAS_PROJECTS } from '../data/mockCanvasProjects';
+import { useQuery } from '@tanstack/react-query';
+import { sdk } from '@/sdk';
 import { CanvasWorkspaceSidePanel } from './CanvasWorkspaceSidePanel';
 import { CanvasZoomWidget } from './CanvasZoomWidget';
 import { CanvasBottomToolbar } from './CanvasBottomToolbar';
@@ -48,17 +49,21 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
   const isRtl = dir === 'rtl';
   const isFa = locale === 'fa';
 
-  // Find project details from mock or provide fallback
-  const existingProject = useMemo(() => {
-    return MOCK_CANVAS_PROJECTS.find((p) => p.id === projectId);
-  }, [projectId]);
-
-  const [projectTitle, setProjectTitle] = useState(() => {
-    if (existingProject) {
-      return isFa ? existingProject.titleFa : existingProject.title;
-    }
-    return isFa ? 'بوم جدید نامحدود' : 'Untitled Infinite Canvas';
+  // Fetch project details from SDK via TanStack Query
+  const { data: serverProjects } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => sdk.projects.list(),
   });
+
+  const existingProject = useMemo(() => {
+    return serverProjects?.find((p) => p.id === projectId);
+  }, [serverProjects, projectId]);
+
+  const [customTitle, setCustomTitle] = useState<string | null>(null);
+  const projectTitle =
+    customTitle ??
+    (existingProject?.name || (isFa ? 'بوم جدید نامحدود' : 'Untitled Infinite Canvas'));
+  const setProjectTitle = setCustomTitle;
 
   // Hydration safety using React 19 recommended useSyncExternalStore
   const mounted = useSyncExternalStore(
@@ -167,7 +172,8 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
 
   // Initial Sample Nodes for this project
   const [nodes, setNodes] = useState<CanvasNode[]>(() => {
-    const defaultThumbnail = existingProject?.thumbnail || '/images/feed/a-young-woman-stands-in-a-sunlit-retro-interior-holding-a.webp';
+    const defaultThumbnail =
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80';
 
     return [
       {
@@ -179,9 +185,7 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
         y: 80,
         status: 'success',
         prompt: existingProject
-          ? isFa
-            ? existingProject.descriptionFa
-            : existingProject.description
+          ? existingProject.description
           : 'Cinematic portrait, dramatic volumetric lighting, 8k render',
         aspectRatio: '16:9',
         steps: 28,
@@ -225,7 +229,7 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
                 status: 'success',
                 previewUrl:
                   n.previewUrl ||
-                  '/images/feed/kneeling-knight-in-full-plate-armor-holding-glowing-sword.webp',
+                  'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
               }
             : n
         )
@@ -245,7 +249,8 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
 
   // Initial Hierarchical Layers (Figma-Style folders + stacking order: Foreground at top, Background at bottom)
   const [layers, setLayers] = useState<CanvasLayer[]>(() => {
-    const defaultThumbnail = existingProject?.thumbnail || '/images/feed/a-young-woman-stands-in-a-sunlit-retro-interior-holding-a.webp';
+    const defaultThumbnail =
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80';
 
     return [
       {
@@ -525,7 +530,8 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
       x: Math.round(-viewport.x / viewport.zoom + 120),
       y: Math.round(-viewport.y / viewport.zoom + 220),
       status: 'success',
-      previewUrl: '/images/feed/futuristic-solarpunk-city-towering-mushroom-shaped.webp',
+      previewUrl:
+        'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
       aspectRatio: '16:9',
     };
 
@@ -575,7 +581,7 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
               status: 'success',
               previewUrl:
                 node.previewUrl ||
-                '/images/feed/kneeling-knight-in-full-plate-armor-holding-glowing-sword.webp',
+                'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
             };
           }
           return node;

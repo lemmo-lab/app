@@ -231,7 +231,7 @@ export default function AccountPanel({ onShowToast }: AccountPanelProps) {
             id="acc-lang"
             value={locale}
             onChange={(val) => {
-              setLocale(val as any);
+              setLocale(val as 'fa' | 'en');
               onShowToast(val === 'fa' ? 'زبان فارسی انتخاب شد' : 'English selected');
             }}
             options={[

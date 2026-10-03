@@ -12,7 +12,7 @@ import {
   AgentGenerationConfig,
   AgentAspectRatio,
 } from '../types';
-import { AGENT_MODELS } from '../data/mockAgentData';
+import { AGENT_MODELS } from '../constants/presets';
 
 interface AgentConfigPopoverProps {
   config: AgentGenerationConfig;
@@ -43,7 +43,7 @@ export function AgentConfigPopover({
   // Close when clicked outside
   useEffect(() => {
     if (!isOpen) {
-      setIsModelDropdownOpen(false);
+      queueMicrotask(() => setIsModelDropdownOpen(false));
       return;
     }
 

@@ -16,10 +16,9 @@ import {
   ArrowUp,
   X01,
   RefreshCw,
-  InfoCircle,
 } from 'synthline/react';
 import { AgentReferenceItem } from '../types';
-import { AgentCommandPalette, AgentCommandIcon } from './AgentCommandPalette';
+import { AgentCommandPalette } from './AgentCommandPalette';
 import { AgentActiveToolStrip } from './AgentActiveToolStrip';
 import { useAgentSlashCommands } from '../hooks/useAgentSlashCommands';
 
@@ -30,7 +29,7 @@ interface AgentSingleContentViewProps {
 }
 
 const DEFAULT_RESULT_IMAGE =
-  '/images/feed/a-young-woman-stands-in-a-sunlit-retro-interior-holding-a.webp';
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80';
 
 export function AgentSingleContentView({
   currentId = 'file-01',
@@ -40,7 +39,7 @@ export function AgentSingleContentView({
   const router = useRouter();
 
   // State
-  const [imageUrl, setImageUrl] = useState<string>(DEFAULT_RESULT_IMAGE);
+  const [imageUrl] = useState<string>(DEFAULT_RESULT_IMAGE);
   const [isFavorited, setIsFavorited] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -129,10 +128,11 @@ export function AgentSingleContentView({
     }
   };
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const isReady = (prompt.trim().length > 0 || references.length > 0 || activeTool !== null) && !isSubmitting;
   const isButtonDisabled = !mounted ? true : (!isReady || isSubmitting);

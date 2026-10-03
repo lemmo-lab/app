@@ -100,7 +100,7 @@ export default function MembersPanel({ onShowToast }: MembersPanelProps) {
             <LemmoSelect
               id="invite-role-sel"
               value={inviteRole}
-              onChange={(val) => setInviteRole(val as any)}
+              onChange={(val) => setInviteRole(val as 'Admin' | 'Editor' | 'Viewer')}
               options={[
                 { value: 'Admin', label: locale === 'fa' ? 'مدیر (Admin)' : 'Admin' },
                 { value: 'Editor', label: locale === 'fa' ? 'ویرایشگر (Editor)' : 'Editor' },

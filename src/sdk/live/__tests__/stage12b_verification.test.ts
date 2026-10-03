@@ -8,17 +8,13 @@ import {
   customFetch,
   setTransportContext,
   incrementSessionGeneration,
-  getSessionGenerationId,
-  getActiveWorkspaceId,
   onStepUpAuthRequired,
-  onSignedOut,
   scheduleProactiveRefresh,
   cancelProactiveRefresh,
   executeSilentRefresh,
 } from '../transport';
 import { liveSdkAdapter, closeAllStreams } from '../live-adapter';
 import { useUiStore } from '@/stores/uiStore';
-import { PlatformApiError } from '../../errors';
 
 describe('Stage 12B: Ingress Transport Hardening & Isolation', () => {
   beforeEach(() => {

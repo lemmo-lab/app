@@ -16,9 +16,10 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search01, Heart, Plus01, Sparks, Copy01, AiMagicWand01, Check01 } from 'synthline/react';
+import { Search01, Heart, Plus01, Copy01, AiMagicWand01, Check01 } from 'synthline/react';
+import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
-import { FEED_ITEMS, FeedItem } from '@/shared/data/feedData';
+import { sdk, FeedItem } from '@/sdk';
 
 export default function MasonryFeed() {
   const { locale } = useUiStore();
@@ -26,6 +27,28 @@ export default function MasonryFeed() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const { data: feedResult } = useQuery({
+    queryKey: ['feed'],
+    queryFn: () => sdk.feed.list(),
+  });
+
+  const filteredItems = useMemo(() => {
+    const feedItems = feedResult?.items || [];
+    return feedItems.filter((item) => {
+      const matchCategory =
+        activeCategory === 'all' || item.category === activeCategory;
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch =
+        !q ||
+        item.title.toLowerCase().includes(q) ||
+        item.titleFa.toLowerCase().includes(q) ||
+        item.prompt.toLowerCase().includes(q) ||
+        item.author.toLowerCase().includes(q);
+
+      return matchCategory && matchSearch;
+    });
+  }, [activeCategory, searchQuery, feedResult]);
 
   // Category filter options
   const categories = [
@@ -58,23 +81,6 @@ export default function MasonryFeed() {
       [itemId]: !prev[itemId],
     }));
   };
-
-  // Filtered items
-  const filteredItems = useMemo(() => {
-    return FEED_ITEMS.filter((item) => {
-      const matchCategory =
-        activeCategory === 'all' || item.category === activeCategory;
-      const q = searchQuery.toLowerCase().trim();
-      const matchSearch =
-        !q ||
-        item.title.toLowerCase().includes(q) ||
-        item.titleFa.toLowerCase().includes(q) ||
-        item.prompt.toLowerCase().includes(q) ||
-        item.author.toLowerCase().includes(q);
-
-      return matchCategory && matchSearch;
-    });
-  }, [activeCategory, searchQuery]);
 
   return (
     <section

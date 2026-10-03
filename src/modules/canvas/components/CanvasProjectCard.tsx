@@ -21,7 +21,7 @@ interface CanvasProjectCardProps {
   project?: CanvasProject;
   isCreateCard?: boolean;
   locale: string;
-  isRtl: boolean;
+  isRtl?: boolean;
   onCreateNew?: () => void;
   onToggleFavorite?: (id: string, e: React.MouseEvent) => void;
   onDuplicate?: (id: string, e: React.MouseEvent) => void;
@@ -32,7 +32,6 @@ export function CanvasProjectCard({
   project,
   isCreateCard = false,
   locale,
-  isRtl,
   onCreateNew,
   onToggleFavorite,
   onDuplicate,

@@ -206,6 +206,65 @@ export interface JobEvent {
 }
 
 // ================================================================== //
+// FEED TYPES                                                          //
+// ================================================================== //
+
+export interface BannerSlide {
+  id: string;
+  title: string;
+  titleFa: string;
+  prompt: string;
+  promptFa: string;
+  image: string;
+  author: string;
+  model: string;
+  aspectRatio: string;
+  remixCount: number;
+  likes: number;
+}
+
+export interface QuickTool {
+  id: string;
+  name: string;
+  nameFa: string;
+  category: string;
+  categoryFa: string;
+  description: string;
+  descriptionFa: string;
+  image: string;
+  href: string;
+  badge: string;
+  isNew?: boolean;
+}
+
+export interface FeedItem {
+  id: string;
+  title: string;
+  titleFa: string;
+  prompt: string;
+  image: string;
+  author: string;
+  authorHandle: string;
+  avatar: string;
+  category: string;
+  aspectRatio: string;
+  width: number;
+  height: number;
+  likes: number;
+  views: number;
+  model: string;
+  createdAt: string;
+}
+
+export interface FeedResult {
+  items: FeedItem[];
+  featured?: BannerSlide[];
+  quick_tools?: QuickTool[];
+  next_cursor?: string;
+  has_more?: boolean;
+}
+
+// ================================================================== //
 // SDK CLIENT INTERFACE — shared contract                              //
 // ================================================================== //
 
@@ -238,6 +297,10 @@ export interface SdkClient {
   assets: {
     list: () => Promise<Asset[]>;
     get: (assetId: string) => Promise<Asset>;
+  };
+  feed: {
+    list: (params?: { category?: string; limit?: number; cursor?: string }) => Promise<FeedResult>;
+    get: (id: string) => Promise<FeedItem>;
   };
   user: {
     getProfile: () => Promise<UserProfile>;

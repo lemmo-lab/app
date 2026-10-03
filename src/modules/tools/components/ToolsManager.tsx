@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
+import { sdk, ToolManifest } from '@/sdk';
 import { ToolItem, ToolCategory } from '../types';
-import { MOCK_TOOLS } from '../data/mockTools';
 import {
   ToolDrawerHeader,
   ToolSearchFilter,
@@ -26,6 +27,43 @@ const CATEGORY_TABS: { key: ToolCategory; labelEn: string; labelFa: string }[] =
   { key: 'generative', labelEn: 'Generative', labelFa: 'مدل‌های مولد' },
 ];
 
+function manifestToToolItem(m: ToolManifest): ToolItem {
+  let category: ToolCategory = 'generative';
+  if (m.category === 'image-editing' || m.category === 'editing') category = 'editing';
+  else if (m.category === 'vision') category = 'vision';
+  else if (m.category === 'depth' || m.category === '3d') category = 'depth';
+
+  let iconName: ToolItem['iconName'] = 'wand';
+  if (m.id.includes('bg') || m.id.includes('remove')) iconName = 'scissors';
+  else if (m.id.includes('upscale')) iconName = 'spark';
+  else if (m.id.includes('face')) iconName = 'cpu';
+
+  return {
+    id: m.id,
+    name: m.name,
+    nameFa: m.nameFa,
+    tagline: m.description ? m.description.slice(0, 45) : 'High performance AI tool',
+    taglineFa: m.descriptionFa ? m.descriptionFa.slice(0, 45) : 'ابزار پردازش هوش مصنوعی با عملکرد بالا',
+    description: m.description,
+    descriptionFa: m.descriptionFa,
+    category,
+    categoryLabel: m.category,
+    categoryLabelFa: m.nameFa,
+    rating: '4.9',
+    version: 'v1.0',
+    coverImage: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80',
+    author: 'Lemmo Studio',
+    authorFa: 'استودیو لمو',
+    iconName,
+    inputs: m.inputFields?.map((f) => f.label).join(', ') || 'Parameters',
+    inputsFa: m.inputFields?.map((f) => f.labelFa || f.label).join('، ') || 'پارامترها',
+    speed: '~2s',
+    speedFa: '۲ ثانیه',
+    credits: m.estimatedTokenCost || 5,
+    isRecent: true,
+  };
+}
+
 export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
   const { dir, locale } = useUiStore();
   const isRtl = dir === 'rtl';
@@ -33,14 +71,27 @@ export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory>('all');
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
-  const [selectedTool, setSelectedTool] = useState<ToolItem>(() => {
-    if (initialToolId) {
-      const found = MOCK_TOOLS.find((t) => t.id === initialToolId);
+  const [mobileBottomSheetOpen, setMobileBottomSheetOpen] = useState(false);
+
+  // Fetch tools from SDK / gateway
+  const { data: rawManifests = [] } = useQuery({
+    queryKey: ['tools'],
+    queryFn: () => sdk.tools.list(),
+  });
+
+  const tools = useMemo(() => {
+    return rawManifests.map(manifestToToolItem);
+  }, [rawManifests]);
+
+  const [activeToolId, setActiveToolId] = useState<string | null>(initialToolId || null);
+
+  const selectedTool: ToolItem | null = useMemo(() => {
+    if (activeToolId && tools.length > 0) {
+      const found = tools.find((t) => t.id === activeToolId);
       if (found) return found;
     }
-    return MOCK_TOOLS[0];
-  });
-  const [mobileBottomSheetOpen, setMobileBottomSheetOpen] = useState(false);
+    return tools[0] || null;
+  }, [activeToolId, tools]);
 
   // Position references for the popover-style preview
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -68,9 +119,6 @@ export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
     // For tools near bottom of screen: align bottom of preview card with bottom of tool card
     if (cardRect.bottom > viewportHeight * 0.65 || targetTop > maxTop) {
       targetTop = cardRect.bottom - popupHeight;
-    } else if (cardRect.top < viewportHeight * 0.25 || targetTop < minTop) {
-      // For tools near top: align top of preview card with top of tool card
-      targetTop = cardRect.top;
     }
 
     // Clamp within viewport
@@ -85,12 +133,18 @@ export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
 
   // Update position on tool change or list changes
   useEffect(() => {
-    updatePosition(selectedTool.id);
+    if (selectedTool) {
+      updatePosition(selectedTool.id);
+    }
   }, [selectedTool, updatePosition]);
 
   // Window resize listener
   useEffect(() => {
-    const handleResize = () => updatePosition(selectedTool.id);
+    const handleResize = () => {
+      if (selectedTool) {
+        updatePosition(selectedTool.id);
+      }
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [selectedTool, updatePosition]);
@@ -109,7 +163,7 @@ export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
 
   // Filter tools
   const filteredTools = useMemo(() => {
-    return MOCK_TOOLS.filter((tool) => {
+    return tools.filter((tool) => {
       const matchesCategory =
         selectedCategory === 'all' || tool.category === selectedCategory;
 
@@ -126,7 +180,7 @@ export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
 
       return matchesCategory && matchesQuery;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [tools, searchQuery, selectedCategory]);
 
   const recentTools = useMemo(
     () => filteredTools.filter((t) => t.isRecent),
@@ -137,68 +191,74 @@ export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
     [filteredTools]
   );
 
-  const handleCardHover = (tool: ToolItem) => {
-    setSelectedTool(tool);
-    updatePosition(tool.id);
-  };
+  const handleCardHover = useCallback(
+    (tool: ToolItem) => {
+      if (typeof window !== 'undefined' && window.innerWidth > 900) {
+        setActiveToolId(tool.id);
+        updatePosition(tool.id);
+      }
+    },
+    [updatePosition]
+  );
 
-  const handleToolClick = (tool: ToolItem) => {
-    setSelectedTool(tool);
-    updatePosition(tool.id);
-    if (typeof window !== 'undefined' && window.innerWidth <= 900) {
-      setMobileBottomSheetOpen(true);
-    }
-  };
+  const handleToolClick = useCallback(
+    (tool: ToolItem) => {
+      setActiveToolId(tool.id);
+      if (typeof window !== 'undefined' && window.innerWidth <= 900) {
+        setMobileBottomSheetOpen(true);
+      } else {
+        updatePosition(tool.id);
+      }
+    },
+    [updatePosition]
+  );
 
-  const handleRegisterRef = (id: string, el: HTMLDivElement | null) => {
-    if (el) {
-      cardRefs.current.set(id, el);
-    } else {
-      cardRefs.current.delete(id);
-    }
-  };
+  const handleRegisterRef = useCallback(
+    (id: string, el: HTMLDivElement | null) => {
+      if (el) {
+        cardRefs.current.set(id, el);
+      } else {
+        cardRefs.current.delete(id);
+      }
+    },
+    []
+  );
 
-  const clearActiveCategoryFilter = () => {
-    setSelectedCategory('all');
-  };
-
-  const clearAllFilters = () => {
-    setSelectedCategory('all');
+  const clearAllFilters = useCallback(() => {
     setSearchQuery('');
-  };
+    setSelectedCategory('all');
+  }, []);
 
   return (
-    <div className="tools-engine-root" dir={dir}>
-      {/* ===== TOOLS DRAWER PANEL ===== */}
-      <aside className="tools-drawer-aside" aria-label="AI Tools Library">
-        {/* Header (Title & Active Count) */}
+    <div className="tools-workspace-container" dir={dir}>
+      {/* ===== SIDEBAR DRAWER (TOOLS CATALOG) ===== */}
+      <aside className="tools-drawer-sidebar">
         <ToolDrawerHeader
-          count={filteredTools.length}
+          count={tools.length}
           locale={locale}
         />
 
-        {/* Search Bar & Filter Action Row */}
         <ToolSearchFilter
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onSearchClear={() => setSearchQuery('')}
           selectedCategory={selectedCategory}
-          onSelectCategory={(cat) => {
-            setSelectedCategory(cat);
-            setFilterMenuOpen(false);
-          }}
+          onSelectCategory={setSelectedCategory}
           filterMenuOpen={filterMenuOpen}
-          onToggleFilterMenu={() => setFilterMenuOpen(!filterMenuOpen)}
-          onClearCategoryFilter={clearActiveCategoryFilter}
-          onClearAllFilters={clearAllFilters}
+          onToggleFilterMenu={() => setFilterMenuOpen((prev) => !prev)}
+          onClearCategoryFilter={() => setSelectedCategory('all')}
+          onClearAllFilters={() => {
+            setSearchQuery('');
+            setSelectedCategory('all');
+          }}
           locale={locale}
           categoryTabs={CATEGORY_TABS}
         />
 
-        {/* Scrollable Tools Panel Content */}
+        {/* Scrollable Tool list area */}
         <div
           className="drawer-scroll-container"
-          onScroll={() => updatePosition(selectedTool.id)}
+          onScroll={() => selectedTool && updatePosition(selectedTool.id)}
         >
           {/* Featured Showcase / Tutorial Banner */}
           <ToolTutorialBanner locale={locale} isRtl={isRtl} />
@@ -209,7 +269,7 @@ export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
               title={locale === 'fa' ? 'ابزارهای اخیر' : 'Recent Tools'}
               count={recentTools.length}
               tools={recentTools}
-              selectedToolId={selectedTool.id}
+              selectedToolId={selectedTool?.id || ''}
               onHoverTool={handleCardHover}
               onClickTool={handleToolClick}
               registerRef={handleRegisterRef}
@@ -223,7 +283,7 @@ export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
             title={locale === 'fa' ? 'همه ابزارها' : 'All Tools'}
             count={allOtherTools.length}
             tools={allOtherTools}
-            selectedToolId={selectedTool.id}
+            selectedToolId={selectedTool?.id || ''}
             onHoverTool={handleCardHover}
             onClickTool={handleToolClick}
             registerRef={handleRegisterRef}
@@ -251,11 +311,13 @@ export default function ToolsManager({ initialToolId }: ToolsManagerProps) {
         )}
 
         {/* Center Canvas Dropzone / Workspace Helper */}
-        <ToolCanvasDropzone
-          selectedTool={selectedTool}
-          locale={locale}
-          isRtl={isRtl}
-        />
+        {selectedTool && (
+          <ToolCanvasDropzone
+            selectedTool={selectedTool}
+            locale={locale}
+            isRtl={isRtl}
+          />
+        )}
       </main>
 
       {/* ===== MOBILE BOTTOM SHEET MODAL ===== */}

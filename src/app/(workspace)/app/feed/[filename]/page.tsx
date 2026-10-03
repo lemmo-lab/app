@@ -29,7 +29,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import {
   ArrowLeft,
   ArrowRight,
@@ -40,39 +40,69 @@ import {
   Sparks,
   Download01,
   Maximize01,
-  Stars01,
   AiCpu,
 } from 'synthline/react';
+import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
-import { FEED_ITEMS, FeedItem } from '@/shared/data/feedData';
+import { sdk, FeedItem } from '@/sdk';
 
 export default function SingleImageFeedPage() {
   const params = useParams();
-  const router = useRouter();
   const { locale, dir } = useUiStore();
   const isRtl = dir === 'rtl';
 
   const rawFilename = (params?.filename as string) || 'feed-1';
 
+  const { data: feedResult } = useQuery({
+    queryKey: ['feed'],
+    queryFn: () => sdk.feed.list(),
+  });
+
+  const feedItems = useMemo(() => feedResult?.items || [], [feedResult]);
+
   // Find initial item or default to first
   const initialItem = useMemo(() => {
     return (
-      FEED_ITEMS.find(
+      feedItems.find(
         (item) => item.id === rawFilename || item.image.includes(rawFilename)
-      ) || FEED_ITEMS[0]
+      ) || feedItems[0] || null
     );
-  }, [rawFilename]);
+  }, [rawFilename, feedItems]);
 
-  const [selectedItem, setSelectedItem] = useState<FeedItem>(initialItem);
+  const [selectedItemState, setSelectedItemState] = useState<FeedItem | null>(null);
+
+  const selectedItem: FeedItem = useMemo(() => {
+    if (selectedItemState) return selectedItemState;
+    if (initialItem) return initialItem;
+    return {
+      id: rawFilename,
+      title: 'Neon Solarpunk Metropolis',
+      titleFa: 'کلان‌شهر نئونی سولارپانک',
+      prompt: 'Futuristic solarpunk city with towering biophilic mushroom architecture',
+      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+      author: 'Elena Rostova',
+      authorHandle: 'elena_r',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+      category: 'photoreal',
+      aspectRatio: '16:9',
+      width: 1920,
+      height: 1080,
+      likes: 3890,
+      views: 14200,
+      model: 'Flux Dev',
+      createdAt: '2026-10-01T12:00:00Z',
+    };
+  }, [selectedItemState, initialItem, rawFilename]);
+
   const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [likesCount, setLikesCount] = useState<number>(initialItem.likes);
+  const [likesCount, setLikesCount] = useState<number>(selectedItem.likes);
   const [copiedPrompt, setCopiedPrompt] = useState<boolean>(false);
   const [copiedShare, setCopiedShare] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   // Sync state if selected item changes
   const handleSelectItem = (item: FeedItem) => {
-    setSelectedItem(item);
+    setSelectedItemState(item);
     setIsLiked(false);
     setLikesCount(item.likes);
     setCopiedPrompt(false);
@@ -113,7 +143,7 @@ export default function SingleImageFeedPage() {
           url: window.location.href,
         });
         return;
-      } catch (err) {
+      } catch {
         // Fallback to clipboard
       }
     }
@@ -133,11 +163,11 @@ export default function SingleImageFeedPage() {
     document.body.removeChild(link);
   };
 
-  // Mock reference images based on neighboring items
+  // Reference images based on neighboring items
   const referenceImages = useMemo(() => {
-    const others = FEED_ITEMS.filter((i) => i.id !== selectedItem.id);
+    const others = feedItems.filter((i) => i.id !== selectedItem.id);
     return [others[0]?.image || selectedItem.image, others[1]?.image || selectedItem.image];
-  }, [selectedItem.id]);
+  }, [feedItems, selectedItem.id, selectedItem.image]);
 
   return (
     <div className="single-image-app" dir={dir}>
@@ -375,7 +405,7 @@ export default function SingleImageFeedPage() {
             className="little-gallery"
             aria-label={locale === 'fa' ? 'گالری آثار مرتبط' : 'Gallery Items'}
           >
-            {FEED_ITEMS.map((item) => {
+            {feedItems.map((item) => {
               const isActive = item.id === selectedItem.id;
               return (
                 <button

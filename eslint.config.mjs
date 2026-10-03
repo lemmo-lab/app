@@ -48,6 +48,34 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    files: ["src/modules/**/*.{ts,tsx}", "src/app/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "*mock*",
+                "*mockData*",
+                "**/*mock*",
+                "**/*mockData*",
+                "@/*mock*",
+                "@/*mockData*",
+                "@/sdk/mock*",
+                "**/sdk/mock*",
+                "@/sdk/live/generated*",
+                "**/sdk/live/generated*",
+              ],
+              message:
+                "Importing in-memory mocks, mock files, or internal SDK implementations inside src/modules or src/app is strictly prohibited. All data fetching must route through '@/sdk' (ADR-016).",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

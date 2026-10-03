@@ -3,7 +3,7 @@
 import React from 'react';
 import { Sparks } from 'synthline/react';
 import { AgentStylePreset } from '../types';
-import { AGENT_STYLE_PRESETS } from '../data/mockAgentData';
+import { AGENT_STYLE_PRESETS } from '../constants/presets';
 
 interface AgentStyleDeckProps {
   onSelectStyle: (preset: AgentStylePreset) => void;

@@ -43,7 +43,7 @@ import {
 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
 import { AssetItem, AssetFilterCategory, AssetSubFilter, DateGroupKey } from '../types';
-import { MOCK_ASSETS } from '../data/mockAssets';
+import { ASSET_ITEMS } from '../data/assetsData';
 
 interface AssetsManagerProps {
   initialEmpty?: boolean;
@@ -54,7 +54,7 @@ export default function AssetsManager({ initialEmpty = false }: AssetsManagerPro
   const isRtl = dir === 'rtl';
 
   // State management
-  const [items, setItems] = useState<AssetItem[]>(MOCK_ASSETS);
+  const [items, setItems] = useState<AssetItem[]>(ASSET_ITEMS);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<AssetFilterCategory>('all');
   const [activeSubFilter, setActiveSubFilter] = useState<AssetSubFilter>('all');

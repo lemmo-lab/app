@@ -30,6 +30,39 @@ export interface Asset {
   width?: number;
 }
 
+export interface BannerSlide {
+  aspectRatio?: string;
+  author: string;
+  id: string;
+  image: string;
+  likes?: number;
+  model?: string;
+  prompt: string;
+  promptFa?: string;
+  remixCount?: number;
+  title: string;
+  titleFa?: string;
+}
+
+export interface FeedItem {
+  aspectRatio: string;
+  author: string;
+  authorHandle?: string;
+  avatar?: string;
+  category: string;
+  createdAt?: string;
+  height?: number;
+  id: string;
+  image: string;
+  likes: number;
+  model?: string;
+  prompt: string;
+  title: string;
+  titleFa?: string;
+  views?: number;
+  width?: number;
+}
+
 export interface FieldOption {
   label: string;
   value: string;
@@ -115,6 +148,20 @@ export interface ProblemDetails {
   title: string;
   /** A URI reference that identifies the problem type. */
   type?: string;
+}
+
+export interface QuickTool {
+  badge: string;
+  category: string;
+  categoryFa?: string;
+  description: string;
+  descriptionFa?: string;
+  href: string;
+  id: string;
+  image: string;
+  isNew?: boolean;
+  name: string;
+  nameFa?: string;
 }
 
 export interface Thread {
@@ -273,6 +320,18 @@ export type SendChatMessageBody = {
   content: string;
   /** @nullable */
   threadId?: string | null;
+};
+
+export type GetFeedParams = {
+category?: string;
+limit?: number;
+cursor?: string;
+};
+
+export type GetFeed200 = {
+  featured?: BannerSlide[];
+  items: FeedItem[];
+  quick_tools?: QuickTool[];
 };
 
 export type GetMeContextParams = {
@@ -980,6 +1039,87 @@ export const getGetChatThreadUrl = (threadId: string,) => {
 export const getChatThread = async (threadId: string, options?: Parameters<typeof customFetch>[1]): Promise<getChatThreadResponse> => {
 
   return customFetch<getChatThreadResponse>(getGetChatThreadUrl(threadId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getFeedResponse200 = {
+  data: GetFeed200
+  status: 200
+}
+
+export type getFeedResponseSuccess = (getFeedResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getFeedResponse = (getFeedResponseSuccess)
+
+export const getGetFeedUrl = (params?: GetFeedParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/feed?${stringifiedParams}` : `/api/v1/feed`
+}
+
+/**
+ * Returns discovery showcase items, featured banner slides, and quick tools.
+ * @summary List Feed Items
+ */
+export const getFeed = async (params?: GetFeedParams, options?: Parameters<typeof customFetch>[1]): Promise<getFeedResponse> => {
+
+  return customFetch<getFeedResponse>(getGetFeedUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getFeedItemResponse200 = {
+  data: FeedItem
+  status: 200
+}
+
+export type getFeedItemResponseSuccess = (getFeedItemResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getFeedItemResponse = (getFeedItemResponseSuccess)
+
+export const getGetFeedItemUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/feed/${id}`
+}
+
+/**
+ * Returns details of a specific showcase feed item.
+ * @summary Get Feed Item
+ */
+export const getFeedItem = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<getFeedItemResponse> => {
+
+  return customFetch<getFeedItemResponse>(getGetFeedItemUrl(id),
   {
     ...options,
     method: 'GET'

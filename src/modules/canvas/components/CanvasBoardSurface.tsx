@@ -33,7 +33,7 @@ interface CanvasBoardSurfaceProps {
   onAddToolNode: (toolType: 'flux-dev' | 'remove-bg' | 'upscale') => void;
   onUploadImage: () => void;
   locale: string;
-  isRtl: boolean;
+  isRtl?: boolean;
 }
 
 export function CanvasBoardSurface({
@@ -49,7 +49,6 @@ export function CanvasBoardSurface({
   onAddToolNode,
   onUploadImage,
   locale,
-  isRtl,
 }: CanvasBoardSurfaceProps) {
   const isFa = locale === 'fa';
   const boardRef = useRef<HTMLDivElement>(null);

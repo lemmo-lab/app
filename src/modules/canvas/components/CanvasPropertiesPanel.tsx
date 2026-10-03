@@ -38,20 +38,15 @@ import {
   Triangle,
   BadgeShape,
   LayersThree,
-  Type01,
   Sparks,
   Eye,
   EyeOff,
   Lock01,
   Lock02Unlocked,
   ChevronRight,
-  Droplets01,
   ColorPalette,
-  Image03,
   Sliders01,
   AiMagicWand01,
-  Trash01,
-  CheckCircle01,
   AiCpu,
   Refresh01,
 } from 'synthline/react';
@@ -427,7 +422,12 @@ export function CanvasPropertiesPanel({
                     key={s.id}
                     type="button"
                     className={`ratio-chip ${engineConfig.sampler === s.id ? 'active' : ''}`}
-                    onClick={() => setEngineConfig((p) => ({ ...p, sampler: s.id as any }))}
+                    onClick={() =>
+                      setEngineConfig((p) => ({
+                        ...p,
+                        sampler: s.id as 'euler-a' | 'dpmpp-2m' | 'unipc' | 'ddim',
+                      }))
+                    }
                   >
                     {s.label}
                   </button>

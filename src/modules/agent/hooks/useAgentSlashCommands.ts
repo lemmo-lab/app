@@ -112,9 +112,11 @@ export function useAgentSlashCommands({
           c.aliases?.some((a) => a.toLowerCase() === token.toLowerCase())
       );
       if (cmd) {
-        setActiveTool(cmd);
-        const cleaned = prompt.replace(token, '').replace(/\s+/g, ' ').trim();
-        onChangePrompt(cleaned);
+        queueMicrotask(() => {
+          setActiveTool(cmd);
+          const cleaned = prompt.replace(token, '').replace(/\s+/g, ' ').trim();
+          onChangePrompt(cleaned);
+        });
       }
     }
   }, [prompt, activeTool, onChangePrompt]);

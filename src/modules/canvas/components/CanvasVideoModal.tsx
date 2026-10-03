@@ -19,7 +19,6 @@ export function CanvasVideoModal({
   isOpen,
   onClose,
   locale,
-  isRtl,
 }: CanvasVideoModalProps) {
   const isFa = locale === 'fa';
 
@@ -71,7 +70,7 @@ export function CanvasVideoModal({
         <div className="video-modal-screen">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/feed/an-ultra-wide-heavily-flared-cinematic-rendering-depicts-a.webp"
+            src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80"
             alt=""
             className="video-modal-backdrop"
           />

@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Eye, RefreshCw } from 'synthline/react';
 import {
   AgentChatMessageItem,
+  AgentConversation,
   AgentGenerationConfig,
   AgentReferenceItem,
 } from '../types';
 import { AgentChatMessage } from './AgentChatMessage';
 import { AgentInputBar } from './AgentInputBar';
-import { MOCK_CONVERSATIONS } from '../data/mockAgentData';
 
 interface AgentChatViewProps {
   currentId?: string;
@@ -18,12 +18,47 @@ interface AgentChatViewProps {
   isRtl: boolean;
 }
 
+const DEFAULT_CONVERSATION: AgentConversation = {
+  id: 'chat-01',
+  title: 'Neon Tokyo & Studio Portrait',
+  updatedAt: 'Just now',
+  messages: [
+    {
+      id: 'msg-1',
+      sender: 'user',
+      timestamp: '14:23',
+      prompt:
+        'Create a cinematic editorial portrait /relight of an elegant futuristic model in a sunlit retro space. Natural sunlight shafts, delicate grain, high fashion studio aesthetic.',
+      references: [
+        {
+          id: 'ref-1',
+          url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+          name: 'lighting-ref.jpg',
+        },
+      ],
+    },
+    {
+      id: 'msg-2',
+      sender: 'assistant',
+      timestamp: '14:24',
+      resultMediaUrl:
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+      contentType: 'image',
+      aspectRatio: '3:4',
+      modelUsed: 'FLUX.1 [dev]',
+      seed: 849204812,
+      generationDurationSec: 3.4,
+      creditsUsed: 5,
+      isFavorite: false,
+    },
+  ],
+};
+
 export function AgentChatView({
-  currentId = 'chat-01',
   locale,
   isRtl,
 }: AgentChatViewProps) {
-  const initialConv = MOCK_CONVERSATIONS[currentId] || MOCK_CONVERSATIONS['chat-01'];
+  const initialConv = DEFAULT_CONVERSATION;
   const [messages, setMessages] = useState<AgentChatMessageItem[]>(initialConv.messages);
   const [prompt, setPrompt] = useState('');
   const [references, setReferences] = useState<AgentReferenceItem[]>([]);
@@ -80,7 +115,7 @@ export function AgentChatView({
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         resultMediaUrl:
           currentRefs[0]?.url ||
-          '/images/feed/an-anime-style-girl-with-translucent-moth-wings-and-fluffy.webp',
+          'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
         contentType: config.contentType,
         aspectRatio: config.aspectRatio,
         modelUsed: config.modelId === 'flux-1-dev' ? 'FLUX.1 [dev]' : 'Lemmo Realism v2',

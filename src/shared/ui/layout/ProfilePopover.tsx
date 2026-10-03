@@ -32,7 +32,7 @@ import {
   Sparks,
   Maximize01,
 } from 'synthline/react';
-import { useUiStore, Locale, Direction, DefaultWorkspace } from '@/stores/uiStore';
+import { useUiStore, Locale, Direction } from '@/stores/uiStore';
 
 interface ProfilePopoverProps {
   isOpen: boolean;
@@ -79,7 +79,7 @@ export default function ProfilePopover({
   // Popover close and Escape handler
   useEffect(() => {
     if (!isOpen) {
-      setLanguageDropdownOpen(false);
+      queueMicrotask(() => setLanguageDropdownOpen(false));
       return;
     }
 

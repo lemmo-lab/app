@@ -1,5 +1,5 @@
 export * from './types';
-export * from './data/mockAgentData';
+export * from './constants/presets';
 export { AgentInputBar } from './components/AgentInputBar';
 export { AgentConfigPopover } from './components/AgentConfigPopover';
 export { AgentStyleDeck } from './components/AgentStyleDeck';

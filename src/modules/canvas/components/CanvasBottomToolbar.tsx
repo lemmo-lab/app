@@ -145,7 +145,7 @@ export function CanvasBottomToolbar({
   // Sync nav tool selection with activeTool if changed externally
   useEffect(() => {
     if (activeTool === 'select' || activeTool === 'hand') {
-      setSelectedNavTool(activeTool);
+      queueMicrotask(() => setSelectedNavTool(activeTool));
     }
   }, [activeTool]);
 

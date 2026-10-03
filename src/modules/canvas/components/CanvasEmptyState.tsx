@@ -14,7 +14,7 @@ interface CanvasEmptyStateProps {
   onResetSearch: () => void;
   onCreateNew: () => void;
   locale: string;
-  isRtl: boolean;
+  isRtl?: boolean;
 }
 
 export function CanvasEmptyState({
@@ -23,7 +23,6 @@ export function CanvasEmptyState({
   onResetSearch,
   onCreateNew,
   locale,
-  isRtl,
 }: CanvasEmptyStateProps) {
   const isFa = locale === 'fa';
 

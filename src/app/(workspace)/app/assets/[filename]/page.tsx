@@ -34,7 +34,7 @@ import {
   X01,
 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
-import { MOCK_ASSETS } from '@/modules/assets/data/mockAssets';
+import { ASSET_ITEMS } from '@/modules/assets/data/assetsData';
 import { AssetItem } from '@/modules/assets/types';
 
 export default function SingleAssetDetailsPage() {
@@ -47,7 +47,7 @@ export default function SingleAssetDetailsPage() {
 
   // Lookup matching asset or fallback to first item
   const initialAsset = useMemo(() => {
-    return MOCK_ASSETS.find((a) => a.id === assetId) || MOCK_ASSETS[0];
+    return ASSET_ITEMS.find((a) => a.id === assetId) || ASSET_ITEMS[0];
   }, [assetId]);
 
   const [asset] = useState<AssetItem>(initialAsset);

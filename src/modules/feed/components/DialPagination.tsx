@@ -141,10 +141,10 @@ export default function DialPagination({
       dir={dir}
       data-ghosts={ghosts}
       style={{
-        ['--g' as any]: ghosts,
-        ['--pos' as any]: current,
-        ['--dir' as any]: isRtl ? -1 : 1,
-      }}
+        '--g': ghosts,
+        '--pos': current,
+        '--dir': isRtl ? -1 : 1,
+      } as React.CSSProperties}
       role="group"
       aria-label="Dial Pagination"
       onKeyDown={handleKeyDown}

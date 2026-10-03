@@ -14,12 +14,20 @@
 import React from 'react';
 import Link from 'next/link';
 import { ChevronRight, ChevronLeft, ArrowRight, ArrowLeft } from 'synthline/react';
+import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
-import { QUICK_TOOLS, QuickTool } from '@/shared/data/feedData';
+import { sdk, QuickTool } from '@/sdk';
 
 export default function QuickToolsSection() {
   const { locale, dir } = useUiStore();
   const isRtl = dir === 'rtl';
+
+  const { data: feedResult } = useQuery({
+    queryKey: ['feed'],
+    queryFn: () => sdk.feed.list(),
+  });
+
+  const quickTools = feedResult?.quick_tools || [];
 
   return (
     <section
@@ -54,7 +62,7 @@ export default function QuickToolsSection() {
 
       {/* Tools Cards Grid / Mobile Scroll Track */}
       <div className="tools-grid">
-        {QUICK_TOOLS.map((tool: QuickTool) => (
+        {quickTools.map((tool: QuickTool) => (
           <Link
             key={tool.id}
             href={tool.href}

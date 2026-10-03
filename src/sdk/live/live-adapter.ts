@@ -16,6 +16,8 @@ import type {
   Message,
   Thread,
   Asset,
+  FeedItem,
+  FeedResult,
   UserProfile,
   BillingInfo,
 } from '../types';
@@ -35,11 +37,14 @@ import {
   sendChatMessage,
   listAssets,
   getAsset,
+  getFeed,
+  getFeedItem,
   type GetMeContext200,
   type ListProjects200,
   type CreateProject201,
   type ListWorkspaces200,
   type CreateWorkspace201,
+  type GetFeed200,
 } from './generated';
 
 import { onSignedOut } from './transport';
@@ -316,6 +321,21 @@ export const liveSdkAdapter: SdkClient = {
     get: async (assetId: string): Promise<Asset> => {
       const response = await getAsset(assetId);
       return (response as { data: Asset }).data;
+    },
+  },
+
+  // ================================================================ //
+  // FEED                                                              //
+  // ================================================================ //
+  feed: {
+    list: async (params?: { category?: string; limit?: number; cursor?: string }): Promise<FeedResult> => {
+      const response = await getFeed(params);
+      return (response as { data: GetFeed200 }).data as FeedResult;
+    },
+
+    get: async (id: string): Promise<FeedItem> => {
+      const response = await getFeedItem(id);
+      return (response as { data: FeedItem }).data;
     },
   },
 

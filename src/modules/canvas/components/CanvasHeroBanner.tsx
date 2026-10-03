@@ -11,14 +11,13 @@ import { Plus01, Play } from 'synthline/react';
 
 interface CanvasHeroBannerProps {
   locale: string;
-  isRtl: boolean;
+  isRtl?: boolean;
   onAddProject: () => void;
   onWatchVideo?: () => void;
 }
 
 export function CanvasHeroBanner({
   locale,
-  isRtl,
   onAddProject,
   onWatchVideo,
 }: CanvasHeroBannerProps) {
@@ -30,7 +29,7 @@ export function CanvasHeroBanner({
       <div className="canvas-hero-bg-container" aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/feed/an-ultra-wide-heavily-flared-cinematic-rendering-depicts-a.webp"
+          src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80"
           alt=""
           className="canvas-hero-bg-image"
         />

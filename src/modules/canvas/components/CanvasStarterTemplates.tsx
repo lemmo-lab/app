@@ -28,7 +28,6 @@ export function CanvasStarterTemplates({
   onSelectTemplate,
   onDismiss,
   locale,
-  isRtl,
 }: CanvasStarterTemplatesProps) {
   const isFa = locale === 'fa';
 

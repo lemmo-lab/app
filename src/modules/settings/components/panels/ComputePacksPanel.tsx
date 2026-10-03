@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Server01, Flash, Image03, Film01 } from 'synthline/react';
+import { Flash, Image03, Film01 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
 import SettingsHeader from '../SettingsHeader';
 import SettingsSection from '../SettingsSection';

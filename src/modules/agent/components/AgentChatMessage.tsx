@@ -13,55 +13,19 @@ import {
   InfoCircle,
 } from 'synthline/react';
 import { AgentChatMessageItem } from '../types';
-import { AGENT_COMMANDS, getCommandsFromPrompt, cleanPromptText } from '../data/agentCommands';
+import { getCommandsFromPrompt, cleanPromptText } from '../data/agentCommands';
 import { AgentCommandIcon } from './AgentCommandPalette';
 
 interface AgentChatMessageProps {
   message: AgentChatMessageItem;
   onRemix?: (prompt: string) => void;
   locale: string;
-  isRtl: boolean;
-}
-
-function PromptWithCommands({ prompt }: { prompt?: string }) {
-  if (!prompt) return null;
-
-  // Match slash commands like /remove_background, /upscale, etc.
-  const regex = /(\/[a-zA-Z0-9_\u0600-\u06FF]+)/g;
-  const parts = prompt.split(regex);
-
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (part.startsWith('/')) {
-          const matchedCmd = AGENT_COMMANDS.find(
-            (c) =>
-              c.command.toLowerCase() === part.toLowerCase() ||
-              c.aliases?.some((a) => a.toLowerCase() === part.toLowerCase())
-          );
-          return (
-            <span key={index} className="chat-command-chip">
-              <AgentCommandIcon
-                iconName={matchedCmd ? matchedCmd.iconName : 'Sparks'}
-                size={12}
-                strokeWidth={2.2}
-                color="var(--lemmo-surface-brand-background, #d1fe17)"
-              />
-              <span className="command-chip-text">{part}</span>
-            </span>
-          );
-        }
-        return <span key={index}>{part}</span>;
-      })}
-    </>
-  );
+  isRtl?: boolean;
 }
 
 export function AgentChatMessage({
   message,
-  onRemix,
   locale,
-  isRtl,
 }: AgentChatMessageProps) {
   const [isCopied, setIsCopied] = useState(false);
   const [isFavorited, setIsFavorited] = useState(message.isFavorite || false);

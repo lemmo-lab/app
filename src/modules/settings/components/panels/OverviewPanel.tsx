@@ -10,7 +10,8 @@ export interface OverviewPanelProps {
   onShowToast: (msg: string) => void;
 }
 
-export default function OverviewPanel({ onShowToast }: OverviewPanelProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function OverviewPanel(_props: OverviewPanelProps) {
   const { locale } = useUiStore();
 
   const metrics = [

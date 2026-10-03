@@ -16,7 +16,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Award01,
@@ -27,8 +27,13 @@ import {
   Play,
   Book02,
 } from 'synthline/react';
+import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
-import { FEATURE_ANNOUNCEMENTS, FeatureAnnouncement } from '@/shared/data/feedData';
+import { sdk } from '@/sdk';
+import {
+  DEFAULT_FEATURE_ANNOUNCEMENTS,
+  FeatureAnnouncement,
+} from '../constants/announcements';
 import DialPagination from './DialPagination';
 
 export default function BannerSlider() {
@@ -38,8 +43,36 @@ export default function BannerSlider() {
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const isRtl = dir === 'rtl';
 
-  const slidesCount = FEATURE_ANNOUNCEMENTS.length;
-  const currentSlide: FeatureAnnouncement = FEATURE_ANNOUNCEMENTS[currentIndex];
+  const { data: feedResult } = useQuery({
+    queryKey: ['feed'],
+    queryFn: () => sdk.feed.list(),
+  });
+
+  const slides: FeatureAnnouncement[] = React.useMemo(() => {
+    if (feedResult?.featured && feedResult.featured.length > 0) {
+      return feedResult.featured.map((f, i) => ({
+        id: f.id,
+        type: (i === 0 ? 'model' : i === 1 ? 'premium' : 'workspace') as FeatureAnnouncement['type'],
+        tag: f.model.toUpperCase(),
+        tagFa: f.model,
+        title: f.title,
+        titleFa: f.titleFa,
+        description: f.prompt,
+        descriptionFa: f.promptFa || f.prompt,
+        primaryActionLabel: 'Explore Model',
+        primaryActionLabelFa: 'کاوش مدل',
+        primaryActionHref: '/app/agent',
+        secondaryActionLabel: 'View Tools',
+        secondaryActionLabelFa: 'مشاهده ابزارها',
+        secondaryActionHref: '/app/tools',
+        image: f.image,
+      }));
+    }
+    return DEFAULT_FEATURE_ANNOUNCEMENTS;
+  }, [feedResult]);
+
+  const slidesCount = slides.length;
+  const currentSlide: FeatureAnnouncement = slides[currentIndex % slidesCount] || slides[0];
 
   // Auto-play timer (paused on hover)
   useEffect(() => {
@@ -73,10 +106,18 @@ export default function BannerSlider() {
     if (Math.abs(diff) > 40) {
       if (diff > 0) {
         // Swiped left
-        isRtl ? handlePrev() : handleNext();
+        if (isRtl) {
+          handlePrev();
+        } else {
+          handleNext();
+        }
       } else {
         // Swiped right
-        isRtl ? handleNext() : handlePrev();
+        if (isRtl) {
+          handleNext();
+        } else {
+          handlePrev();
+        }
       }
     }
     setTouchStartX(null);

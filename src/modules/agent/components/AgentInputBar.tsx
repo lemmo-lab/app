@@ -6,7 +6,6 @@ import {
   X01,
   Sparks,
   Sliders01,
-  FolderUpload,
 } from 'synthline/react';
 import {
   AgentReferenceItem,
@@ -16,7 +15,7 @@ import { AgentConfigPopover } from './AgentConfigPopover';
 import { AgentCommandPalette } from './AgentCommandPalette';
 import { AgentActiveToolStrip } from './AgentActiveToolStrip';
 import { useAgentSlashCommands } from '../hooks/useAgentSlashCommands';
-import { AGENT_MODELS } from '../data/mockAgentData';
+import { AGENT_MODELS } from '../constants/presets';
 
 interface AgentInputBarProps {
   prompt: string;
@@ -44,7 +43,6 @@ export function AgentInputBar({
   onSubmit,
   isSubmitting = false,
   locale,
-  isRtl,
   placeholder,
 }: AgentInputBarProps) {
   const [configOpen, setConfigOpen] = useState(false);
@@ -75,10 +73,11 @@ export function AgentInputBar({
     }
   }, [prompt]);
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const canSubmit = (prompt.trim().length > 0 || references.length > 0 || activeTool !== null) && !isSubmitting;
   const isButtonDisabled = !mounted ? true : !canSubmit;

@@ -9,7 +9,10 @@ import type { SdkClient, Job, Message, Thread } from '../types';
 import {
   MOCK_ASSETS,
   MOCK_BILLING,
+  MOCK_FEATURED_SLIDES,
+  MOCK_FEED_ITEMS,
   MOCK_JOBS,
+  MOCK_QUICK_TOOLS,
   MOCK_THREADS,
   MOCK_TOOLS,
   MOCK_USER,
@@ -265,6 +268,32 @@ export const mockSdkAdapter: SdkClient = {
       const asset = MOCK_ASSETS.find((a) => a.id === assetId);
       if (!asset) throw new Error(`Asset ${assetId} not found`);
       return { ...asset };
+    },
+  },
+
+  // ================================================================ //
+  // FEED                                                              //
+  // ================================================================ //
+  feed: {
+    list: async (params) => {
+      await delay(200);
+      let items = [...MOCK_FEED_ITEMS];
+      if (params?.category) {
+        items = items.filter((item) => item.category === params.category);
+      }
+      return {
+        items,
+        featured: MOCK_FEATURED_SLIDES,
+        quick_tools: MOCK_QUICK_TOOLS,
+        has_more: false,
+      };
+    },
+
+    get: async (id) => {
+      await delay(100);
+      const item = MOCK_FEED_ITEMS.find((f) => f.id === id);
+      if (!item) throw new Error(`Feed item ${id} not found`);
+      return { ...item };
     },
   },
 

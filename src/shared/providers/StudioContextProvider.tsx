@@ -56,15 +56,12 @@ export function StudioContextProvider({ children }: StudioContextProviderProps) 
   const queryClient = useQueryClient();
   const [, startTransition] = useTransition();
 
-  const [state, setState] = useState<StudioState>('uninitialized');
+  const [state, setState] = useState<StudioState>('loading');
   const [contextData, setContextData] = useState<ContextResult | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [sessionGen, setSessionGen] = useState<number>(() => getSessionGenerationId());
 
   const fetchContext = useCallback(async (requestedWsId?: string) => {
-    setState('loading');
-    setError(null);
-
     const callGen = getSessionGenerationId();
 
     try {
@@ -75,6 +72,7 @@ export function StudioContextProvider({ children }: StudioContextProviderProps) 
         return;
       }
 
+      setError(null);
       setContextData(res);
 
       if (!res.user || !res.workspaces || res.workspaces.length === 0) {
@@ -108,7 +106,15 @@ export function StudioContextProvider({ children }: StudioContextProviderProps) 
 
   // Initial load
   useEffect(() => {
-    void fetchContext();
+    let ignore = false;
+    queueMicrotask(() => {
+      if (!ignore) {
+        void fetchContext();
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, [fetchContext]);
 
   // Listen for silent transport session invalidation
@@ -120,11 +126,13 @@ export function StudioContextProvider({ children }: StudioContextProviderProps) 
   }, []);
 
   const retry = useCallback(async () => {
+    setState('loading');
     await fetchContext();
   }, [fetchContext]);
 
   const switchWorkspace = useCallback(
     async (workspaceId: string) => {
+      setState('loading');
       startTransition(() => {
         setTransportContext(workspaceId, getSessionGenerationId());
       });
@@ -134,7 +142,7 @@ export function StudioContextProvider({ children }: StudioContextProviderProps) 
   );
 
   const logout = useCallback(async () => {
-    const authUrl =
+    const baseAuthUrl =
       process.env.NEXT_PUBLIC_AUTH_URL ||
       (typeof window !== 'undefined'
         ? `${window.location.protocol}//${window.location.hostname}:3001`
@@ -160,8 +168,9 @@ export function StudioContextProvider({ children }: StudioContextProviderProps) 
     } finally {
       // 5. Hard browser redirect with return_to
       if (typeof window !== 'undefined') {
-        const returnTo = encodeURIComponent(window.location.origin);
-        window.location.href = `${authUrl}/auth/entry?return_to=${returnTo}`;
+        const fullAuthUrl = new URL('/auth/entry', baseAuthUrl);
+        fullAuthUrl.searchParams.set('return_to', window.location.origin);
+        window.location.assign(fullAuthUrl.toString());
       }
     }
   }, [queryClient]);

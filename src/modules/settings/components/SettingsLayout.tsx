@@ -33,7 +33,7 @@ export default function SettingsLayout() {
       (searchParams.get('tab') as SettingsTabId) ||
       (searchParams.get('panel') as SettingsTabId);
     if (tabParam && tabParam !== activeTab) {
-      setActiveTab(tabParam);
+      queueMicrotask(() => setActiveTab(tabParam));
     }
   }, [searchParams, activeTab]);
 

@@ -13,5 +13,5 @@ export { CanvasBoardSurface } from './components/CanvasBoardSurface';
 export { CanvasNodeCard } from './components/CanvasNodeCard';
 export { CanvasPropertiesPanel } from './components/CanvasPropertiesPanel';
 export * from './types';
-export * from './data/mockCanvasProjects';
+export * from './constants/starterTemplates';
 
