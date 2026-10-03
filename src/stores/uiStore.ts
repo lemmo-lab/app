@@ -20,6 +20,8 @@ interface UiState {
   toggleLocale: () => void;
   /** Set default workspace mode (agent or canvas) */
   setDefaultWorkspace: (ws: DefaultWorkspace) => void;
+  /** Reset store state to defaults on session switch */
+  reset: () => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -54,6 +56,14 @@ export const useUiStore = create<UiState>()(
 
       setDefaultWorkspace: (defaultWorkspace) => {
         set({ defaultWorkspace });
+      },
+
+      reset: () => {
+        set({
+          locale: 'en',
+          dir: 'ltr',
+          defaultWorkspace: 'agent',
+        });
       },
     }),
     {

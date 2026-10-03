@@ -28,6 +28,96 @@ function generateId(prefix: string = 'mock'): string {
 
 export const mockSdkAdapter: SdkClient = {
   // ================================================================ //
+  // CONTEXT, WORKSPACES & PROJECTS                                    //
+  // ================================================================ //
+  context: {
+    get: async () => {
+      await delay(200);
+      return {
+        user: {
+          id: MOCK_USER.id,
+          email: MOCK_USER.email,
+          display_name: MOCK_USER.name,
+          handle: 'demo-user',
+          status: 'ACTIVE',
+        },
+        active_workspace: {
+          id: 'mock-ws-001',
+          name: 'Demo Workspace',
+          type: 'PERSONAL',
+          role: 'OWNER',
+        },
+        workspaces: [
+          {
+            id: 'mock-ws-001',
+            name: 'Demo Workspace',
+            type: 'PERSONAL',
+            role: 'OWNER',
+          },
+        ],
+        entitlements: {
+          tier: 'PRO',
+          wallet_balance: 10000,
+          features: ['flux-dev', 'chat', 'unlimited-canvas'],
+        },
+        onboarding: {
+          completed: true,
+          steps: { profile_completed: true, workspace_created: true, first_project_created: true },
+          next_action: 'EXPLORE_TEMPLATES',
+        },
+      };
+    },
+  },
+
+  projects: {
+    list: async () => {
+      await delay(200);
+      return [
+        {
+          id: 'proj-001',
+          name: 'Demo Project',
+          description: 'A mock project for development',
+          version: 1,
+          createdAt: Date.now() - 3600000,
+        },
+      ];
+    },
+    create: async (input) => {
+      await delay(300);
+      return {
+        id: generateId('proj'),
+        name: input.name,
+        description: input.description,
+        version: 1,
+        createdAt: Date.now(),
+      };
+    },
+  },
+
+  workspaces: {
+    list: async () => {
+      await delay(150);
+      return [
+        {
+          id: 'mock-ws-001',
+          name: 'Demo Workspace',
+          type: 'PERSONAL',
+          role: 'OWNER',
+        },
+      ];
+    },
+    create: async (input) => {
+      await delay(300);
+      return {
+        id: generateId('ws'),
+        name: input.name,
+        type: input.type || 'TEAM',
+        role: 'OWNER',
+      };
+    },
+  },
+
+  // ================================================================ //
   // TOOLS                                                             //
   // ================================================================ //
   tools: {
@@ -82,6 +172,34 @@ export const mockSdkAdapter: SdkClient = {
     list: async () => {
       await delay(200);
       return Array.from(MOCK_JOBS.values());
+    },
+
+    subscribe: (jobId, onEvent) => {
+      let cancelled = false;
+      setTimeout(() => {
+        if (cancelled) return;
+        onEvent({
+          type: 'progress',
+          jobId,
+          status: 'processing',
+          progressPercent: 50,
+          step: 1,
+        });
+      }, 500);
+      setTimeout(() => {
+        if (cancelled) return;
+        onEvent({
+          type: 'job.terminal',
+          jobId,
+          status: 'done',
+          progressPercent: 100,
+          step: 2,
+        });
+      }, 1200);
+
+      return () => {
+        cancelled = true;
+      };
     },
   },
 

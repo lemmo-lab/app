@@ -13,6 +13,41 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/sdk/live/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/sdk/live/generated*", "**/sdk/live/generated*"],
+              message:
+                "Direct imports from generated API client outside sdk/live are strictly prohibited (OQ-027, OQ-035).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/sdk/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/sdk/mock*", "**/sdk/mock*"],
+              message: "Direct imports from sdk/mock outside sdk are strictly prohibited.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

@@ -5,7 +5,7 @@
 
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import { DirectionProvider } from '@/shared/ui/primitives/DirectionProvider';
+import { StudioProviders } from '@/shared/providers/StudioProviders';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -29,7 +29,7 @@ export default function RootLayout({
     // Default: en / ltr
     <html lang="en" dir="ltr" data-theme="default" data-locale="en" suppressHydrationWarning>
       <body>
-        <DirectionProvider>{children}</DirectionProvider>
+        <StudioProviders>{children}</StudioProviders>
       </body>
     </html>
   );

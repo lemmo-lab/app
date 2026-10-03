@@ -14,18 +14,28 @@
 
 import type { SdkClient } from './types';
 import { mockSdkAdapter } from './mock/mock-adapter';
+import { liveSdkAdapter } from './live/live-adapter';
 
 const isLiveMode =
   typeof process !== 'undefined' &&
   process.env.NEXT_PUBLIC_API_MODE === 'live';
 
-// M9: import { liveSdkAdapter } from './live/live-adapter';
-// const sdk: SdkClient = isLiveMode ? liveSdkAdapter : mockSdkAdapter;
+export const sdk: SdkClient = isLiveMode ? liveSdkAdapter : mockSdkAdapter;
 
-export const sdk: SdkClient = isLiveMode
-  ? (mockSdkAdapter as SdkClient) // placeholder until M9
-  : mockSdkAdapter;
+export {
+  setTransportContext,
+  incrementSessionGeneration,
+  getActiveWorkspaceId,
+  getSessionGenerationId,
+  onStepUpAuthRequired,
+  onSignedOut,
+  scheduleProactiveRefresh,
+  cancelProactiveRefresh,
+  type StepUpAuthRequest,
+} from './live/transport';
 
 export type { SdkClient } from './types';
+export * from './types';
 export * from './errors';
 export * from './node';
+

@@ -135,10 +135,92 @@ export interface BillingInfo {
 }
 
 // ================================================================== //
+// CONTEXT, WORKSPACE & PROJECT TYPES                                  //
+// ================================================================== //
+
+export interface UserContext {
+  id: string;
+  email: string;
+  handle?: string;
+  display_name?: string;
+  avatar_url?: string;
+  status?: string;
+  preferences?: Record<string, unknown>;
+}
+
+export interface WorkspaceSummary {
+  id: string;
+  name: string;
+  type: string; // PERSONAL, TEAM
+  role: string; // OWNER, ADMIN, EDITOR, RUNNER, VIEWER
+}
+
+export interface EntitlementContext {
+  tier: 'FREE' | 'PRO' | 'ENTERPRISE';
+  wallet_balance: number;
+  features: string[];
+}
+
+export interface OnboardingProgress {
+  completed: boolean;
+  steps: Record<string, boolean>;
+  next_action: string;
+}
+
+export interface ContextResult {
+  user: UserContext;
+  active_workspace?: WorkspaceSummary | null;
+  workspaces: WorkspaceSummary[];
+  entitlements: EntitlementContext;
+  onboarding: OnboardingProgress;
+  session?: {
+    expires_at?: number;
+  };
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  version?: number;
+  createdAt?: number;
+  updatedAt?: number;
+}
+
+export interface Workspace {
+  id: string;
+  name: string;
+  type: string;
+  role?: string;
+}
+
+export interface JobEvent {
+  type: string;
+  jobId: string;
+  status: string;
+  progressPercent?: number;
+  step?: number;
+  results?: Record<string, unknown>;
+  completedAt?: string;
+  raw?: unknown;
+}
+
+// ================================================================== //
 // SDK CLIENT INTERFACE — shared contract                              //
 // ================================================================== //
 
 export interface SdkClient {
+  context: {
+    get: () => Promise<ContextResult>;
+  };
+  projects: {
+    list: () => Promise<Project[]>;
+    create: (input: { name: string; description?: string }) => Promise<Project>;
+  };
+  workspaces: {
+    list: () => Promise<Workspace[]>;
+    create: (input: { name: string; type?: string }) => Promise<Workspace>;
+  };
   tools: {
     list: () => Promise<ToolManifest[]>;
     execute: (toolId: string, inputs: Record<string, unknown>) => Promise<{ jobId: string }>;
@@ -146,6 +228,7 @@ export interface SdkClient {
   jobs: {
     get: (jobId: string) => Promise<Job>;
     list: () => Promise<Job[]>;
+    subscribe: (jobId: string, onEvent: (event: JobEvent) => void) => () => void;
   };
   chat: {
     sendMessage: (threadId: string | null, content: string) => Promise<Message>;

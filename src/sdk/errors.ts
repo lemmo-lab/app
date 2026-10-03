@@ -54,13 +54,45 @@ export interface GoogleRpcStatus {
   }>;
 }
 
+export interface PlatformErrorEnvelope {
+  type?: string;
+  title?: string;
+  status?: number;
+  detail?: string;
+  reason?: string;
+  error?: string;
+  instance?: string;
+  invalid_params?: Array<{ name: string; reason: string; message?: string }>;
+  [key: string]: unknown;
+}
+
+export class PlatformApiError extends Error {
+  public readonly status: number;
+  public readonly reason?: string;
+  public readonly envelope: PlatformErrorEnvelope;
+
+  constructor(status: number, envelope: PlatformErrorEnvelope) {
+    super(envelope.detail || envelope.error || envelope.title || `Request failed with status ${status}`);
+    this.name = 'PlatformApiError';
+    this.status = status;
+    this.reason = envelope.reason;
+    this.envelope = envelope;
+  }
+}
+
 /**
  * Extracts canonical ErrorReason from a google.rpc.Status or RFC 7807 response payload.
  */
-export function extractErrorReason(status: GoogleRpcStatus): ErrorReason | string | null {
-  if (!status.details || !Array.isArray(status.details)) return null;
-  const errorInfo = status.details.find(
-    (d) => d['@type'] === 'type.googleapis.com/google.rpc.ErrorInfo'
-  );
-  return (errorInfo?.reason as ErrorReason) || null;
+export function extractErrorReason(status: GoogleRpcStatus | PlatformErrorEnvelope): ErrorReason | string | null {
+  if ('details' in status && Array.isArray(status.details)) {
+    const errorInfo = status.details.find(
+      (d) => d['@type'] === 'type.googleapis.com/google.rpc.ErrorInfo'
+    );
+    return (errorInfo?.reason as ErrorReason) || null;
+  }
+  if ('reason' in status && status.reason) {
+    return status.reason;
+  }
+  return null;
 }
+
