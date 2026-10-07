@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Eye, RefreshCw } from 'synthline/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { sdk, Message } from '@/sdk';
+import { useOptionalStudioContext } from '@/shared/providers/StudioContextProvider';
 import {
   AgentChatMessageItem,
   AgentGenerationConfig,
@@ -72,18 +73,20 @@ export function AgentChatView({
   isRtl,
 }: AgentChatViewProps) {
   const queryClient = useQueryClient();
+  const studioContext = useOptionalStudioContext();
+  const activeWorkspaceId = studioContext?.activeWorkspace?.id ?? 'default';
 
-  // 1. Fetch available chat threads to identify active thread ID
+  // 1. Fetch available chat threads to identify active thread ID (SEC-23: workspace-scoped)
   const { data: threads = [] } = useQuery({
-    queryKey: ['chat-threads'],
+    queryKey: ['workspace', activeWorkspaceId, 'chat-threads'],
     queryFn: () => sdk.chat.getThreads(),
   });
 
   const activeThreadId = currentId || threads[0]?.id || 'thread-001';
 
-  // 2. Fetch messages for active thread from SDK
+  // 2. Fetch messages for active thread from SDK (SEC-23: workspace-scoped)
   const { data: threadData } = useQuery({
-    queryKey: ['chat-thread', activeThreadId],
+    queryKey: ['workspace', activeWorkspaceId, 'chat-thread', activeThreadId],
     queryFn: () => sdk.chat.getThread(activeThreadId),
     enabled: Boolean(activeThreadId),
   });
@@ -140,7 +143,7 @@ export function AgentChatView({
         ...prev,
         [activeThreadId]: [...(prev[activeThreadId] || []), assistantItem],
       }));
-      queryClient.invalidateQueries({ queryKey: ['chat-thread', activeThreadId] });
+      queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'chat-thread', activeThreadId] });
     },
   });
 

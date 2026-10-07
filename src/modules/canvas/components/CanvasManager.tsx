@@ -10,6 +10,7 @@ import React, {
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
+import { useOptionalStudioContext } from '@/shared/providers/StudioContextProvider';
 import { sdk, Project } from '@/sdk';
 import {
   CanvasProject,
@@ -52,6 +53,8 @@ export default function CanvasManager() {
   const { dir, locale } = useUiStore();
   const isRtl = dir === 'rtl';
   const isFa = locale === 'fa';
+  const studioContext = useOptionalStudioContext();
+  const activeWorkspaceId = studioContext?.activeWorkspace?.id ?? 'default';
 
   // Hydration guard
   const mounted = useSyncExternalStore(
@@ -60,9 +63,9 @@ export default function CanvasManager() {
     () => false
   );
 
-  // TanStack Query for backend projects via SDK
+  // TanStack Query for backend projects via SDK (SEC-23: workspace-scoped)
   const { data: serverProjects = [] } = useQuery({
-    queryKey: ['projects'],
+    queryKey: ['workspace', activeWorkspaceId, 'projects'],
     queryFn: () => sdk.projects.list(),
   });
 
@@ -71,7 +74,7 @@ export default function CanvasManager() {
     mutationFn: (input: { name: string; description?: string }) =>
       sdk.projects.create(input),
     onSuccess: (newProj) => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'projects'] });
       setToastMessage(
         isFa
           ? 'پروژه بوم جدید ایجاد شد و آماده کار است'

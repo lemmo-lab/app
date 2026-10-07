@@ -133,12 +133,17 @@ export function StudioContextProvider({ children }: StudioContextProviderProps) 
   const switchWorkspace = useCallback(
     async (workspaceId: string) => {
       setState('loading');
+      // SEC-23: Cancel in-flight queries & clear cache on workspace switch
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      useUiStore.getState().reset();
+
       startTransition(() => {
         setTransportContext(workspaceId, getSessionGenerationId());
       });
       await fetchContext(workspaceId);
     },
-    [fetchContext]
+    [fetchContext, queryClient]
   );
 
   const logout = useCallback(async () => {
@@ -197,4 +202,8 @@ export function useStudioContext(): StudioContextValue {
     throw new Error('useStudioContext must be used within a StudioContextProvider');
   }
   return ctx;
+}
+
+export function useOptionalStudioContext(): StudioContextValue | null {
+  return useContext(StudioContext);
 }

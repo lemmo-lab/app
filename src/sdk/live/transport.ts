@@ -94,6 +94,8 @@ function notifyStepUpRequired(): Promise<void> {
 }
 
 function notifySignedOut(): void {
+  currentWorkspaceId = null;
+  cancelProactiveRefresh();
   signedOutListeners.forEach((listener) => listener());
 }
 
@@ -195,15 +197,16 @@ function resolveUrl(url: string): string {
 }
 
 /**
- * Sanitizes headers to eliminate raw X-Workspace-ID provided by callers (ADR-016 Section 2.3).
+ * Sanitizes headers to eliminate raw X-Workspace-ID and X-Workspace-Policy provided by callers (ADR-016 Section 2.3, SEC-24).
  */
 function sanitizeHeaders(inputHeaders?: HeadersInit): Headers {
   const headers = new Headers(inputHeaders);
   
-  // Strip any variation of x-workspace-id
+  // Strip any variation of x-workspace-id or x-workspace-policy
   const keysToRemove: string[] = [];
   headers.forEach((_, key) => {
-    if (key.toLowerCase() === 'x-workspace-id') {
+    const lower = key.toLowerCase();
+    if (lower === 'x-workspace-id' || lower === 'x-workspace-policy') {
       keysToRemove.push(key);
     }
   });
@@ -291,6 +294,9 @@ export async function customFetch<T>(
 
     // 4. Handle non-2xx errors
     if (!response.ok) {
+      if (response.status === 401) {
+        notifySignedOut();
+      }
       let envelope: PlatformErrorEnvelope;
       try {
         envelope = (await response.json()) as PlatformErrorEnvelope;
@@ -315,6 +321,11 @@ export async function customFetch<T>(
     }
 
     const data = (await response.json()) as unknown;
+
+    // SEC-25: Invalidate if session changed while waiting for response.json()
+    if (currentSessionGenerationId !== snapshotSessionGen) {
+      throw new Error('Request discarded: session was terminated or switched during JSON deserialization.');
+    }
 
     // 5. Inspect response for session expiration to schedule dynamic refresh
     if (data && typeof data === 'object') {

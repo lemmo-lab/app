@@ -44,6 +44,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { sdk } from '@/sdk';
 import { useUiStore } from '@/stores/uiStore';
+import { useOptionalStudioContext } from '@/shared/providers/StudioContextProvider';
 import { AssetItem, AssetFilterCategory, AssetSubFilter, DateGroupKey } from '../types';
 import { mapAssetToItem } from '../utils/assetMapper';
 
@@ -54,10 +55,12 @@ interface AssetsManagerProps {
 export default function AssetsManager({ initialEmpty = false }: AssetsManagerProps) {
   const { locale, dir } = useUiStore();
   const isRtl = dir === 'rtl';
+  const studioContext = useOptionalStudioContext();
+  const activeWorkspaceId = studioContext?.activeWorkspace?.id ?? 'default';
 
-  // Fetch assets from SDK via TanStack Query
+  // Fetch assets from SDK via TanStack Query (SEC-23: workspace-scoped)
   const { data: serverAssets = [] } = useQuery({
-    queryKey: ['assets'],
+    queryKey: ['workspace', activeWorkspaceId, 'assets'],
     queryFn: () => sdk.assets.list(),
   });
 
