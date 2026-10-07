@@ -16,6 +16,7 @@ import type {
   Message,
   Thread,
   Asset,
+  ContentResult,
   FeedItem,
   FeedResult,
   UserProfile,
@@ -37,6 +38,7 @@ import {
   sendChatMessage,
   listAssets,
   getAsset,
+  getContent,
   getFeed,
   getFeedItem,
   type GetMeContext200,
@@ -44,6 +46,7 @@ import {
   type CreateProject201,
   type ListWorkspaces200,
   type CreateWorkspace201,
+  type GetContent200,
   type GetFeed200,
 } from './generated';
 
@@ -330,6 +333,16 @@ export const liveSdkAdapter: SdkClient = {
     get: async (assetId: string): Promise<Asset> => {
       const response = await getAsset(assetId);
       return (response as { data: Asset }).data;
+    },
+  },
+
+  // ================================================================ //
+  // CONTENT (Platform Showcase, Banners & Quick Tools)                //
+  // ================================================================ //
+  content: {
+    get: async (): Promise<ContentResult> => {
+      const response = await getContent();
+      return (response as { data: GetContent200 }).data as ContentResult;
     },
   },
 

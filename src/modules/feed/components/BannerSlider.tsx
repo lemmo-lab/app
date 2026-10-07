@@ -43,14 +43,14 @@ export default function BannerSlider() {
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const isRtl = dir === 'rtl';
 
-  const { data: feedResult } = useQuery({
-    queryKey: ['feed'],
-    queryFn: () => sdk.feed.list(),
+  const { data: contentResult } = useQuery({
+    queryKey: ['content'],
+    queryFn: () => sdk.content.get(),
   });
 
   const slides: FeatureAnnouncement[] = React.useMemo(() => {
-    if (feedResult?.featured && feedResult.featured.length > 0) {
-      return feedResult.featured.map((f, i) => ({
+    if (contentResult?.featured && contentResult.featured.length > 0) {
+      return contentResult.featured.map((f, i) => ({
         id: f.id,
         type: (i === 0 ? 'model' : i === 1 ? 'premium' : 'workspace') as FeatureAnnouncement['type'],
         tag: f.model.toUpperCase(),
@@ -69,7 +69,7 @@ export default function BannerSlider() {
       }));
     }
     return DEFAULT_FEATURE_ANNOUNCEMENTS;
-  }, [feedResult]);
+  }, [contentResult]);
 
   const slidesCount = slides.length;
   const currentSlide: FeatureAnnouncement = slides[currentIndex % slidesCount] || slides[0];

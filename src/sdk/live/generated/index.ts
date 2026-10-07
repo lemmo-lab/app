@@ -322,6 +322,11 @@ export type SendChatMessageBody = {
   threadId?: string | null;
 };
 
+export type GetContent200 = {
+  featured: BannerSlide[];
+  quick_tools: QuickTool[];
+};
+
 export type GetFeedParams = {
 category?: string;
 limit?: number;
@@ -329,9 +334,10 @@ cursor?: string;
 };
 
 export type GetFeed200 = {
-  featured?: BannerSlide[];
+  has_more: boolean;
   items: FeedItem[];
-  quick_tools?: QuickTool[];
+  /** @nullable */
+  next_cursor: string | null;
 };
 
 export type GetMeContextParams = {
@@ -1049,17 +1055,76 @@ export const getChatThread = async (threadId: string, options?: Parameters<typeo
 
 
 
+export type getContentResponse200 = {
+  data: GetContent200
+  status: 200
+}
+
+export type getContentResponseSuccess = (getContentResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getContentResponse = (getContentResponseSuccess)
+
+export const getGetContentUrl = () => {
+
+
+
+
+  return `/api/v1/content`
+}
+
+/**
+ * Returns platform promotional slides, banners, and quick tool showcases.
+ * @summary Get Platform Content
+ */
+export const getContent = async ( options?: Parameters<typeof customFetch>[1]): Promise<getContentResponse> => {
+
+  return customFetch<getContentResponse>(getGetContentUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export type getFeedResponse200 = {
   data: GetFeed200
   status: 200
 }
 
+export type getFeedResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type getFeedResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type getFeedResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type getFeedResponse503 = {
+  data: ProblemDetails
+  status: 503
+}
+
 export type getFeedResponseSuccess = (getFeedResponse200) & {
   headers: Headers;
 };
-;
+export type getFeedResponseError = (getFeedResponse400 | getFeedResponse401 | getFeedResponse403 | getFeedResponse503) & {
+  headers: Headers;
+};
 
-export type getFeedResponse = (getFeedResponseSuccess)
+export type getFeedResponse = (getFeedResponseSuccess | getFeedResponseError)
 
 export const getGetFeedUrl = (params?: GetFeedParams,) => {
   const normalizedParams = new URLSearchParams();
@@ -1077,7 +1142,7 @@ export const getGetFeedUrl = (params?: GetFeedParams,) => {
 }
 
 /**
- * Returns discovery showcase items, featured banner slides, and quick tools.
+ * Returns discovery showcase items with keyset pagination.
  * @summary List Feed Items
  */
 export const getFeed = async (params?: GetFeedParams, options?: Parameters<typeof customFetch>[1]): Promise<getFeedResponse> => {
@@ -1098,12 +1163,19 @@ export type getFeedItemResponse200 = {
   status: 200
 }
 
+export type getFeedItemResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
 export type getFeedItemResponseSuccess = (getFeedItemResponse200) & {
   headers: Headers;
 };
-;
+export type getFeedItemResponseError = (getFeedItemResponse404) & {
+  headers: Headers;
+};
 
-export type getFeedItemResponse = (getFeedItemResponseSuccess)
+export type getFeedItemResponse = (getFeedItemResponseSuccess | getFeedItemResponseError)
 
 export const getGetFeedItemUrl = (id: string,) => {
 

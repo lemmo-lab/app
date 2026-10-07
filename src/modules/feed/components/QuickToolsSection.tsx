@@ -22,12 +22,12 @@ export default function QuickToolsSection() {
   const { locale, dir } = useUiStore();
   const isRtl = dir === 'rtl';
 
-  const { data: feedResult } = useQuery({
-    queryKey: ['feed'],
-    queryFn: () => sdk.feed.list(),
+  const { data: contentResult } = useQuery({
+    queryKey: ['content'],
+    queryFn: () => sdk.content.get(),
   });
 
-  const quickTools = feedResult?.quick_tools || [];
+  const quickTools = contentResult?.quick_tools || [];
 
   return (
     <section

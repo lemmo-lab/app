@@ -293,6 +293,19 @@ export const mockSdkAdapter: SdkClient = {
   },
 
   // ================================================================ //
+  // CONTENT                                                           //
+  // ================================================================ //
+  content: {
+    get: async () => {
+      await delay(150);
+      return {
+        featured: [...MOCK_FEATURED_SLIDES],
+        quick_tools: [...MOCK_QUICK_TOOLS],
+      };
+    },
+  },
+
+  // ================================================================ //
   // FEED                                                              //
   // ================================================================ //
   feed: {
@@ -304,8 +317,7 @@ export const mockSdkAdapter: SdkClient = {
       }
       return {
         items,
-        featured: MOCK_FEATURED_SLIDES,
-        quick_tools: MOCK_QUICK_TOOLS,
+        next_cursor: null,
         has_more: false,
       };
     },

@@ -268,10 +268,13 @@ export interface FeedItem {
 
 export interface FeedResult {
   items: FeedItem[];
-  featured?: BannerSlide[];
-  quick_tools?: QuickTool[];
-  next_cursor?: string;
-  has_more?: boolean;
+  next_cursor: string | null;
+  has_more: boolean;
+}
+
+export interface ContentResult {
+  featured: BannerSlide[];
+  quick_tools: QuickTool[];
 }
 
 // ================================================================== //
@@ -308,6 +311,9 @@ export interface SdkClient {
   assets: {
     list: () => Promise<Asset[]>;
     get: (assetId: string) => Promise<Asset>;
+  };
+  content: {
+    get: () => Promise<ContentResult>;
   };
   feed: {
     list: (params?: { category?: string; limit?: number; cursor?: string }) => Promise<FeedResult>;
