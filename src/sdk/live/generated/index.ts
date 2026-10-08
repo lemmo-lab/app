@@ -236,6 +236,22 @@ export type PageQueryParamParameter = number;
  */
 export type PerPageQueryParamParameter = number;
 
+export type ListAssetsParams = {
+limit?: number;
+cursor?: string;
+type?: ListAssetsType;
+};
+
+export type ListAssetsType = typeof ListAssetsType[keyof typeof ListAssetsType];
+
+
+export const ListAssetsType = {
+  image: 'image',
+  video: 'video',
+  audio: 'audio',
+  text: 'text',
+} as const;
+
 export type AuthEntryBody = {
   email: string;
   return_to?: string;
@@ -338,6 +354,11 @@ export type GetFeed200 = {
   items: FeedItem[];
   /** @nullable */
   next_cursor: string | null;
+};
+
+export type ListJobsParams = {
+limit?: number;
+status?: string;
 };
 
 export type GetMeContextParams = {
@@ -523,21 +544,28 @@ export type listAssetsResponseSuccess = (listAssetsResponse200) & {
 
 export type listAssetsResponse = (listAssetsResponseSuccess)
 
-export const getListAssetsUrl = () => {
+export const getListAssetsUrl = (params?: ListAssetsParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/v1/assets`
+  return stringifiedParams.length > 0 ? `/api/v1/assets?${stringifiedParams}` : `/api/v1/assets`
 }
 
 /**
- * Returns generated and uploaded assets for the workspace.
+ * Returns generated and uploaded assets for the active workspace.
  * @summary List Workspace Assets
  */
-export const listAssets = async ( options?: Parameters<typeof customFetch>[1]): Promise<listAssetsResponse> => {
+export const listAssets = async (params?: ListAssetsParams, options?: Parameters<typeof customFetch>[1]): Promise<listAssetsResponse> => {
 
-  return customFetch<listAssetsResponse>(getListAssetsUrl(),
+  return customFetch<listAssetsResponse>(getListAssetsUrl(params),
   {
     ...options,
     method: 'GET'
@@ -553,12 +581,19 @@ export type getAssetResponse200 = {
   status: 200
 }
 
+export type getAssetResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
 export type getAssetResponseSuccess = (getAssetResponse200) & {
   headers: Headers;
 };
-;
+export type getAssetResponseError = (getAssetResponse404) & {
+  headers: Headers;
+};
 
-export type getAssetResponse = (getAssetResponseSuccess)
+export type getAssetResponse = (getAssetResponseSuccess | getAssetResponseError)
 
 export const getGetAssetUrl = (assetId: string,) => {
 
@@ -569,7 +604,7 @@ export const getGetAssetUrl = (assetId: string,) => {
 }
 
 /**
- * Returns details of a specific asset.
+ * Returns details of a specific asset within the active workspace.
  * @summary Get Asset
  */
 export const getAsset = async (assetId: string, options?: Parameters<typeof customFetch>[1]): Promise<getAssetResponse> => {
@@ -1214,21 +1249,28 @@ export type listJobsResponseSuccess = (listJobsResponse200) & {
 
 export type listJobsResponse = (listJobsResponseSuccess)
 
-export const getListJobsUrl = () => {
+export const getListJobsUrl = (params?: ListJobsParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/v1/jobs`
+  return stringifiedParams.length > 0 ? `/api/v1/jobs?${stringifiedParams}` : `/api/v1/jobs`
 }
 
 /**
- * Returns recent execution jobs for the workspace.
+ * Returns recent execution jobs for the active workspace.
  * @summary List Workspace Jobs
  */
-export const listJobs = async ( options?: Parameters<typeof customFetch>[1]): Promise<listJobsResponse> => {
+export const listJobs = async (params?: ListJobsParams, options?: Parameters<typeof customFetch>[1]): Promise<listJobsResponse> => {
 
-  return customFetch<listJobsResponse>(getListJobsUrl(),
+  return customFetch<listJobsResponse>(getListJobsUrl(params),
   {
     ...options,
     method: 'GET'
@@ -1244,12 +1286,19 @@ export type getJobResponse200 = {
   status: 200
 }
 
+export type getJobResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
 export type getJobResponseSuccess = (getJobResponse200) & {
   headers: Headers;
 };
-;
+export type getJobResponseError = (getJobResponse404) & {
+  headers: Headers;
+};
 
-export type getJobResponse = (getJobResponseSuccess)
+export type getJobResponse = (getJobResponseSuccess | getJobResponseError)
 
 export const getGetJobUrl = (jobId: string,) => {
 
@@ -1281,29 +1330,12 @@ export type streamJobEventsResponse200 = {
   status: 200
 }
 
-export type streamJobEventsResponse401 = {
-  data: ProblemDetails
-  status: 401
-}
-
-export type streamJobEventsResponse403 = {
-  data: ProblemDetails
-  status: 403
-}
-
-export type streamJobEventsResponse404 = {
-  data: ProblemDetails
-  status: 404
-}
-
 export type streamJobEventsResponseSuccess = (streamJobEventsResponse200) & {
   headers: Headers;
 };
-export type streamJobEventsResponseError = (streamJobEventsResponse401 | streamJobEventsResponse403 | streamJobEventsResponse404) & {
-  headers: Headers;
-};
+;
 
-export type streamJobEventsResponse = (streamJobEventsResponseSuccess | streamJobEventsResponseError)
+export type streamJobEventsResponse = (streamJobEventsResponseSuccess)
 
 export const getStreamJobEventsUrl = (jobId: string,) => {
 
@@ -1314,10 +1346,8 @@ export const getStreamJobEventsUrl = (jobId: string,) => {
 }
 
 /**
- * Streams live execution events for a background job using Server-Sent Events (SSE).
- * Client does not send X-Workspace-ID; the gateway and service resolve workspace membership
- * server-side. The stream ends with an 'event: job.terminal' frame followed by active server close.
- * @summary Subscribe to Job Progress Events (SSE)
+ * Real-time Server-Sent Events stream emitting progress and terminal state events for a job.
+ * @summary Stream Job Events
  */
 export const streamJobEvents = async (jobId: string, options?: Parameters<typeof customFetch>[1]): Promise<streamJobEventsResponse> => {
 
