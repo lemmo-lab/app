@@ -209,10 +209,16 @@ export const ToolManifestOutputType = {
 } as const;
 
 export interface ToolManifest {
+  version?: number;
   category: string;
+  type: string;
+  capability: string;
+  chat_alias?: string[];
+  agent_visible: boolean;
+  llm_description?: string;
   description: string;
   descriptionFa: string;
-  estimatedTokenCost: number;
+  estimatedTokenCost?: number;
   icon?: string;
   id: string;
   inputFields: ToolField[];
@@ -486,9 +492,27 @@ export type CreateProject201 = {
   version: number;
 };
 
-export type ExecuteToolBody = { [key: string]: unknown };
+export type ExecuteToolBodyInputKind = typeof ExecuteToolBodyInputKind[keyof typeof ExecuteToolBodyInputKind];
 
-export type ExecuteTool200 = {
+
+export const ExecuteToolBodyInputKind = {
+  structured: 'structured',
+  command: 'command',
+  natural_language: 'natural_language',
+} as const;
+
+export type ExecuteToolBodyInputs = { [key: string]: unknown };
+
+export type ExecuteToolBody = {
+  input_kind: ExecuteToolBodyInputKind;
+  expected_cost?: number;
+  run_id?: string;
+  parent_reservation_id?: string;
+  inputs?: ExecuteToolBodyInputs;
+  [key: string]: unknown;
+ };
+
+export type ExecuteTool202 = {
   jobId: string;
 };
 
@@ -1584,9 +1608,9 @@ export const listTools = async ( options?: Parameters<typeof customFetch>[1]): P
 
 
 
-export type executeToolResponse200 = {
-  data: ExecuteTool200
-  status: 200
+export type executeToolResponse202 = {
+  data: ExecuteTool202
+  status: 202
 }
 
 export type executeToolResponse400 = {
@@ -1594,10 +1618,15 @@ export type executeToolResponse400 = {
   status: 400
 }
 
-export type executeToolResponseSuccess = (executeToolResponse200) & {
+export type executeToolResponse409 = {
+  data: ProblemDetails
+  status: 409
+}
+
+export type executeToolResponseSuccess = (executeToolResponse202) & {
   headers: Headers;
 };
-export type executeToolResponseError = (executeToolResponse400) & {
+export type executeToolResponseError = (executeToolResponse400 | executeToolResponse409) & {
   headers: Headers;
 };
 

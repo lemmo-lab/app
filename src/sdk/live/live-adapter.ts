@@ -196,7 +196,10 @@ export const liveSdkAdapter: SdkClient = {
     },
 
     execute: async (toolId: string, inputs: Record<string, unknown>): Promise<{ jobId: string }> => {
-      const response = await executeTool(toolId, inputs);
+      const response = await executeTool(toolId, {
+        input_kind: 'structured',
+        inputs,
+      });
       return (response as { data: { jobId: string } }).data;
     },
   },
