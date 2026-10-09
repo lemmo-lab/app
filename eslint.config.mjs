@@ -33,23 +33,7 @@ const eslintConfig = defineConfig([
   },
   {
     files: ["src/**/*.{ts,tsx}"],
-    ignores: ["src/sdk/**"],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["@/sdk/mock*", "**/sdk/mock*"],
-              message: "Direct imports from sdk/mock outside sdk are strictly prohibited.",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    files: ["src/modules/**/*.{ts,tsx}", "src/app/**/*.{ts,tsx}"],
+    ignores: ["src/**/__tests__/**", "src/**/*.test.ts", "src/**/*.test.tsx"],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -65,6 +49,26 @@ const eslintConfig = defineConfig([
                 "@/*mockData*",
                 "@/sdk/mock*",
                 "**/sdk/mock*",
+                "**/mock-adapter*",
+                "**/mock-data*",
+              ],
+              message:
+                "Client-side mock adapters or simulated data paths are strictly forbidden by ADR-016. All requests must route through standard network transport via Kong to live services or backend Prism containers.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/modules/**/*.{ts,tsx}", "src/app/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
                 "@/sdk/live/generated*",
                 "**/sdk/live/generated*",
                 "**/data/*",
@@ -72,7 +76,7 @@ const eslintConfig = defineConfig([
                 "*Data*",
               ],
               message:
-                "Importing in-memory mocks, module data files, or internal SDK implementations inside src/modules or src/app is strictly prohibited. All runtime entity data must flow through '@/sdk' (ADR-016, DOC-FE-002).",
+                "Importing module data files or internal SDK implementations inside src/modules or src/app is strictly prohibited. All runtime entity data must flow through '@/sdk' (ADR-016, DOC-FE-002).",
             },
           ],
         },

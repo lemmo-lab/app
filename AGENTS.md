@@ -39,16 +39,16 @@ Switch to `lang="en" dir="ltr"` via a client store — never hardcode direction 
 
 ## 3. Architecture rules that differ from defaults
 
-### SDK gateway (Zero-Leakage rule)
-All data fetching goes through `@/sdk`. No component, hook, or page may import from a path containing the word `mock`. The SDK picks the adapter via env var:
+### SDK gateway (Single Network Client & Zero-Client-Mock, ADR-016)
+All data fetching routes exclusively through `@/sdk`. No component, hook, or page may import from a path containing the word `mock` or `generated`. Client-side mock adapters, in-memory datasets, and `NEXT_PUBLIC_API_MODE` are permanently eradicated.
 
+The SDK operates as a single network client routing all calls via Kong Edge Gateway:
 ```typescript
 // src/sdk/index.ts
-const isLiveMode = process.env.NEXT_PUBLIC_API_MODE === 'live';
-export const sdk: SdkClient = isLiveMode ? liveHttpSdkAdapter : mockSdkAdapter;
+import { liveSdkAdapter } from './live/live-adapter';
+export const sdk: SdkClient = liveSdkAdapter;
 ```
-
-Default dev mode: `NEXT_PUBLIC_API_MODE` is unset → mock adapter. To connect real backend: set `NEXT_PUBLIC_API_MODE=live` in `.env`.
+All endpoints connect to live Go microservices or the schema-driven backend Prism mock container (`lemmo-mock-content`).
 
 ### CSS: use logical properties everywhere
 Never use `left`/`right` CSS properties. Always use `margin-inline-start`, `padding-inline-end`, `inset-inline-start`, etc. — required for RTL/LTR flip to work without any CSS changes.

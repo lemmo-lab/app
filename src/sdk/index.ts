@@ -1,26 +1,20 @@
 /**
- * SDK Index — Centralized data access bottleneck.
+ * Lemmo SDK Index — Single Network Client & Data Path Gateway.
  *
- * The ONLY permitted way to consume data anywhere in the frontend:
- *   import { sdk } from '@/sdk';
- *   const result = await sdk.tools.list();
+ * Conforms to:
+ * - ADR-016 Sections 2.17, 2.21, 2.23 (Zero-Leakage & Client Zero-Mock Enforcement)
+ * - ADR-013 Three-Tier Edge Gateway & BFF Architecture
+ * - DOC-FE-002 Frontend Architecture & Data Flow Specification
  *
- * Single-switch migration via NEXT_PUBLIC_API_MODE:
- *   - 'mock' (default during development): MockAdapter with simulated data
- *   - 'live': LiveAdapter connecting to the real backend (M9)
- *
- * No code outside this file may import from mock/ or live/.
+ * All data fetching across the entire frontend routes exclusively through this gateway.
+ * Client-side mock adapters and in-memory simulated paths are strictly eradicated.
+ * Requests route through Kong Edge Gateway to live backend services or Prism schema-driven mock.
  */
 
 import type { SdkClient } from './types';
-import { mockSdkAdapter } from './mock/mock-adapter';
 import { liveSdkAdapter } from './live/live-adapter';
 
-const isLiveMode =
-  typeof process !== 'undefined' &&
-  process.env.NEXT_PUBLIC_API_MODE === 'live';
-
-export const sdk: SdkClient = isLiveMode ? liveSdkAdapter : mockSdkAdapter;
+export const sdk: SdkClient = liveSdkAdapter;
 
 export {
   setTransportContext,
@@ -38,4 +32,3 @@ export type { SdkClient } from './types';
 export * from './types';
 export * from './errors';
 export * from './node';
-

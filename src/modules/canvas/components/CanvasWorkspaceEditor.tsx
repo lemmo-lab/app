@@ -85,7 +85,7 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
   const [viewport, setViewport] = useState<CanvasViewport>({ x: 60, y: 80, zoom: 1 });
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>('node-1');
   const [activeLayerId, setActiveLayerId] = useState<string>('layer-1');
-  const [isRunningPipeline, setIsRunningPipeline] = useState(false);
+  const [isRunningPipeline] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Engineered Canvas Properties Inspector State
@@ -213,26 +213,13 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
   };
 
   const handleRunSingleNode = (nodeId: string) => {
-    setNodes((prev) =>
-      prev.map((n) => (n.id === nodeId ? { ...n, status: 'running' } : n))
+    // Stage 17C/D integrates real execution via sdk.tools.execute / sdk.jobs
+    // Eradicated fake setTimeout and artificial Unsplash image injection (ADR-016, DEBT-CANVAS-01)
+    setToastMessage(
+      isFa
+        ? `اجرای مستقیم نود (${nodeId}) در استیج ۱۷C به موتور جاب زنده متصل می‌گردد`
+        : `Node execution (${nodeId}) routes to live job engine in Stage 17C`
     );
-    setToastMessage(isFa ? 'پردازش هوش مصنوعی نود آغاز گردید...' : 'Generating node with AI...');
-    setTimeout(() => {
-      setNodes((prev) =>
-        prev.map((n) =>
-          n.id === nodeId
-            ? {
-                ...n,
-                status: 'success',
-                previewUrl:
-                  n.previewUrl ||
-                  'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
-              }
-            : n
-        )
-      );
-      setToastMessage(isFa ? 'نود با موفقیت تولید شد' : 'Node generated successfully');
-    }, 1400);
   };
 
   const handleSelectNode = (nodeId: string | null) => {
@@ -558,39 +545,13 @@ export default function CanvasWorkspaceEditor({ projectId }: CanvasWorkspaceEdit
 
   // Flow Execution Simulator (Zero-Leakage Mock Job Lifecycle)
   const handleRunPipeline = () => {
-    if (isRunningPipeline) return;
-
-    setIsRunningPipeline(true);
-    setToastMessage(isFa ? 'پردازش پایپ‌لاین بوم آغاز گردید...' : 'Pipeline execution started...');
-
-    // Set idle nodes to running
-    setNodes((prev) =>
-      prev.map((node) => (node.status === 'idle' ? { ...node, status: 'running' } : node))
+    // Stage 17C/D integrates real pipeline execution via backend job graph
+    // Eradicated fake setTimeout and artificial Unsplash image injection (ADR-016, DEBT-CANVAS-01)
+    setToastMessage(
+      isFa
+        ? 'پردازش پایپ‌لاین بوم در استیج ۱۷C به ارکستریتور متصل می‌گردد'
+        : 'Pipeline execution routes to orchestrator in Stage 17C'
     );
-
-    // Simulate async job completion
-    setTimeout(() => {
-      setNodes((prev) =>
-        prev.map((node) => {
-          if (node.status === 'running') {
-            return {
-              ...node,
-              status: 'success',
-              previewUrl:
-                node.previewUrl ||
-                'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
-            };
-          }
-          return node;
-        })
-      );
-      setIsRunningPipeline(false);
-      setToastMessage(
-        isFa
-          ? 'پردازش پایپ‌لاین بوم با موفقیت به پایان رسید'
-          : 'Pipeline execution finished successfully'
-      );
-    }, 1800);
   };
 
   if (!mounted) {

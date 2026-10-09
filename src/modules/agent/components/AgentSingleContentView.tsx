@@ -111,11 +111,8 @@ export function AgentSingleContentView({
       handleRemoveActiveTool();
     }
 
-    // Simulate iteration processing and redirect back to conversation with edited output
-    setTimeout(() => {
-      setIsSubmitting(false);
-      router.push('/app/agent/chat-01');
-    }, 1200);
+    // Direct redirection to agent studio workspace for live conversation processing
+    router.push('/app/agent');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
