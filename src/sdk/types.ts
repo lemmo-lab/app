@@ -172,19 +172,52 @@ export interface Thread {
 
 // ================================================================== //
 // USER / BILLING TYPES                                                //
-// ================================================================== //
+export interface UpdateProfileInput {
+  displayName?: string;
+  handle?: string;
+  avatarUrl?: string;
+  bio?: string;
+}
 
 export interface UserProfile {
   id: string;
   name: string;
   email: string;
   avatarUrl?: string;
+  handle?: string;
+  bio?: string;
 }
 
 export interface BillingInfo {
   tokenBalance: number;
   plan: 'free' | 'pro' | 'enterprise';
   nextBillingDate?: string;
+}
+
+export interface PricingRateCard {
+  version: string;
+  currency: string;
+  tools: Record<string, unknown>;
+}
+
+export interface WorkspaceMemberInfo {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  initials?: string;
+  status?: string;
+}
+
+export interface WorkspaceSettingsData {
+  defaultView?: string;
+  autoSave?: string;
+  retention?: string;
+  publicLinks?: string;
+  modelOptOut?: boolean;
+  allowedModels?: string[];
+  requireAdminApproval?: boolean;
+  defaultResolution?: string;
 }
 
 // ================================================================== //
@@ -336,6 +369,14 @@ export interface SdkClient {
   workspaces: {
     list: () => Promise<Workspace[]>;
     create: (input: { name: string; type?: string }) => Promise<Workspace>;
+    get?: (id: string) => Promise<Workspace>;
+    update?: (id: string, input: { name?: string; slug?: string }) => Promise<Workspace>;
+    getMembers?: (workspaceId: string) => Promise<WorkspaceMemberInfo[]>;
+    inviteMember?: (workspaceId: string, email: string, role: string) => Promise<void>;
+    removeMember?: (workspaceId: string, memberId: string) => Promise<void>;
+    updateMemberRole?: (workspaceId: string, memberId: string, role: string) => Promise<void>;
+    getSettings?: (workspaceId: string) => Promise<WorkspaceSettingsData>;
+    updateSettings?: (workspaceId: string, settings: WorkspaceSettingsData) => Promise<WorkspaceSettingsData>;
   };
   tools: {
     list: () => Promise<ToolManifest[]>;
@@ -364,8 +405,12 @@ export interface SdkClient {
     list: (params?: { category?: string; limit?: number; cursor?: string }) => Promise<FeedResult>;
     get: (id: string) => Promise<FeedItem>;
   };
+  quota?: {
+    getPricing: () => Promise<PricingRateCard>;
+  };
   user: {
     getProfile: () => Promise<UserProfile>;
+    updateProfile: (input: UpdateProfileInput) => Promise<UserProfile>;
     getBillingInfo: () => Promise<BillingInfo>;
   };
 }

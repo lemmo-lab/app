@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Check01, AlertTriangle } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
+import { useStudioContext } from '@/shared/providers/StudioContextProvider';
 import SettingsHeader from '../SettingsHeader';
 import SettingsSection from '../SettingsSection';
 import SettingsRow from '../SettingsRow';
@@ -17,9 +18,10 @@ export interface AccountPanelProps {
 
 export default function AccountPanel({ onShowToast }: AccountPanelProps) {
   const { locale, setLocale } = useUiStore();
+  const { user } = useStudioContext();
 
-  const [email] = useState('alex@example.com');
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const email = user?.email || 'user@example.com';
+  const [isEmailVerified, setIsEmailVerified] = useState(user?.status === 'ACTIVE' || false);
   const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [timezone, setTimezone] = useState('Asia/Tehran');

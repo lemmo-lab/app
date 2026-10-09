@@ -1,8 +1,10 @@
 'use client';
 
-import React from 'react';
-import { CreditCard01, Check01 } from 'synthline/react';
+import React, { useState, useEffect } from 'react';
+import { CreditCard01, Check01, Coins01 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
+import { useStudioContext } from '@/shared/providers/StudioContextProvider';
+import { sdk } from '@/sdk';
 import SettingsHeader from '../SettingsHeader';
 import SettingsSection from '../SettingsSection';
 import LemmoButton from '../LemmoButton';
@@ -13,6 +15,21 @@ export interface BillingPanelProps {
 
 export default function BillingPanel({ onShowToast }: BillingPanelProps) {
   const { locale } = useUiStore();
+  const { context } = useStudioContext();
+
+  const tier = context?.entitlements?.tier || 'FREE';
+  const walletBalance = context?.entitlements?.wallet_balance ?? 0;
+
+  const [rateCard, setRateCard] = useState<import('@/sdk').PricingRateCard | null>(null);
+
+  useEffect(() => {
+    sdk.quota?.getPricing()
+      .then((pricing) => setRateCard(pricing))
+      .catch((err) => console.error('Failed to load quota pricing:', err));
+  }, []);
+
+  const planName = tier === 'ENTERPRISE' ? 'Studio Enterprise' : tier === 'PRO' ? 'Studio Pro' : 'Studio Free';
+  const planPrice = tier === 'ENTERPRISE' ? '$99' : tier === 'PRO' ? '$29' : '$0';
 
   return (
     <div className="panel-container">
@@ -20,15 +37,31 @@ export default function BillingPanel({ onShowToast }: BillingPanelProps) {
         title={locale === 'fa' ? 'صورت‌حساب و اشتراک' : 'Billing & Subscription'}
         description={
           locale === 'fa'
-            ? 'مدیریت پلن فعال، روش‌های پرداخت و سوابق فاکتورهای فضای کاری.'
-            : 'Manage your active subscription plan, payment methods, and billing history.'
+            ? 'مدیریت پلن فعال، سهمیه توکن‌ها و تعرفه مصرف ابزارهای استودیو لیمو.'
+            : 'Manage your active subscription plan, token balances, and tool rate cards.'
         }
       />
+
+      <SettingsSection title={locale === 'fa' ? 'موجودی کیف‌پول و سهمیه' : 'Wallet & Quota'}>
+        <div className="wallet-card">
+          <div className="wallet-header">
+            <div className="wallet-icon">
+              <Coins01 size={20} strokeWidth={1.5} />
+            </div>
+            <div className="wallet-info">
+              <span className="wallet-label">
+                {locale === 'fa' ? 'موجودی توکن / کردیت' : 'Available Token Balance'}
+              </span>
+              <span className="wallet-amount">{walletBalance.toLocaleString()} {rateCard?.currency || 'IRR'}</span>
+            </div>
+          </div>
+        </div>
+      </SettingsSection>
 
       <SettingsSection title={locale === 'fa' ? 'پلن جاری' : 'Active Plan'}>
         <div className="plan-card">
           <div className="plan-badge-row">
-            <span className="plan-name">Studio Pro</span>
+            <span className="plan-name">{planName}</span>
             <span className="plan-active-tag">
               <Check01 size={12} strokeWidth={2.4} />
               <span>{locale === 'fa' ? 'فعال' : 'Active'}</span>
@@ -36,13 +69,21 @@ export default function BillingPanel({ onShowToast }: BillingPanelProps) {
           </div>
 
           <p className="plan-description">
-            {locale === 'fa'
-              ? 'دسترسی نامحدود به بوم بی‌نهایت، ایجنت استودیو، ۴ مدل تولید تصویر و ۱۰ گیگابایت حافظه ابری.'
-              : 'Unlimited infinite canvas, agent studio, 4 AI model integrations, and 10GB cloud asset storage.'}
+            {tier === 'ENTERPRISE'
+              ? locale === 'fa'
+                ? 'دسترسی سازمانی نامحدود، پردازش اختصاصی H100 و قرارداد SLA.'
+                : 'Enterprise cluster access, dedicated H100 capacity, and custom SLA.'
+              : tier === 'PRO'
+              ? locale === 'fa'
+                ? 'دسترسی کامل به بوم بی‌نهایت، ایجنت استودیو، ۴ مدل تولید تصویر و ۱۰ گیگابایت حافظه ابری.'
+                : 'Unlimited infinite canvas, agent studio, 4 AI model integrations, and 10GB cloud asset storage.'
+              : locale === 'fa'
+              ? 'پلن پایه رایگان با دسترسی محدود به ابزارهای استاندارد.'
+              : 'Free starter tier with standard tool access.'}
           </p>
 
           <div className="plan-price-row">
-            <span className="plan-price">$29</span>
+            <span className="plan-price">{planPrice}</span>
             <span className="plan-period">/ {locale === 'fa' ? 'ماهانه' : 'month'}</span>
           </div>
 
@@ -53,7 +94,9 @@ export default function BillingPanel({ onShowToast }: BillingPanelProps) {
               size="sm"
               onClick={() => onShowToast(locale === 'fa' ? 'به صفحه ارتقا هدایت می‌شوید' : 'Navigating to upgrade')}
             >
-              {locale === 'fa' ? 'ارتقا به پلن سازمانی' : 'Upgrade to Enterprise'}
+              {tier === 'ENTERPRISE'
+                ? locale === 'fa' ? 'مدیریت اشتراک سازمانی' : 'Manage Enterprise Subscription'
+                : locale === 'fa' ? 'ارتقا به پلن بالاتر' : 'Upgrade Plan'}
             </LemmoButton>
           </div>
         </div>
@@ -86,6 +129,50 @@ export default function BillingPanel({ onShowToast }: BillingPanelProps) {
       <style jsx>{`
         .panel-container {
           width: 100%;
+        }
+
+        .wallet-card {
+          padding: var(--lemmo-space-400, 16px) var(--lemmo-space-500, 20px);
+          background: var(--lemmo-surface-primary-background, #1c1e20);
+          border: var(--lemmo-stroke-thin, 1px) solid var(--lemmo-border-default, rgba(255, 255, 255, 0.15));
+          border-radius: var(--lemmo-radius-card, 12px);
+          margin-bottom: var(--lemmo-space-400, 16px);
+        }
+
+        .wallet-header {
+          display: flex;
+          align-items: center;
+          gap: var(--lemmo-gap-3, 12px);
+        }
+
+        .wallet-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: var(--lemmo-radius-200, 8px);
+          background: color-mix(in srgb, var(--lemmo-surface-brand-background, #d1fe17) 12%, transparent);
+          color: var(--lemmo-surface-brand-background, #d1fe17);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .wallet-info {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .wallet-label {
+          font-size: var(--lemmo-type-size-050, 0.75rem);
+          color: var(--lemmo-text-muted, #898a8b);
+        }
+
+        .wallet-amount {
+          font-family: var(--lemmo-font-heading, inherit);
+          font-size: var(--lemmo-type-size-400, 1.125rem);
+          font-weight: var(--lemmo-font-weight-bold, 700);
+          color: var(--lemmo-surface-brand-background, #d1fe17);
         }
 
         .plan-card {

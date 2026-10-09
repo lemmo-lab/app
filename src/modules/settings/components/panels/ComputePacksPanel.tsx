@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flash, Image03, Film01 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
+import { sdk } from '@/sdk';
 import SettingsHeader from '../SettingsHeader';
 import SettingsSection from '../SettingsSection';
 import LemmoButton from '../LemmoButton';
@@ -15,6 +16,15 @@ export default function ComputePacksPanel({
   onShowToast,
 }: ComputePacksPanelProps) {
   const { locale } = useUiStore();
+  const [rateCard, setRateCard] = useState<import('@/sdk').PricingRateCard | null>(null);
+
+  useEffect(() => {
+    sdk.quota?.getPricing()
+      .then((pricing) => setRateCard(pricing))
+      .catch((err) => console.error('Failed to load quota pricing:', err));
+  }, []);
+
+  const currency = rateCard?.currency || 'IRR';
 
   const packs = [
     {
@@ -24,7 +34,7 @@ export default function ComputePacksPanel({
       descFa: 'اولویت صف پردازش روی پردازنده‌های H100 بدون وقفه.',
       descEn: 'Zero-wait priority queue on NVIDIA H100 clusters.',
       quota: '1,000 credits',
-      price: '$12',
+      price: currency === 'IRR' ? '۵۰۰,۰۰۰ ریال' : '$12',
       icon: <Flash size={18} strokeWidth={1.5} />,
     },
     {
@@ -34,7 +44,7 @@ export default function ComputePacksPanel({
       descFa: 'تبدیل تصاویر به رزولوشن 4K با حفظ کامل تکسچر و جزئیات.',
       descEn: 'Neural texture preservation upscaling up to 3840x2160.',
       quota: '250 upscales',
-      price: '$18',
+      price: currency === 'IRR' ? '۷۵۰,۰۰۰ ریال' : '$18',
       icon: <Image03 size={18} strokeWidth={1.5} />,
     },
     {
@@ -44,7 +54,7 @@ export default function ComputePacksPanel({
       descFa: 'متحرک‌سازی فریم‌های ایستا با مدل‌های SVD و انیمیشن پیوسته.',
       descEn: 'Cinematic video synthesis from canvas prompts.',
       quota: '60 video clips',
-      price: '$25',
+      price: currency === 'IRR' ? '۱,۲۰۰,۰۰۰ ریال' : '$25',
       icon: <Film01 size={18} strokeWidth={1.5} />,
     },
   ];

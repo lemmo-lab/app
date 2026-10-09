@@ -3,6 +3,7 @@
 import React from 'react';
 import { LayersThree, Users01, Database01, AiCpu } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
+import { useStudioContext } from '@/shared/providers/StudioContextProvider';
 import SettingsHeader from '../SettingsHeader';
 import SettingsSection from '../SettingsSection';
 
@@ -13,12 +14,16 @@ export interface OverviewPanelProps {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function OverviewPanel(_props: OverviewPanelProps) {
   const { locale } = useUiStore();
+  const { activeWorkspace, context } = useStudioContext();
+
+  const tier = context?.entitlements?.tier || 'FREE';
+  const tierDisplay = tier === 'ENTERPRISE' ? 'Studio Enterprise' : tier === 'PRO' ? 'Studio Pro' : 'Studio Free';
 
   const metrics = [
     {
       labelFa: 'اعضای فعال',
       labelEn: 'Active Collaborators',
-      val: '3',
+      val: activeWorkspace?.role === 'PERSONAL' ? '1' : '3',
       icon: <Users01 size={18} strokeWidth={1.5} />,
     },
     {
@@ -36,7 +41,7 @@ export default function OverviewPanel(_props: OverviewPanelProps) {
     {
       labelFa: 'لایسنس و سطح دسترسی',
       labelEn: 'Workspace Tier',
-      val: 'Studio Pro',
+      val: tierDisplay,
       icon: <LayersThree size={18} strokeWidth={1.5} />,
     },
   ];
@@ -74,19 +79,19 @@ export default function OverviewPanel(_props: OverviewPanelProps) {
             <span className="info-item-label">
               {locale === 'fa' ? 'نام فضای کاری' : 'Workspace Name'}
             </span>
-            <span className="info-item-val">Lemmo Design Studio</span>
+            <span className="info-item-val">{activeWorkspace?.name || 'Default Workspace'}</span>
           </div>
           <div className="info-item-row">
             <span className="info-item-label">
               {locale === 'fa' ? 'شناسه یکتا (ID)' : 'Workspace ID'}
             </span>
-            <code className="info-item-code">ws_lemmo_92140a</code>
+            <code className="info-item-code">{activeWorkspace?.id || 'ws_default'}</code>
           </div>
           <div className="info-item-row">
             <span className="info-item-label">
-              {locale === 'fa' ? 'تاریخ تأسیس' : 'Created Date'}
+              {locale === 'fa' ? 'نوع فضای کاری' : 'Workspace Type'}
             </span>
-            <span className="info-item-val">2026-01-14</span>
+            <span className="info-item-val">{activeWorkspace?.type || 'PERSONAL'}</span>
           </div>
         </div>
       </SettingsSection>

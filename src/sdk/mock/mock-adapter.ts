@@ -133,6 +133,71 @@ export const mockSdkAdapter: SdkClient = {
         role: 'OWNER',
       };
     },
+    get: async (id: string) => {
+      await delay(150);
+      return {
+        id,
+        name: 'Demo Workspace',
+        type: 'PERSONAL',
+        role: 'OWNER',
+      };
+    },
+    update: async (id: string, input: { name?: string; slug?: string }) => {
+      await delay(200);
+      return {
+        id,
+        name: input.name || 'Demo Workspace',
+        type: 'PERSONAL',
+        role: 'OWNER',
+      };
+    },
+    getMembers: async () => {
+      await delay(150);
+      return [
+        {
+          id: 'usr-1',
+          name: 'Arash Rad',
+          email: 'arash@lemmo.art',
+          role: 'Owner',
+          initials: 'AR',
+          status: 'Active',
+        },
+        {
+          id: 'usr-2',
+          name: 'Sara Tehrani',
+          email: 'sara@lemmo.art',
+          role: 'Admin',
+          initials: 'ST',
+          status: 'Active',
+        },
+      ];
+    },
+    inviteMember: async () => {
+      await delay(200);
+    },
+    removeMember: async () => {
+      await delay(200);
+    },
+    updateMemberRole: async () => {
+      await delay(200);
+    },
+    getSettings: async () => {
+      await delay(150);
+      return {
+        defaultView: 'grid',
+        autoSave: 'instant',
+        retention: '90d',
+        publicLinks: 'enabled',
+        modelOptOut: false,
+        allowedModels: ['flux-schnell', 'flux-dev'],
+        requireAdminApproval: false,
+        defaultResolution: '1024x1024',
+      };
+    },
+    updateSettings: async (_wsId, settings) => {
+      await delay(200);
+      return settings;
+    },
   },
 
   // ================================================================ //
@@ -365,12 +430,41 @@ export const mockSdkAdapter: SdkClient = {
   },
 
   // ================================================================ //
+  // QUOTA & PRICING                                                   //
+  // ================================================================ //
+  quota: {
+    getPricing: async () => {
+      await delay(150);
+      return {
+        version: '1.0.0',
+        currency: 'IRR',
+        tools: {
+          'flux-schnell': { cost_units: 10, type: 'per_image' },
+          'flux-dev': { cost_units: 25, type: 'per_image' },
+          'sdxl': { cost_units: 15, type: 'per_image' },
+        },
+      };
+    },
+  },
+
+  // ================================================================ //
   // USER                                                              //
   // ================================================================ //
   user: {
     getProfile: async () => {
       await delay(200);
       return { ...MOCK_USER };
+    },
+
+    updateProfile: async (input) => {
+      await delay(200);
+      if (input.displayName) MOCK_USER.name = input.displayName;
+      if (input.avatarUrl) MOCK_USER.avatarUrl = input.avatarUrl;
+      return {
+        ...MOCK_USER,
+        handle: input.handle || 'demo-user',
+        bio: input.bio || '',
+      };
     },
 
     getBillingInfo: async () => {

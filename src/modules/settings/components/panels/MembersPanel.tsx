@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus01, Trash01, Shield01 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
+import { useStudioContext } from '@/shared/providers/StudioContextProvider';
+import { sdk } from '@/sdk';
 import SettingsHeader from '../SettingsHeader';
 import SettingsSection from '../SettingsSection';
 import SettingsRow from '../SettingsRow';
@@ -17,55 +19,144 @@ export interface MembersPanelProps {
 
 export default function MembersPanel({ onShowToast }: MembersPanelProps) {
   const { locale } = useUiStore();
+  const { activeWorkspace, user } = useStudioContext();
+
+  const isOwnerOrAdmin =
+    activeWorkspace?.role === 'OWNER' || activeWorkspace?.role === 'ADMIN';
 
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<'Admin' | 'Editor' | 'Viewer'>('Editor');
+  const [membersList, setMembersList] = useState<WorkspaceMember[]>([]);
+  const [loading] = useState(false);
+  const [inviting, setInviting] = useState(false);
 
-  const [membersList, setMembersList] = useState<WorkspaceMember[]>([
-    {
-      id: 'm-1',
-      name: locale === 'fa' ? 'الکس مورگان (شما)' : 'Alex Morgan (You)',
-      email: 'alex@example.com',
-      role: 'Owner',
-      initials: 'AM',
-    },
-    {
-      id: 'm-2',
-      name: locale === 'fa' ? 'سارا چن' : 'Sarah Chen',
-      email: 'sarah.chen@studio.co',
-      role: 'Admin',
-      initials: 'SC',
-    },
-    {
-      id: 'm-3',
-      name: locale === 'fa' ? 'مارکوس ونس' : 'Marcus Vance',
-      email: 'm.vance@studio.co',
-      role: 'Editor',
-      initials: 'MV',
-    },
-  ]);
+  useEffect(() => {
+    let isCancelled = false;
+    const wsId = activeWorkspace?.id;
+    if (!wsId) return;
 
-  const handleInvite = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inviteEmail.trim()) return;
+    sdk.workspaces.getMembers?.(wsId)
+      .then((members) => {
+        if (isCancelled || !members) return;
+        setMembersList(
+          members.map((m) => {
+            const isMe = m.id === user?.id;
+            return {
+              id: m.id,
+              name: isMe
+                ? `${m.name} (${locale === 'fa' ? 'شما' : 'You'})`
+                : m.name,
+              email: m.email,
+              role: m.role as 'Owner' | 'Admin' | 'Editor' | 'Viewer',
+              initials:
+                m.initials ||
+                m.name
+                  .trim()
+                  .split(/\s+/)
+                  .map((p) => p[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase() ||
+                'LM',
+            };
+          })
+        );
+      })
+      .catch((err) => {
+        console.error('Failed to load members:', err);
+      });
 
-    const emailParts = inviteEmail.trim().split('@')[0];
-    const newMember: WorkspaceMember = {
-      id: `m-${Date.now()}`,
-      name: emailParts,
-      email: inviteEmail.trim(),
-      role: inviteRole,
-      initials: emailParts.slice(0, 2).toUpperCase(),
+    return () => {
+      isCancelled = true;
     };
+  }, [activeWorkspace?.id, user?.id, locale]);
 
-    setMembersList([...membersList, newMember]);
-    setInviteEmail('');
-    onShowToast(locale === 'fa' ? 'دعوت‌نامه با موفقیت ارسال شد' : 'Invite sent successfully');
+  const handleInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim() || !activeWorkspace?.id) return;
+
+    if (!isOwnerOrAdmin) {
+      onShowToast(
+        locale === 'fa'
+          ? 'تنها مالک یا مدیران مجاز به ارسال دعوت‌نامه هستند.'
+          : 'Only owners or admins may invite members.'
+      );
+      return;
+    }
+
+    try {
+      setInviting(true);
+      await sdk.workspaces.inviteMember?.(
+        activeWorkspace.id,
+        inviteEmail.trim(),
+        inviteRole.toUpperCase()
+      );
+      const emailParts = inviteEmail.trim().split('@')[0];
+      const newMember: WorkspaceMember = {
+        id: `m-${Date.now()}`,
+        name: emailParts,
+        email: inviteEmail.trim(),
+        role: inviteRole,
+        initials: emailParts.slice(0, 2).toUpperCase(),
+      };
+      setMembersList((prev) => [...prev, newMember]);
+      setInviteEmail('');
+      onShowToast(locale === 'fa' ? 'دعوت‌نامه با موفقیت ارسال شد' : 'Invite sent successfully');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Invite failed';
+      onShowToast(locale === 'fa' ? `خطا در ارسال دعوت: ${msg}` : `Invite failed: ${msg}`);
+    } finally {
+      setInviting(false);
+    }
   };
 
-  const handleRemove = (id: string) => {
-    setMembersList(membersList.filter((m) => m.id !== id));
-    onShowToast(locale === 'fa' ? 'عضو از فضای کاری حذف شد' : 'Member removed');
+  const handleRemove = async (memberId: string) => {
+    if (!activeWorkspace?.id) return;
+
+    if (!isOwnerOrAdmin) {
+      onShowToast(
+        locale === 'fa'
+          ? 'تنها مالک یا مدیران مجاز به حذف اعضا هستند.'
+          : 'Only owners or admins may remove members.'
+      );
+      return;
+    }
+
+    try {
+      await sdk.workspaces.removeMember?.(activeWorkspace.id, memberId);
+      setMembersList((prev) => prev.filter((m) => m.id !== memberId));
+      onShowToast(locale === 'fa' ? 'عضو از فضای کاری حذف شد' : 'Member removed');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Remove failed';
+      onShowToast(locale === 'fa' ? `خطا در حذف عضو: ${msg}` : `Remove failed: ${msg}`);
+    }
+  };
+
+  const handleRoleChange = async (memberId: string, newRole: string) => {
+    if (!activeWorkspace?.id) return;
+    if (!isOwnerOrAdmin) {
+      onShowToast(
+        locale === 'fa'
+          ? 'تنها مالک یا مدیران مجاز به تغییر نقش هستند.'
+          : 'Only owners or admins may change roles.'
+      );
+      return;
+    }
+
+    try {
+      await sdk.workspaces.updateMemberRole?.(activeWorkspace.id, memberId, newRole.toUpperCase());
+      setMembersList((prev) =>
+        prev.map((m) =>
+          m.id === memberId
+            ? { ...m, role: newRole as 'Owner' | 'Admin' | 'Editor' | 'Viewer' }
+            : m
+        )
+      );
+      onShowToast(locale === 'fa' ? 'نقش عضو به‌روزرسانی شد' : 'Role updated successfully');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Role update failed';
+      onShowToast(locale === 'fa' ? `خطا در تغییر نقش: ${msg}` : `Role update failed: ${msg}`);
+    }
   };
 
   return (
@@ -113,47 +204,76 @@ export default function MembersPanel({ onShowToast }: MembersPanelProps) {
             <LemmoButton
               type="submit"
               variant="primary"
+              disabled={inviting}
               icon={<Plus01 size={14} strokeWidth={2} />}
             >
-              {locale === 'fa' ? 'ارسال دعوت‌نامه' : 'Send Invite'}
+              {inviting
+                ? locale === 'fa'
+                  ? 'در حال ارسال...'
+                  : 'Sending...'
+                : locale === 'fa'
+                ? 'ارسال دعوت‌نامه'
+                : 'Send Invite'}
             </LemmoButton>
           </div>
         </form>
       </SettingsSection>
 
       <SettingsSection title={locale === 'fa' ? 'اعضای فعال' : 'Active Collaborators'}>
-        {membersList.map((m) => (
-          <div key={m.id} className="member-row">
-            <div className="member-meta">
-              <div className="member-avatar-disc">
-                <span>{m.initials}</span>
-              </div>
-              <div className="member-text-info">
-                <span className="member-name">{m.name}</span>
-                <span className="member-email">{m.email}</span>
-              </div>
-            </div>
-
-            <div className="member-actions">
-              <span className={`role-badge ${m.role.toLowerCase()}`}>
-                {m.role === 'Owner' && <Shield01 size={11} strokeWidth={2} />}
-                <span>{m.role}</span>
-              </span>
-
-              {m.role !== 'Owner' && (
-                <LemmoButton
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemove(m.id)}
-                  title={locale === 'fa' ? 'حذف عضو' : 'Remove member'}
-                >
-                  <Trash01 size={14} strokeWidth={1.8} />
-                </LemmoButton>
-              )}
-            </div>
+        {loading ? (
+          <div className="members-loading-hint">
+            {locale === 'fa' ? 'در حال بارگذاری اعضا...' : 'Loading members...'}
           </div>
-        ))}
+        ) : membersList.length === 0 ? (
+          <div className="members-loading-hint">
+            {locale === 'fa' ? 'هیچ عضوی یافت نشد.' : 'No members found.'}
+          </div>
+        ) : (
+          membersList.map((m) => (
+            <div key={m.id} className="member-row">
+              <div className="member-meta">
+                <div className="member-avatar-disc">
+                  <span>{m.initials}</span>
+                </div>
+                <div className="member-text-info">
+                  <span className="member-name">{m.name}</span>
+                  <span className="member-email">{m.email}</span>
+                </div>
+              </div>
+
+              <div className="member-actions">
+                {m.role === 'Owner' || !isOwnerOrAdmin ? (
+                  <span className={`role-badge ${m.role.toLowerCase()}`}>
+                    {m.role === 'Owner' && <Shield01 size={11} strokeWidth={2} />}
+                    <span>{m.role}</span>
+                  </span>
+                ) : (
+                  <select
+                    className="role-select"
+                    value={m.role}
+                    onChange={(e) => void handleRoleChange(m.id, e.target.value)}
+                  >
+                    <option value="Admin">Admin</option>
+                    <option value="Editor">Editor</option>
+                    <option value="Viewer">Viewer</option>
+                  </select>
+                )}
+
+                {m.role !== 'Owner' && isOwnerOrAdmin && (
+                  <LemmoButton
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemove(m.id)}
+                    title={locale === 'fa' ? 'حذف عضو' : 'Remove member'}
+                  >
+                    <Trash01 size={14} strokeWidth={1.8} />
+                  </LemmoButton>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </SettingsSection>
 
       <style jsx>{`

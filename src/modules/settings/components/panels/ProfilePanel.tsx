@@ -2,6 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import { useUiStore } from '@/stores/uiStore';
+import { useStudioContext } from '@/shared/providers/StudioContextProvider';
+import { sdk } from '@/sdk';
 import SettingsHeader from '../SettingsHeader';
 import SettingsSection from '../SettingsSection';
 import SettingsRow from '../SettingsRow';
@@ -14,24 +16,32 @@ export interface ProfilePanelProps {
 
 export default function ProfilePanel({ onShowToast }: ProfilePanelProps) {
   const { locale } = useUiStore();
+  const { user, retry } = useStudioContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [displayName, setDisplayName] = useState(
-    locale === 'fa' ? 'بهروز احمدی' : 'Alex Morgan'
-  );
-  const [username, setUsername] = useState('alexmorgan');
+  const [prevUserId, setPrevUserId] = useState(user?.id);
+  const [displayName, setDisplayName] = useState(user?.display_name || user?.handle || '');
+  const [username, setUsername] = useState(user?.handle || '');
   const [bio, setBio] = useState(
-    locale === 'fa'
-      ? 'طراح محصول و ابزارهای خلاقانه هوش مصنوعی در استودیو لیمو.'
-      : 'Product designer building calm, considered tools. Currently exploring generative imagery.'
+    (user?.preferences as { bio?: string } | undefined)?.bio || ''
   );
-  const [xHandle, setXHandle] = useState('alexmorgan');
-  const [githubHandle, setGithubHandle] = useState('alex-designer');
-  const [instagramHandle, setInstagramHandle] = useState('alex.design');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [xHandle, setXHandle] = useState('');
+  const [githubHandle, setGithubHandle] = useState('');
+  const [instagramHandle, setInstagramHandle] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatar_url || null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Synchronize state when user changes (e.g. after retry or user switch)
+  if (user?.id !== prevUserId) {
+    setPrevUserId(user?.id);
+    setDisplayName(user?.display_name || user?.handle || '');
+    setUsername(user?.handle || '');
+    setAvatarUrl(user?.avatar_url || null);
+    setBio((user?.preferences as { bio?: string } | undefined)?.bio || '');
+  }
 
   const initials = (() => {
-    const parts = displayName.trim().split(/\s+/).filter(Boolean);
+    const nameToUse = displayName || username || 'User';
+    const parts = nameToUse.trim().split(/\s+/).filter(Boolean);
     const s = (parts[0] ? parts[0][0] : '') + (parts[1] ? parts[1][0] : '');
     return s.toUpperCase() || 'LM';
   })();
@@ -53,9 +63,24 @@ export default function ProfilePanel({ onShowToast }: ProfilePanelProps) {
     onShowToast(locale === 'fa' ? 'تصویر نمایه انتخاب شد' : 'Avatar selected');
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    onShowToast(locale === 'fa' ? 'پروفایل با موفقیت ذخیره شد' : 'Profile updated successfully');
+    setIsSaving(true);
+    try {
+      await sdk.user.updateProfile({
+        displayName: displayName.trim(),
+        handle: username.trim(),
+        avatarUrl: avatarUrl || undefined,
+        bio: bio.trim(),
+      });
+      await retry();
+      onShowToast(locale === 'fa' ? 'پروفایل با موفقیت ذخیره شد' : 'Profile updated successfully');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to update profile';
+      onShowToast(locale === 'fa' ? `خطا در ذخیره پروفایل: ${msg}` : `Update failed: ${msg}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -189,8 +214,14 @@ export default function ProfilePanel({ onShowToast }: ProfilePanelProps) {
       </SettingsSection>
 
       <div className="panel-actions-footer">
-        <LemmoButton type="submit" variant="primary">
-          {locale === 'fa' ? 'ذخیره تغییرات' : 'Save Changes'}
+        <LemmoButton type="submit" variant="primary" disabled={isSaving}>
+          {isSaving
+            ? locale === 'fa'
+              ? 'در حال ذخیره...'
+              : 'Saving...'
+            : locale === 'fa'
+            ? 'ذخیره تغییرات'
+            : 'Save Changes'}
         </LemmoButton>
       </div>
 

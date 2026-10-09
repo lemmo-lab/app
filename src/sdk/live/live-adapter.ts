@@ -52,7 +52,7 @@ import {
   type GetFeed200,
 } from './generated';
 
-import { onSignedOut } from './transport';
+import { onSignedOut, customFetch } from './transport';
 
 // Active SSE subscriptions tracking for automatic cleanup on session change
 const activeStreams = new Set<EventSource>();
@@ -185,6 +185,67 @@ export const liveSdkAdapter: SdkClient = {
         type: data.type,
         role: 'OWNER',
       };
+    },
+
+    get: async (id: string): Promise<Workspace> => {
+      const res = await customFetch<{ workspace: Workspace }>(`/api/v1/workspaces/${encodeURIComponent(id)}`);
+      return res.workspace;
+    },
+
+    update: async (id: string, input: { name?: string; slug?: string }): Promise<Workspace> => {
+      const res = await customFetch<{ workspace: Workspace }>(`/api/v1/workspaces/${encodeURIComponent(id)}`, {
+        method: 'PUT',
+        body: JSON.stringify(input),
+      });
+      return res.workspace;
+    },
+
+    getMembers: async (workspaceId: string): Promise<import('../types').WorkspaceMemberInfo[]> => {
+      const res = await customFetch<{ members: import('../types').WorkspaceMemberInfo[] }>(
+        `/api/v1/workspaces/${encodeURIComponent(workspaceId)}/members`
+      );
+      return res.members || [];
+    },
+
+    inviteMember: async (workspaceId: string, email: string, role: string): Promise<void> => {
+      await customFetch(`/api/v1/workspaces/${encodeURIComponent(workspaceId)}/members/invite`, {
+        method: 'POST',
+        body: JSON.stringify({ email, role }),
+      });
+    },
+
+    removeMember: async (workspaceId: string, memberId: string): Promise<void> => {
+      await customFetch(`/api/v1/workspaces/${encodeURIComponent(workspaceId)}/members/${encodeURIComponent(memberId)}`, {
+        method: 'DELETE',
+      });
+    },
+
+    updateMemberRole: async (workspaceId: string, memberId: string, role: string): Promise<void> => {
+      await customFetch(`/api/v1/workspaces/${encodeURIComponent(workspaceId)}/members/${encodeURIComponent(memberId)}/role`, {
+        method: 'PUT',
+        body: JSON.stringify({ role }),
+      });
+    },
+
+    getSettings: async (workspaceId: string): Promise<import('../types').WorkspaceSettingsData> => {
+      const res = await customFetch<{ settings: import('../types').WorkspaceSettingsData }>(
+        `/api/v1/workspaces/${encodeURIComponent(workspaceId)}/settings`
+      );
+      return res.settings || {};
+    },
+
+    updateSettings: async (
+      workspaceId: string,
+      settings: import('../types').WorkspaceSettingsData
+    ): Promise<import('../types').WorkspaceSettingsData> => {
+      const res = await customFetch<{ settings: import('../types').WorkspaceSettingsData }>(
+        `/api/v1/workspaces/${encodeURIComponent(workspaceId)}/settings`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({ settings }),
+        }
+      );
+      return res.settings || {};
     },
   },
 
@@ -456,6 +517,18 @@ export const liveSdkAdapter: SdkClient = {
   },
 
   // ================================================================ //
+  // QUOTA & PRICING                                                   //
+  // ================================================================ //
+  quota: {
+    getPricing: async (): Promise<import('../types').PricingRateCard> => {
+      const res = await customFetch<{ pricing: import('../types').PricingRateCard }>('/api/v1/quota/pricing');
+      return (res as unknown as import('../types').PricingRateCard)?.version
+        ? (res as unknown as import('../types').PricingRateCard)
+        : res.pricing || { version: '1.0.0', currency: 'IRR', tools: {} };
+    },
+  },
+
+  // ================================================================ //
   // USER & BILLING                                                    //
   // ================================================================ //
   user: {
@@ -466,6 +539,49 @@ export const liveSdkAdapter: SdkClient = {
         name: ctx.user.display_name || ctx.user.handle || 'User',
         email: ctx.user.email,
         avatarUrl: ctx.user.avatar_url,
+        handle: ctx.user.handle,
+        bio: (ctx.user.preferences as { bio?: string } | undefined)?.bio,
+      };
+    },
+
+    updateProfile: async (input: import('../types').UpdateProfileInput): Promise<UserProfile> => {
+      const ctx = await liveSdkAdapter.context.get();
+      const userId = ctx.user.id;
+      if (!userId) {
+        throw new Error('Unauthenticated user cannot update profile');
+      }
+
+      // 1. Update core profile fields (display_name, handle, avatar_url)
+      if (input.displayName !== undefined || input.handle !== undefined || input.avatarUrl !== undefined) {
+        await customFetch(`/api/v1/users/${encodeURIComponent(userId)}/profile`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            display_name: input.displayName ?? ctx.user.display_name,
+            handle: input.handle ?? ctx.user.handle,
+            avatar_url: input.avatarUrl ?? ctx.user.avatar_url,
+          }),
+        });
+      }
+
+      // 2. Update bio if provided in preferences
+      if (input.bio !== undefined) {
+        const existingPrefs = (ctx.user.preferences as Record<string, unknown>) || {};
+        await customFetch(`/api/v1/users/${encodeURIComponent(userId)}/preferences`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            ...existingPrefs,
+            bio: input.bio,
+          }),
+        });
+      }
+
+      return {
+        id: userId,
+        name: input.displayName ?? ctx.user.display_name ?? 'User',
+        email: ctx.user.email,
+        handle: input.handle ?? ctx.user.handle,
+        avatarUrl: input.avatarUrl ?? ctx.user.avatar_url,
+        bio: input.bio ?? (ctx.user.preferences as { bio?: string } | undefined)?.bio,
       };
     },
 
