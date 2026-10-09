@@ -44,18 +44,18 @@ function mapSdkMessageToAgentMessage(
   }
 
   // Assistant response
-  const mediaUrl =
-    msg.attachments?.[0]?.url ||
-    'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80';
+  const mediaUrl = msg.attachments?.[0]?.url;
   const aspect =
     (msg.attachments?.[0]?.aspectRatio as AgentAspectRatio) ||
     config?.aspectRatio ||
     '3:4';
+  const firstJob = msg.jobs?.[0];
 
   return {
     id: msg.id,
     sender: 'assistant',
     timestamp: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    text: msg.content,
     resultMediaUrl: mediaUrl,
     contentType: config?.contentType || 'image',
     aspectRatio: aspect,
@@ -64,6 +64,9 @@ function mapSdkMessageToAgentMessage(
     generationDurationSec: 2.8,
     creditsUsed: (config?.batchCount || 1) * 5,
     isFavorite: false,
+    status: (msg.status as AgentChatMessageItem['status']) || 'completed',
+    jobId: firstJob?.jobId || msg.jobId,
+    toolId: firstJob?.toolId,
   };
 }
 
@@ -132,18 +135,109 @@ export function AgentChatView({
     setReferences((prev) => prev.filter((r) => r.id !== id));
   };
 
+  const [activeSubscription, setActiveSubscription] = useState<(() => void) | null>(null);
+
+  // Cleanup active SSE subscription on unmount
+  useEffect(() => {
+    return () => {
+      if (activeSubscription) {
+        activeSubscription();
+      }
+    };
+  }, [activeSubscription]);
+
   // 3. Send message mutation via sdk.chat.sendMessage
   const sendMessageMutation = useMutation({
     mutationFn: async ({ threadId, content }: { threadId: string | null; content: string }) => {
       return sdk.chat.sendMessage(threadId, content);
     },
-    onSuccess: (assistantMsg) => {
-      const assistantItem = mapSdkMessageToAgentMessage(assistantMsg, config);
+    onSuccess: (res) => {
+      const { threadId, assistantMessageId } = res;
+      const tid = threadId || activeThreadId;
+
+      // Add placeholder assistant message in local state
+      const assistantItem: AgentChatMessageItem = {
+        id: assistantMessageId,
+        sender: 'assistant',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: '',
+        status: 'streaming',
+        contentType: config.contentType,
+        aspectRatio: config.aspectRatio,
+        modelUsed: config.modelId === 'flux-1-dev' ? 'FLUX.1 [dev]' : 'Lemmo Realism v2',
+        seed: Math.floor(Math.random() * 900000000) + 100000000,
+        generationDurationSec: 2.8,
+        creditsUsed: (config.batchCount || 1) * 5,
+        isFavorite: false,
+      };
+
       setLocalMessages((prev) => ({
         ...prev,
-        [activeThreadId]: [...(prev[activeThreadId] || []), assistantItem],
+        [tid]: [...(prev[tid] || []), assistantItem],
       }));
-      queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'chat-thread', activeThreadId] });
+
+      // Connect to SSE stream
+      const unsubscribe = sdk.chat.subscribe(tid, assistantMessageId, (event) => {
+        if (event.type === 'token') {
+          setLocalMessages((prev) => {
+            const currentList = prev[tid] || [];
+            const updated = currentList.map((m) => {
+              if (m.id === assistantMessageId) {
+                return { ...m, text: (m.text || '') + (event.token || ''), status: 'streaming' as const };
+              }
+              return m;
+            });
+            return { ...prev, [tid]: updated };
+          });
+        } else if (event.type === 'job_dispatched') {
+          setLocalMessages((prev) => {
+            const currentList = prev[tid] || [];
+            const updated = currentList.map((m) => {
+              if (m.id === assistantMessageId) {
+                return { ...m, jobId: event.jobId, toolId: event.toolId };
+              }
+              return m;
+            });
+            return { ...prev, [tid]: updated };
+          });
+        } else if (event.type === 'message_done') {
+          setLocalMessages((prev) => {
+            const currentList = prev[tid] || [];
+            const updated = currentList.map((m) => {
+              if (m.id === assistantMessageId) {
+                return { ...m, status: 'completed' as const };
+              }
+              return m;
+            });
+            return { ...prev, [tid]: updated };
+          });
+          queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'chat-thread', tid] });
+        } else if (event.type === 'message_failed') {
+          setLocalMessages((prev) => {
+            const currentList = prev[tid] || [];
+            const updated = currentList.map((m) => {
+              if (m.id === assistantMessageId) {
+                return { ...m, status: 'failed' as const, text: m.text || event.error || 'Generation failed' };
+              }
+              return m;
+            });
+            return { ...prev, [tid]: updated };
+          });
+        } else if (event.type === 'message_cancelled') {
+          setLocalMessages((prev) => {
+            const currentList = prev[tid] || [];
+            const updated = currentList.map((m) => {
+              if (m.id === assistantMessageId) {
+                return { ...m, status: 'cancelled' as const };
+              }
+              return m;
+            });
+            return { ...prev, [tid]: updated };
+          });
+        }
+      });
+
+      setActiveSubscription(() => unsubscribe);
     },
   });
 

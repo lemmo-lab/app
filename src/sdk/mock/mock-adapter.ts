@@ -226,24 +226,31 @@ export const mockSdkAdapter: SdkClient = {
   // ================================================================ //
   chat: {
     sendMessage: async (threadId, content) => {
-      await delay(400);
+      await delay(200);
 
       const thread: Thread = threadId
         ? (MOCK_THREADS.find((t) => t.id === threadId) ?? MOCK_THREADS[0])
         : MOCK_THREADS[0];
 
+      const userMsgId = generateId('msg');
+      const assistantMsgId = generateId('msg');
+
       const userMessage: Message = {
-        id: generateId('msg'),
+        id: userMsgId,
         role: 'user',
         content,
         createdAt: Date.now(),
+        threadId: thread.id,
+        status: 'completed',
       };
 
       const assistantMessage: Message = {
-        id: generateId('msg'),
+        id: assistantMsgId,
         role: 'assistant',
         content: `Creative synthesis completed for: "${content.slice(0, 60)}"`,
         createdAt: Date.now() + 100,
+        threadId: thread.id,
+        status: 'completed',
         attachments: [
           {
             id: generateId('ast'),
@@ -259,7 +266,12 @@ export const mockSdkAdapter: SdkClient = {
       thread.messages.push(userMessage, assistantMessage);
       thread.updatedAt = Date.now();
 
-      return assistantMessage;
+      return {
+        threadId: thread.id,
+        userMessageId: userMsgId,
+        assistantMessageId: assistantMsgId,
+        status: 'completed',
+      };
     },
 
     getThreads: async () => {
@@ -272,6 +284,28 @@ export const mockSdkAdapter: SdkClient = {
       const thread = MOCK_THREADS.find((t) => t.id === threadId);
       if (!thread) throw new Error(`Thread ${threadId} not found`);
       return { ...thread };
+    },
+
+    subscribe: (threadId, messageId, onEvent) => {
+      let cancelled = false;
+      setTimeout(() => {
+        if (cancelled) return;
+        onEvent({
+          type: 'token',
+          threadId,
+          messageId,
+          token: 'Mock generation completed.',
+        });
+        onEvent({
+          type: 'message_done',
+          threadId,
+          messageId,
+        });
+      }, 300);
+
+      return () => {
+        cancelled = true;
+      };
     },
   },
 

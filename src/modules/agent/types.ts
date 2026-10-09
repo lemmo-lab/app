@@ -52,6 +52,10 @@ export interface AgentChatMessageItem {
   generationDurationSec?: number;
   creditsUsed?: number;
   isFavorite?: boolean;
+  text?: string;
+  status?: 'pending' | 'streaming' | 'completed' | 'failed' | 'cancelled';
+  jobId?: string;
+  toolId?: string;
 }
 
 export interface AgentConversation {

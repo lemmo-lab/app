@@ -98,6 +98,33 @@ export interface Job {
   toolId: string;
 }
 
+export interface MessageJob {
+  jobId: string;
+  toolId: string;
+  toolVersion?: number;
+}
+
+export type SendMessageResponseStatus = typeof SendMessageResponseStatus[keyof typeof SendMessageResponseStatus];
+
+
+export const SendMessageResponseStatus = {
+  pending: 'pending',
+  streaming: 'streaming',
+  awaiting_confirmation: 'awaiting_confirmation',
+  completed: 'completed',
+  failed: 'failed',
+  cancelled: 'cancelled',
+} as const;
+
+export interface SendMessageResponse {
+  assistantMessageId: string;
+  status: SendMessageResponseStatus;
+  threadId: string;
+  userMessageId: string;
+}
+
+export type MessagePartsItem = { [key: string]: unknown };
+
 export type MessageRole = typeof MessageRole[keyof typeof MessageRole];
 
 
@@ -107,12 +134,29 @@ export const MessageRole = {
   system: 'system',
 } as const;
 
+export type MessageStatus = typeof MessageStatus[keyof typeof MessageStatus];
+
+
+export const MessageStatus = {
+  pending: 'pending',
+  streaming: 'streaming',
+  awaiting_confirmation: 'awaiting_confirmation',
+  completed: 'completed',
+  failed: 'failed',
+  cancelled: 'cancelled',
+} as const;
+
 export interface Message {
   content: string;
   createdAt: number;
   id: string;
   jobId?: string;
+  jobs?: MessageJob[];
+  parts?: MessagePartsItem[];
   role: MessageRole;
+  status?: MessageStatus;
+  threadId?: string;
+  updatedAt?: number;
 }
 
 export interface PaginationMeta {
@@ -165,6 +209,8 @@ export interface QuickTool {
 }
 
 export interface Thread {
+  /** @nullable */
+  activeMessageId?: string | null;
   createdAt: number;
   id: string;
   messages: Message[];
@@ -338,10 +384,20 @@ export type AuthVerify200 = {
   user_id: string;
 };
 
+export type SendChatMessageBodyMode = typeof SendChatMessageBodyMode[keyof typeof SendChatMessageBodyMode];
+
+
+export const SendChatMessageBodyMode = {
+  default: 'default',
+  agent: 'agent',
+  workflow: 'workflow',
+} as const;
+
 export type SendChatMessageBody = {
   content: string;
   /** @nullable */
   threadId?: string | null;
+  mode?: SendChatMessageBodyMode;
 };
 
 export type GetContent200 = {
@@ -989,17 +1045,34 @@ return customFetch<authVerifyResponse>(getAuthVerifyUrl(),
 
 
 
-export type sendChatMessageResponse200 = {
-  data: Message
-  status: 200
+export type sendChatMessageResponse202 = {
+  data: SendMessageResponse
+  status: 202
 }
 
-export type sendChatMessageResponseSuccess = (sendChatMessageResponse200) & {
+export type sendChatMessageResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type sendChatMessageResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type sendChatMessageResponse409 = {
+  data: ProblemDetails
+  status: 409
+}
+
+export type sendChatMessageResponseSuccess = (sendChatMessageResponse202) & {
   headers: Headers;
 };
-;
+export type sendChatMessageResponseError = (sendChatMessageResponse400 | sendChatMessageResponse404 | sendChatMessageResponse409) & {
+  headers: Headers;
+};
 
-export type sendChatMessageResponse = (sendChatMessageResponseSuccess)
+export type sendChatMessageResponse = (sendChatMessageResponseSuccess | sendChatMessageResponseError)
 
 export const getSendChatMessageUrl = () => {
 
@@ -1010,7 +1083,7 @@ export const getSendChatMessageUrl = () => {
 }
 
 /**
- * Dispatches a user message to a thread and returns the created message or reply.
+ * Dispatches a user message to a thread and returns 202 Accepted with pending message IDs.
  * @summary Send Chat Message
  */
 export const sendChatMessage = async (sendChatMessageBody: SendChatMessageBody, options?: Parameters<typeof customFetch>[1]): Promise<sendChatMessageResponse> => {
@@ -1082,12 +1155,19 @@ export type getChatThreadResponse200 = {
   status: 200
 }
 
+export type getChatThreadResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
 export type getChatThreadResponseSuccess = (getChatThreadResponse200) & {
   headers: Headers;
 };
-;
+export type getChatThreadResponseError = (getChatThreadResponse404) & {
+  headers: Headers;
+};
 
-export type getChatThreadResponse = (getChatThreadResponseSuccess)
+export type getChatThreadResponse = (getChatThreadResponseSuccess | getChatThreadResponseError)
 
 export const getGetChatThreadUrl = (threadId: string,) => {
 
@@ -1107,6 +1187,98 @@ export const getChatThread = async (threadId: string, options?: Parameters<typeo
   {
     ...options,
     method: 'GET'
+
+
+  }
+);}
+
+
+
+export type streamChatMessageEventsResponse200 = {
+  data: string
+  status: 200
+}
+
+export type streamChatMessageEventsResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type streamChatMessageEventsResponseSuccess = (streamChatMessageEventsResponse200) & {
+  headers: Headers;
+};
+export type streamChatMessageEventsResponseError = (streamChatMessageEventsResponse404) & {
+  headers: Headers;
+};
+
+export type streamChatMessageEventsResponse = (streamChatMessageEventsResponseSuccess | streamChatMessageEventsResponseError)
+
+export const getStreamChatMessageEventsUrl = (threadId: string,
+    messageId: string,) => {
+
+
+
+
+  return `/api/v1/chat/threads/${threadId}/messages/${messageId}/events`
+}
+
+/**
+ * Real-time Server-Sent Events (SSE) stream for a specific assistant message.
+ * @summary Stream Chat Message Events
+ */
+export const streamChatMessageEvents = async (threadId: string,
+    messageId: string, options?: Parameters<typeof customFetch>[1]): Promise<streamChatMessageEventsResponse> => {
+
+  return customFetch<streamChatMessageEventsResponse>(getStreamChatMessageEventsUrl(threadId,messageId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type cancelChatMessageResponse200 = {
+  data: Message
+  status: 200
+}
+
+export type cancelChatMessageResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type cancelChatMessageResponseSuccess = (cancelChatMessageResponse200) & {
+  headers: Headers;
+};
+export type cancelChatMessageResponseError = (cancelChatMessageResponse404) & {
+  headers: Headers;
+};
+
+export type cancelChatMessageResponse = (cancelChatMessageResponseSuccess | cancelChatMessageResponseError)
+
+export const getCancelChatMessageUrl = (threadId: string,
+    messageId: string,) => {
+
+
+
+
+  return `/api/v1/chat/threads/${threadId}/messages/${messageId}/cancel`
+}
+
+/**
+ * Explicitly cancels processing and streaming for an active assistant message.
+ * @summary Cancel Chat Message Processing
+ */
+export const cancelChatMessage = async (threadId: string,
+    messageId: string, options?: Parameters<typeof customFetch>[1]): Promise<cancelChatMessageResponse> => {
+
+  return customFetch<cancelChatMessageResponse>(getCancelChatMessageUrl(threadId,messageId),
+  {
+    ...options,
+    method: 'POST'
 
 
   }

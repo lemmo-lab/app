@@ -108,6 +108,19 @@ export interface ToolManifest {
 // ================================================================== //
 
 export type MessageRole = 'user' | 'assistant' | 'system';
+export type MessageStatus =
+  | 'pending'
+  | 'streaming'
+  | 'awaiting_confirmation'
+  | 'completed'
+  | 'failed'
+  | 'cancelled';
+
+export interface MessageJob {
+  jobId: string;
+  toolId: string;
+  toolVersion?: number;
+}
 
 export interface Message {
   id: string;
@@ -117,6 +130,36 @@ export interface Message {
   attachments?: Asset[];
   /** Associated job ID if this message triggered a tool execution */
   jobId?: string;
+  threadId?: string;
+  status?: MessageStatus;
+  parts?: Array<Record<string, unknown>>;
+  jobs?: MessageJob[];
+}
+
+export interface SendMessageResponse {
+  threadId: string;
+  userMessageId: string;
+  assistantMessageId: string;
+  status: MessageStatus;
+}
+
+export interface ChatEvent {
+  type:
+    | 'token'
+    | 'tool_call'
+    | 'job_dispatched'
+    | 'message_done'
+    | 'message_failed'
+    | 'message_cancelled';
+  threadId?: string;
+  messageId?: string;
+  token?: string;
+  jobId?: string;
+  toolId?: string;
+  toolVersion?: number;
+  error?: string;
+  data?: Record<string, unknown>;
+  raw?: unknown;
 }
 
 export interface Thread {
@@ -304,9 +347,11 @@ export interface SdkClient {
     subscribe: (jobId: string, onEvent: (event: JobEvent) => void) => () => void;
   };
   chat: {
-    sendMessage: (threadId: string | null, content: string) => Promise<Message>;
+    sendMessage: (threadId: string | null, content: string) => Promise<SendMessageResponse>;
     getThreads: () => Promise<Thread[]>;
     getThread: (threadId: string) => Promise<Thread>;
+    subscribe: (threadId: string, messageId: string, onEvent: (event: ChatEvent) => void) => () => void;
+    cancelMessage?: (threadId: string, messageId: string) => Promise<void>;
   };
   assets: {
     list: () => Promise<Asset[]>;

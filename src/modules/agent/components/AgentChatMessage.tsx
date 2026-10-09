@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Sparks,
@@ -11,7 +11,9 @@ import {
   LayersThree,
   Eye,
   InfoCircle,
+  RefreshCw,
 } from 'synthline/react';
+import { sdk } from '@/sdk';
 import { AgentChatMessageItem } from '../types';
 import { getCommandsFromPrompt, cleanPromptText } from '../constants/agentCommands';
 import { AgentCommandIcon } from './AgentCommandPalette';
@@ -30,6 +32,49 @@ export function AgentChatMessage({
   const [isCopied, setIsCopied] = useState(false);
   const [isFavorited, setIsFavorited] = useState(message.isFavorite || false);
   const [showMeta, setShowMeta] = useState(false);
+  const [jobMediaUrl, setJobMediaUrl] = useState<string | undefined>(undefined);
+  const [jobProgress, setJobProgress] = useState<number>(0);
+  const [jobStatus, setJobStatus] = useState<'idle' | 'running' | 'done' | 'failed'>('idle');
+
+  const mediaUrl = message.resultMediaUrl || jobMediaUrl;
+
+  useEffect(() => {
+    if (!message.jobId || message.resultMediaUrl || jobMediaUrl) return;
+
+    const unsubscribe = sdk.jobs.subscribe(message.jobId, (event) => {
+      setJobStatus('running');
+      if (event.progressPercent !== undefined) {
+        setJobProgress(event.progressPercent);
+      }
+      if (
+        event.status === 'done' ||
+        event.status === 'SUCCEEDED' ||
+        event.type === 'job.terminal'
+      ) {
+        setJobStatus('done');
+        const results = event.results as Record<string, unknown> | undefined;
+        const generatedUrl = (results?.url as string) || (results?.preview_url as string);
+        if (generatedUrl) {
+          setJobMediaUrl(generatedUrl);
+        } else if (results?.asset_id) {
+          sdk.assets
+            .get(results.asset_id as string)
+            .then((asset) => {
+              if (asset?.url) setJobMediaUrl(asset.url);
+            })
+            .catch(() => {
+              // fallback
+            });
+        }
+      } else if (event.status === 'failed' || event.status === 'FAILED') {
+        setJobStatus('failed');
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [message.jobId, message.resultMediaUrl, jobMediaUrl]);
 
   const handleCopy = (text?: string) => {
     if (!text) return;
@@ -112,22 +157,53 @@ export function AgentChatMessage({
   // 2. Assistant Generated Output Message Row
   return (
     <div className="agent-chat-row assistant-row">
-      <div className="assistant-result-frame">
-        {/* Pure image frame without overlay buttons */}
-        <div className="assistant-result-media">
-          <Link
-            href={`/app/agent/file-${message.id}`}
-            className="media-link-wrapper"
-            title={locale === 'fa' ? 'مشاهده در نمای جزئیات' : 'Inspect single content'}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={message.resultMediaUrl}
-              alt="AI Generated Output"
-              className="generated-media-img"
-            />
-          </Link>
+      {/* 2a. Text response bubble (streaming or completed) */}
+      {message.text && (
+        <div className="assistant-text-bubble">
+          <p className="assistant-text-content">
+            {message.text}
+            {message.status === 'streaming' && (
+              <span className="streaming-cursor animate-pulse">▋</span>
+            )}
+          </p>
         </div>
+      )}
+
+      {/* 2b. Job progress card during tool execution */}
+      {jobStatus === 'running' && !mediaUrl && (
+        <div className="assistant-job-progress-card">
+          <RefreshCw
+            size={18}
+            strokeWidth={2.2}
+            className="spin-animation"
+            color="var(--lemmo-surface-brand-background, #d1fe17)"
+          />
+          <span>
+            {locale === 'fa'
+              ? `در حال اجرای ابزار و تولید خروجی... (${jobProgress}٪)`
+              : `Executing tool & synthesizing output... (${jobProgress}%)`}
+          </span>
+        </div>
+      )}
+
+      {/* 2c. Result media frame when image/video is available */}
+      {mediaUrl && (
+        <div className="assistant-result-frame">
+          {/* Pure image frame without overlay buttons */}
+          <div className="assistant-result-media">
+            <Link
+              href={`/app/agent/file-${message.id}`}
+              className="media-link-wrapper"
+              title={locale === 'fa' ? 'مشاهده در نمای جزئیات' : 'Inspect single content'}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={mediaUrl}
+                alt="AI Generated Output"
+                className="generated-media-img"
+              />
+            </Link>
+          </div>
 
         {/* Sleek action toolbar beneath image */}
         <div className="assistant-result-toolbar">
@@ -174,7 +250,7 @@ export function AgentChatMessage({
           </Link>
 
           <a
-            href={message.resultMediaUrl}
+            href={mediaUrl}
             download={`lemmo-agent-${message.id}.webp`}
             className="toolbar-action-btn"
             title={locale === 'fa' ? 'دانلود تصویر' : 'Download image'}
@@ -206,6 +282,7 @@ export function AgentChatMessage({
           </div>
         )}
       </div>
-    </div>
-  );
+    )}
+  </div>
+);
 }

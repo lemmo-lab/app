@@ -13,7 +13,6 @@ import type {
   ToolManifest,
   Job,
   JobEvent,
-  Message,
   Thread,
   Asset,
   ContentResult,
@@ -21,6 +20,8 @@ import type {
   FeedResult,
   UserProfile,
   BillingInfo,
+  SendMessageResponse,
+  ChatEvent,
 } from '../types';
 
 import {
@@ -36,6 +37,7 @@ import {
   listChatThreads,
   getChatThread,
   sendChatMessage,
+  cancelChatMessage,
   listAssets,
   getAsset,
   getContent,
@@ -302,25 +304,114 @@ export const liveSdkAdapter: SdkClient = {
   },
 
   // ================================================================ //
-  // CHAT (Zero-Mock in Client — Dispatched to Kong / Prism Mock)       //
+  // CHAT (Live Agent Service — Dispatched to agent-service via Kong)  //
   // ================================================================ //
   chat: {
-    sendMessage: async (threadId: string | null, content: string): Promise<Message> => {
+    sendMessage: async (threadId: string | null, content: string): Promise<SendMessageResponse> => {
       const response = await sendChatMessage({
         threadId: threadId ?? undefined,
         content,
       });
-      return (response as { data: Message }).data;
+      if (response.status === 202) {
+        return response.data as SendMessageResponse;
+      }
+      const errorData = (response as { data?: { detail?: string; title?: string } }).data;
+      const errMsg = errorData?.detail || errorData?.title || `Failed to send message: HTTP ${response.status}`;
+      throw new Error(errMsg);
     },
 
     getThreads: async (): Promise<Thread[]> => {
       const response = await listChatThreads();
-      return (response as { data: Thread[] }).data;
+      if ('data' in response && Array.isArray(response.data)) {
+        return response.data;
+      }
+      return [];
     },
 
     getThread: async (threadId: string): Promise<Thread> => {
       const response = await getChatThread(threadId);
       return (response as { data: Thread }).data;
+    },
+
+    subscribe: (threadId: string, messageId: string, onEvent: (event: ChatEvent) => void): (() => void) => {
+      const EventSourceCtor =
+        typeof window !== 'undefined'
+          ? window.EventSource
+          : (globalThis as unknown as { EventSource?: typeof EventSource }).EventSource;
+
+      if (!EventSourceCtor) {
+        return () => {};
+      }
+
+      const url = `/api/v1/chat/threads/${encodeURIComponent(threadId)}/messages/${encodeURIComponent(messageId)}/events`;
+      const eventSource = new EventSourceCtor(url, { withCredentials: true });
+      activeStreams.add(eventSource);
+
+      const cleanup = () => {
+        if (activeStreams.has(eventSource)) {
+          activeStreams.delete(eventSource);
+          eventSource.close();
+        }
+      };
+
+      const handleParsed = (eventType: ChatEvent['type'], dataStr: string) => {
+        try {
+          const payload = JSON.parse(dataStr);
+          onEvent({
+            type: eventType,
+            threadId,
+            messageId,
+            token: payload.token,
+            jobId: payload.job_id || payload.jobId,
+            toolId: payload.tool_id || payload.toolId,
+            toolVersion: payload.tool_version || payload.toolVersion,
+            error: payload.error,
+            data: payload,
+            raw: payload,
+          });
+        } catch {
+          // ignore parsing error
+        }
+      };
+
+      eventSource.addEventListener('token', (e) => {
+        handleParsed('token', (e as MessageEvent).data);
+      });
+
+      eventSource.addEventListener('tool_call', (e) => {
+        handleParsed('tool_call', (e as MessageEvent).data);
+      });
+
+      eventSource.addEventListener('job_dispatched', (e) => {
+        handleParsed('job_dispatched', (e as MessageEvent).data);
+      });
+
+      eventSource.addEventListener('message_done', (e) => {
+        handleParsed('message_done', (e as MessageEvent).data);
+        cleanup();
+      });
+
+      eventSource.addEventListener('message_failed', (e) => {
+        handleParsed('message_failed', (e as MessageEvent).data);
+        cleanup();
+      });
+
+      eventSource.addEventListener('message_cancelled', (e) => {
+        handleParsed('message_cancelled', (e as MessageEvent).data);
+        cleanup();
+      });
+
+      eventSource.onerror = () => {
+        if (eventSource.readyState === EventSource.CLOSED) {
+          cleanup();
+        }
+      };
+
+      return cleanup;
+    },
+
+    cancelMessage: async (threadId: string, messageId: string): Promise<void> => {
+      await cancelChatMessage(threadId, messageId);
     },
   },
 
