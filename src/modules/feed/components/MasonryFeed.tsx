@@ -14,12 +14,12 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
-import { Search01, Heart, Plus01, Copy01, AiMagicWand01, Check01 } from 'synthline/react';
+import { Search01, Heart, Plus01, Copy01, AiMagicWand01, Check01, RefreshCw, AlertTriangle } from 'synthline/react';
 import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
-import { sdk, FeedItem } from '@/sdk';
+import { sdk, FeedItem, FeedResult } from '@/sdk';
 
 export default function MasonryFeed() {
   const { locale } = useUiStore();
@@ -28,27 +28,77 @@ export default function MasonryFeed() {
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const { data: feedResult } = useQuery({
-    queryKey: ['feed'],
-    queryFn: () => sdk.feed.list(),
+  // Query per activeCategory using strict cursor pagination
+  const {
+    data: feedResult,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<FeedResult>({
+    queryKey: ['feed', activeCategory],
+    queryFn: () =>
+      sdk.feed.list({
+        category: activeCategory === 'all' ? undefined : activeCategory,
+        limit: 24,
+      }),
   });
 
+  // Extra items appended via "Load More"
+  const [extraItems, setExtraItems] = useState<FeedItem[]>([]);
+  const [extraCursor, setExtraCursor] = useState<string | null>(null);
+  const [extraHasMore, setExtraHasMore] = useState<boolean | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+
+  // Reset pagination extra pages when category changes
+  const [lastQueryCategory, setLastQueryCategory] = useState<string>(activeCategory);
+  if (lastQueryCategory !== activeCategory) {
+    setLastQueryCategory(activeCategory);
+    setExtraItems([]);
+    setExtraCursor(null);
+    setExtraHasMore(null);
+  }
+
+  const allItems = useMemo(() => {
+    const initial = feedResult?.items || [];
+    return [...initial, ...extraItems];
+  }, [feedResult, extraItems]);
+
+  const currentCursor = extraCursor ?? feedResult?.next_cursor ?? null;
+  const hasMore = extraHasMore ?? feedResult?.has_more ?? false;
+
+  // Load more via next_cursor (FEED-CHK-1: Strictly Cursor-Based, never ?page=)
+  const handleLoadMore = useCallback(async () => {
+    if (!currentCursor || isLoadingMore) return;
+    try {
+      setIsLoadingMore(true);
+      const res = await sdk.feed.list({
+        category: activeCategory === 'all' ? undefined : activeCategory,
+        limit: 24,
+        cursor: currentCursor,
+      });
+      setExtraItems((prev) => [...prev, ...res.items]);
+      setExtraCursor(res.next_cursor);
+      setExtraHasMore(res.has_more);
+    } catch (err) {
+      console.error('Failed to load more feed items:', err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [currentCursor, isLoadingMore, activeCategory]);
+
   const filteredItems = useMemo(() => {
-    const feedItems = feedResult?.items || [];
-    return feedItems.filter((item) => {
-      const matchCategory =
-        activeCategory === 'all' || item.category === activeCategory;
+    return allItems.filter((item) => {
       const q = searchQuery.toLowerCase().trim();
-      const matchSearch =
-        !q ||
+      if (!q) return true;
+      return (
         item.title.toLowerCase().includes(q) ||
         item.titleFa.toLowerCase().includes(q) ||
         item.prompt.toLowerCase().includes(q) ||
-        item.author.toLowerCase().includes(q);
-
-      return matchCategory && matchSearch;
+        item.author.toLowerCase().includes(q)
+      );
     });
-  }, [activeCategory, searchQuery, feedResult]);
+  }, [allItems, searchQuery]);
 
   // Category filter options
   const categories = [
@@ -148,8 +198,45 @@ export default function MasonryFeed() {
         </div>
       </div>
 
-      {/* Masonry Items Grid */}
-      {filteredItems.length === 0 ? (
+      {/* Masonry Items Grid / Skeleton / Error States */}
+      {isLoading ? (
+        <div className="masonry-columns skeleton-grid" aria-busy="true" aria-label={locale === 'fa' ? 'در حال بارگذاری آثار...' : 'Loading showcase creations...'}>
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <div key={`skel-${idx}`} className={`feed-card-item skeleton-card skeleton-card-${idx % 4}`}>
+              <div className="skeleton-media-box" />
+              <div className="skeleton-hover-meta">
+                <div className="skeleton-line skeleton-title" />
+                <div className="skeleton-line skeleton-snippet" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="feed-error-state" role="alert">
+          <div className="error-icon-wrap">
+            <AlertTriangle size={32} strokeWidth={1.5} color="currentColor" />
+          </div>
+          <h4 className="error-title">
+            {locale === 'fa' ? 'خطا در بارگذاری آثار فید' : 'Failed to load showcase feed'}
+          </h4>
+          <p className="error-desc">
+            {error instanceof Error
+              ? error.message
+              : locale === 'fa'
+              ? 'امکان برقراری ارتباط با سرویس فید وجود ندارد. لطفاً اتصال شبکه را بررسی کرده و مجدداً تلاش کنید.'
+              : 'Unable to connect to the discovery feed service. Please verify your connection and retry.'}
+          </p>
+          <button
+            type="button"
+            className="btn-retry"
+            onClick={() => refetch()}
+            data-action="retry-feed"
+          >
+            <RefreshCw size={14} strokeWidth={2} color="currentColor" />
+            <span>{locale === 'fa' ? 'تلاش مجدد' : 'Retry'}</span>
+          </button>
+        </div>
+      ) : filteredItems.length === 0 ? (
         <div className="empty-search-state">
           <div className="empty-icon-wrap">
             <Search01 size={28} strokeWidth={1.5} color="currentColor" />
@@ -174,7 +261,8 @@ export default function MasonryFeed() {
           </button>
         </div>
       ) : (
-        <div className="masonry-columns">
+        <>
+          <div className="masonry-columns">
           {filteredItems.map((item: FeedItem) => {
             const isLiked = likedMap[item.id] || false;
             const currentLikes = item.likes + (isLiked ? 1 : 0);
@@ -293,7 +381,30 @@ export default function MasonryFeed() {
               </article>
             );
           })}
-        </div>
+          </div>
+
+          {/* Cursor-Based Load More Button (FEED-CHK-1) */}
+          {hasMore && (
+            <div className="load-more-container">
+              <button
+                type="button"
+                className="btn-load-more"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                data-action="load-more-feed"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <RefreshCw size={15} strokeWidth={2} className="spin-icon" color="currentColor" />
+                    <span>{locale === 'fa' ? 'در حال دریافت آثار...' : 'Loading more creations...'}</span>
+                  </>
+                ) : (
+                  <span>{locale === 'fa' ? 'بارگذاری آثار بیشتر' : 'Load More Creations'}</span>
+                )}
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       <style jsx>{`
@@ -819,6 +930,189 @@ export default function MasonryFeed() {
 
         .btn-reset:hover {
           background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ================= SKELETON LOADING STATES ================= */
+        .skeleton-card {
+          position: relative;
+          background: var(--lemmo-surface-primary-background, #1c1e20);
+          border-radius: var(--lemmo-radius-lg, 12px);
+          overflow: hidden;
+          border: 1px solid var(--lemmo-border-subtle, rgba(255, 255, 255, 0.06));
+        }
+
+        .skeleton-card-0 .skeleton-media-box {
+          height: 280px;
+        }
+
+        .skeleton-card-1 .skeleton-media-box {
+          height: 380px;
+        }
+
+        .skeleton-card-2 .skeleton-media-box {
+          height: 220px;
+        }
+
+        .skeleton-card-3 .skeleton-media-box {
+          height: 320px;
+        }
+
+        .skeleton-media-box {
+          width: 100%;
+          background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.03) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0.03) 100%
+          );
+          background-size: 200% 100%;
+          animation: skeletonShimmer 1.8s infinite ease-in-out;
+        }
+
+        .skeleton-hover-meta {
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .skeleton-line {
+          height: 12px;
+          border-radius: 4px;
+          background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.03) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0.03) 100%
+          );
+          background-size: 200% 100%;
+          animation: skeletonShimmer 1.8s infinite ease-in-out;
+        }
+
+        .skeleton-title {
+          width: 60%;
+        }
+
+        .skeleton-snippet {
+          width: 85%;
+        }
+
+        @keyframes skeletonShimmer {
+          0% {
+            background-position: 200% 0;
+          }
+          100% {
+            background-position: -200% 0;
+          }
+        }
+
+        /* ================= ERROR STATE ================= */
+        .feed-error-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: var(--lemmo-space-1200, 64px) var(--lemmo-space-400, 16px);
+          background: rgba(239, 68, 68, 0.04);
+          border: 1px dashed rgba(239, 68, 68, 0.25);
+          border-radius: var(--lemmo-radius-xl, 16px);
+          margin-top: var(--lemmo-space-400, 16px);
+        }
+
+        .error-icon-wrap {
+          color: #ef4444;
+          margin-bottom: var(--lemmo-space-300, 12px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .error-title {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--lemmo-text-primary, #e1e1e3);
+          margin: 0 0 var(--lemmo-space-200, 8px) 0;
+        }
+
+        .error-desc {
+          font-size: 0.875rem;
+          color: var(--lemmo-text-secondary, #a1a1a5);
+          max-width: 440px;
+          margin: 0 0 var(--lemmo-space-500, 20px) 0;
+          line-height: 1.5;
+        }
+
+        .btn-retry {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          height: 38px;
+          padding: 0 18px;
+          background: var(--lemmo-surface-secondary-background, #23262a);
+          border: 1px solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.15));
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          color: var(--lemmo-text-primary, #e1e1e3);
+          font-size: 0.8125rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .btn-retry:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ================= LOAD MORE CONTAINER ================= */
+        .load-more-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: var(--lemmo-space-800, 32px);
+          margin-bottom: var(--lemmo-space-600, 24px);
+        }
+
+        .btn-load-more {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          height: 44px;
+          padding: 0 28px;
+          background: var(--lemmo-surface-secondary-background, #23262a);
+          border: 1px solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.15));
+          border-radius: var(--lemmo-radius-pill, 9999px);
+          color: var(--lemmo-text-primary, #e1e1e3);
+          font-family: inherit;
+          font-size: 0.875rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-load-more:hover:not(:disabled) {
+          background: var(--lemmo-surface-primary-background, #1c1e20);
+          border-color: var(--lemmo-surface-brand-background, #d1fe17);
+          box-shadow: 0 0 12px rgba(209, 254, 23, 0.15);
+        }
+
+        .btn-load-more:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .spin-icon {
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
         }
 
         /* ================= RESPONSIVE MASONRY COLUMNS ================= */

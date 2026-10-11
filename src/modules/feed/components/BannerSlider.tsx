@@ -30,10 +30,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
 import { sdk } from '@/sdk';
-import {
-  DEFAULT_FEATURE_ANNOUNCEMENTS,
-  FeatureAnnouncement,
-} from '../constants/announcements';
+import { FeatureAnnouncement } from '../constants/announcements';
 import DialPagination from './DialPagination';
 
 export default function BannerSlider() {
@@ -43,7 +40,7 @@ export default function BannerSlider() {
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const isRtl = dir === 'rtl';
 
-  const { data: contentResult } = useQuery({
+  const { data: contentResult, isLoading } = useQuery({
     queryKey: ['content'],
     queryFn: () => sdk.content.get(),
   });
@@ -68,15 +65,15 @@ export default function BannerSlider() {
         image: f.image,
       }));
     }
-    return DEFAULT_FEATURE_ANNOUNCEMENTS;
+    return [];
   }, [contentResult]);
 
   const slidesCount = slides.length;
-  const currentSlide: FeatureAnnouncement = slides[currentIndex % slidesCount] || slides[0];
+  const currentSlide: FeatureAnnouncement | undefined = slides[currentIndex % (slidesCount || 1)];
 
   // Auto-play timer (paused on hover)
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || slidesCount === 0) return;
 
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % slidesCount);
@@ -84,6 +81,100 @@ export default function BannerSlider() {
 
     return () => clearInterval(timer);
   }, [isPaused, slidesCount]);
+
+  if (isLoading) {
+    return (
+      <section
+        className="feature-hero-wrapper"
+        aria-busy="true"
+        aria-label={locale === 'fa' ? 'در حال بارگذاری اطلاعیه‌ها...' : 'Loading announcements...'}
+      >
+        <div className="hero-banner-card skeleton-banner-card">
+          <div className="skeleton-backdrop-shimmer" />
+          <div className="banner-inner-content">
+            <div className="banner-top-bar">
+              <div className="skeleton-pill" />
+            </div>
+            <div className="banner-bottom-wrap">
+              <div className="banner-body">
+                <div className="skeleton-title" />
+                <div className="skeleton-desc" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <style jsx>{`
+          .feature-hero-wrapper {
+            width: 100%;
+            margin-bottom: var(--lemmo-space-800, 32px);
+          }
+          .skeleton-banner-card {
+            position: relative;
+            height: 380px;
+            border-radius: var(--lemmo-radius-2xl, 20px);
+            background: var(--lemmo-surface-primary-background, #1c1e20);
+            border: 1px solid var(--lemmo-border-subtle, rgba(255, 255, 255, 0.08));
+            overflow: hidden;
+            box-sizing: border-box;
+          }
+          .skeleton-backdrop-shimmer {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.02) 0%,
+              rgba(255, 255, 255, 0.06) 50%,
+              rgba(255, 255, 255, 0.02) 100%
+            );
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.8s infinite ease-in-out;
+          }
+          .banner-inner-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            padding: var(--lemmo-space-600, 24px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+          }
+          .skeleton-pill {
+            width: 120px;
+            height: 28px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.06);
+          }
+          .skeleton-title {
+            width: 320px;
+            height: 32px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            margin-bottom: 12px;
+          }
+          .skeleton-desc {
+            width: 480px;
+            max-width: 80%;
+            height: 18px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+          }
+          @keyframes skeletonShimmer {
+            0% {
+              background-position: 200% 0;
+            }
+            100% {
+              background-position: -200% 0;
+            }
+          }
+        `}</style>
+      </section>
+    );
+  }
+
+  if (slidesCount === 0 || !currentSlide) {
+    return null;
+  }
 
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev - 1 + slidesCount) % slidesCount);

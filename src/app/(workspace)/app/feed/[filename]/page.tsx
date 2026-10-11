@@ -41,6 +41,8 @@ import {
   Download01,
   Maximize01,
   AiCpu,
+  RefreshCw,
+  AlertTriangle,
 } from 'synthline/react';
 import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
@@ -51,83 +53,67 @@ export default function SingleImageFeedPage() {
   const { locale, dir } = useUiStore();
   const isRtl = dir === 'rtl';
 
-  const rawFilename = (params?.filename as string) || 'feed-1';
+  const rawFilename = (params?.filename as string) || '';
 
-  const { data: feedResult } = useQuery({
+  const { data: feedResult, isLoading: isFeedLoading } = useQuery({
     queryKey: ['feed'],
-    queryFn: () => sdk.feed.list(),
+    queryFn: () => sdk.feed.list({ limit: 50 }),
+  });
+
+  const {
+    data: fetchedItem,
+    isLoading: isItemLoading,
+    refetch: refetchItem,
+  } = useQuery({
+    queryKey: ['feed-item', rawFilename],
+    queryFn: () => sdk.feed.get(rawFilename),
+    retry: 1,
+    enabled: Boolean(rawFilename),
   });
 
   const feedItems = useMemo(() => feedResult?.items || [], [feedResult]);
 
-  // Find initial item or default to first
-  const initialItem = useMemo(() => {
-    return (
-      feedItems.find(
-        (item) => item.id === rawFilename || item.image.includes(rawFilename)
-      ) || feedItems[0] || null
-    );
-  }, [rawFilename, feedItems]);
-
   const [selectedItemState, setSelectedItemState] = useState<FeedItem | null>(null);
 
-  const selectedItem: FeedItem = useMemo(() => {
+  // Active item resolution: manual selection > direct fetch > feed list match
+  const selectedItem: FeedItem | null = useMemo(() => {
     if (selectedItemState) return selectedItemState;
-    if (initialItem) return initialItem;
-    return {
-      id: rawFilename,
-      title: 'Neon Solarpunk Metropolis',
-      titleFa: 'کلان‌شهر نئونی سولارپانک',
-      prompt: 'Futuristic solarpunk city with towering biophilic mushroom architecture',
-      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
-      author: 'Elena Rostova',
-      authorHandle: 'elena_r',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-      category: 'photoreal',
-      aspectRatio: '16:9',
-      width: 1920,
-      height: 1080,
-      likes: 3890,
-      views: 14200,
-      model: 'Flux Dev',
-      createdAt: '2026-10-01T12:00:00Z',
-    };
-  }, [selectedItemState, initialItem, rawFilename]);
+    if (fetchedItem) return fetchedItem;
+    if (feedItems.length > 0) {
+      return (
+        feedItems.find(
+          (item) => item.id === rawFilename || item.image.includes(rawFilename)
+        ) || null
+      );
+    }
+    return null;
+  }, [selectedItemState, fetchedItem, feedItems, rawFilename]);
 
   const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [likesCount, setLikesCount] = useState<number>(selectedItem.likes);
   const [copiedPrompt, setCopiedPrompt] = useState<boolean>(false);
   const [copiedShare, setCopiedShare] = useState<boolean>(false);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  const likesCount = (selectedItem?.likes || 0) + (isLiked ? 1 : 0);
 
   // Sync state if selected item changes
   const handleSelectItem = (item: FeedItem) => {
     setSelectedItemState(item);
     setIsLiked(false);
-    setLikesCount(item.likes);
     setCopiedPrompt(false);
     setCopiedShare(false);
   };
 
   // Like toggle handler
   const handleToggleLike = () => {
-    if (isLiked) {
-      setIsLiked(false);
-      setLikesCount((prev) => prev - 1);
-    } else {
-      setIsLiked(true);
-      setLikesCount((prev) => prev + 1);
-    }
+    setIsLiked((prev) => !prev);
   };
 
   // Copy prompt handler
   const handleCopyPrompt = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const promptText =
-      locale === 'fa' && selectedItem.prompt
-        ? selectedItem.prompt
-        : selectedItem.prompt;
-    navigator.clipboard.writeText(promptText);
+    if (!selectedItem) return;
+    navigator.clipboard.writeText(selectedItem.prompt);
     setCopiedPrompt(true);
     setTimeout(() => setCopiedPrompt(false), 2200);
   };
@@ -135,6 +121,7 @@ export default function SingleImageFeedPage() {
   // Share link handler
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!selectedItem) return;
     if (navigator.share) {
       try {
         await navigator.share({
@@ -155,6 +142,7 @@ export default function SingleImageFeedPage() {
   // Download image handler
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!selectedItem) return;
     const link = document.createElement('a');
     link.href = selectedItem.image;
     link.download = `${selectedItem.id}-lemmo.webp`;
@@ -165,9 +153,187 @@ export default function SingleImageFeedPage() {
 
   // Reference images based on neighboring items
   const referenceImages = useMemo(() => {
+    if (!selectedItem) return [];
     const others = feedItems.filter((i) => i.id !== selectedItem.id);
     return [others[0]?.image || selectedItem.image, others[1]?.image || selectedItem.image];
-  }, [feedItems, selectedItem.id, selectedItem.image]);
+  }, [feedItems, selectedItem]);
+
+  // Loading skeleton state
+  if ((isItemLoading || isFeedLoading) && !selectedItem) {
+    return (
+      <div className="single-image-app loading-skeleton-container" dir={dir} aria-busy="true">
+        <div className="main-body">
+          <div className="content">
+            <div className="content-area skeleton-content-area">
+              <div className="skeleton-hero-media" />
+            </div>
+            <div className="details-content skeleton-details-column">
+              <div className="skeleton-author-badge" />
+              <div className="skeleton-prompt-box" />
+              <div className="skeleton-action-bar" />
+            </div>
+          </div>
+        </div>
+        <style jsx>{`
+          .loading-skeleton-container {
+            width: 100%;
+            min-height: 80vh;
+            padding: var(--lemmo-space-400, 16px);
+          }
+          .skeleton-content-area {
+            flex: 1;
+            min-height: 480px;
+            background: var(--lemmo-surface-primary-background, #1c1e20);
+            border-radius: var(--lemmo-radius-2xl, 20px);
+            overflow: hidden;
+            position: relative;
+          }
+          .skeleton-hero-media {
+            width: 100%;
+            height: 100%;
+            min-height: 480px;
+            background: linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.02) 0%,
+              rgba(255, 255, 255, 0.07) 50%,
+              rgba(255, 255, 255, 0.02) 100%
+            );
+            background-size: 200% 100%;
+            animation: detailShimmer 1.8s infinite ease-in-out;
+          }
+          .skeleton-details-column {
+            width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          }
+          .skeleton-author-badge {
+            height: 64px;
+            border-radius: 12px;
+            background: var(--lemmo-surface-primary-background, #1c1e20);
+          }
+          .skeleton-prompt-box {
+            height: 180px;
+            border-radius: 16px;
+            background: var(--lemmo-surface-primary-background, #1c1e20);
+          }
+          .skeleton-action-bar {
+            height: 52px;
+            border-radius: 9999px;
+            background: var(--lemmo-surface-secondary-background, #23262a);
+          }
+          @keyframes detailShimmer {
+            0% {
+              background-position: 200% 0;
+            }
+            100% {
+              background-position: -200% 0;
+            }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Not Found / Error state
+  if (!selectedItem) {
+    return (
+      <div className="single-image-app not-found-container" dir={dir} role="alert">
+        <div className="not-found-card">
+          <div className="not-found-icon">
+            <AlertTriangle size={36} strokeWidth={1.5} color="currentColor" />
+          </div>
+          <h3 className="not-found-title">
+            {locale === 'fa' ? 'اثر مورد نظر در گالری یافت نشد' : 'Showcase Item Not Found'}
+          </h3>
+          <p className="not-found-desc">
+            {locale === 'fa'
+              ? 'این اثر ممکن است حذف شده باشد یا شناسه آن نامعتبر است.'
+              : 'The requested creation could not be found or has been removed from discovery.'}
+          </p>
+          <div className="not-found-actions">
+            <Link href="/app" className="btn-back-gallery">
+              {locale === 'fa' ? 'بازگشت به گالری' : 'Back to Gallery'}
+            </Link>
+            <button
+              type="button"
+              className="btn-retry-action"
+              onClick={() => refetchItem()}
+            >
+              <RefreshCw size={14} strokeWidth={2} color="currentColor" />
+              <span>{locale === 'fa' ? 'تلاش مجدد' : 'Retry'}</span>
+            </button>
+          </div>
+        </div>
+        <style jsx>{`
+          .not-found-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            padding: 24px;
+          }
+          .not-found-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            max-width: 420px;
+            background: var(--lemmo-surface-primary-background, #1c1e20);
+            border: 1px solid var(--lemmo-border-subtle, rgba(255, 255, 255, 0.08));
+            border-radius: var(--lemmo-radius-xl, 16px);
+            padding: 40px 24px;
+          }
+          .not-found-icon {
+            color: #ef4444;
+            margin-bottom: 16px;
+          }
+          .not-found-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--lemmo-text-primary, #e1e1e3);
+            margin: 0 0 8px 0;
+          }
+          .not-found-desc {
+            font-size: 0.875rem;
+            color: var(--lemmo-text-secondary, #a1a1a5);
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+          }
+          .not-found-actions {
+            display: flex;
+            gap: 12px;
+          }
+          .btn-back-gallery {
+            display: inline-flex;
+            align-items: center;
+            height: 38px;
+            padding: 0 18px;
+            background: var(--lemmo-surface-brand-background, #d1fe17);
+            color: var(--lemmo-surface-brand-foreground, #0d0e0f);
+            border-radius: var(--lemmo-radius-pill, 9999px);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            text-decoration: none;
+          }
+          .btn-retry-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 38px;
+            padding: 0 16px;
+            background: var(--lemmo-surface-secondary-background, #23262a);
+            border: 1px solid var(--lemmo-border-mid, rgba(255, 255, 255, 0.15));
+            border-radius: var(--lemmo-radius-pill, 9999px);
+            color: var(--lemmo-text-primary, #e1e1e3);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
     <div className="single-image-app" dir={dir}>

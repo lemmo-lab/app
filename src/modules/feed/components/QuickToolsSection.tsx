@@ -22,12 +22,16 @@ export default function QuickToolsSection() {
   const { locale, dir } = useUiStore();
   const isRtl = dir === 'rtl';
 
-  const { data: contentResult } = useQuery({
+  const { data: contentResult, isLoading } = useQuery({
     queryKey: ['content'],
     queryFn: () => sdk.content.get(),
   });
 
   const quickTools = contentResult?.quick_tools || [];
+
+  if (!isLoading && quickTools.length === 0) {
+    return null;
+  }
 
   return (
     <section
@@ -60,8 +64,17 @@ export default function QuickToolsSection() {
         </Link>
       </div>
 
-      {/* Tools Cards Grid / Mobile Scroll Track */}
-      <div className="tools-grid">
+      {/* Tools Cards Grid / Skeleton Track */}
+      {isLoading ? (
+        <div className="tools-grid skeleton-track" aria-busy="true">
+          {Array.from({ length: 4 }).map((_, idx) => (
+            <div key={`tool-skel-${idx}`} className="tool-card skeleton-tool-card">
+              <div className="skeleton-tool-shimmer" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="tools-grid">
         {quickTools.map((tool: QuickTool) => (
           <Link
             key={tool.id}
@@ -119,7 +132,8 @@ export default function QuickToolsSection() {
             </div>
           </Link>
         ))}
-      </div>
+        </div>
+      )}
 
       <style jsx>{`
         .tools-section-wrapper {
@@ -378,6 +392,36 @@ export default function QuickToolsSection() {
 
         :global(.tool-card:hover) .cta-arrow {
           transform: translateX(isRtl ? -3px : 3px);
+        }
+
+        /* ================= SKELETON LOADING ================= */
+        .skeleton-tool-card {
+          position: relative;
+          background: var(--lemmo-surface-primary-background, #1c1e20);
+          pointer-events: none;
+          cursor: default;
+        }
+
+        .skeleton-tool-shimmer {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.02) 0%,
+            rgba(255, 255, 255, 0.07) 50%,
+            rgba(255, 255, 255, 0.02) 100%
+          );
+          background-size: 200% 100%;
+          animation: toolShimmer 1.8s infinite ease-in-out;
+        }
+
+        @keyframes toolShimmer {
+          0% {
+            background-position: 200% 0;
+          }
+          100% {
+            background-position: -200% 0;
+          }
         }
 
         /* ================= RESPONSIVE ================= */
