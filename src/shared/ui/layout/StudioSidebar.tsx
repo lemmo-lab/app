@@ -37,11 +37,25 @@ import {
   ChevronRight,
 } from 'synthline/react';
 import { useUiStore } from '@/stores/uiStore';
+import { useOptionalStudioContext } from '@/shared/providers/StudioContextProvider';
 import ProfilePopover from './ProfilePopover';
 
 export default function StudioSidebar() {
   const pathname = usePathname();
   const { locale, dir } = useUiStore();
+  const studioCtx = useOptionalStudioContext();
+  const user = studioCtx?.user;
+  const activeWorkspace = studioCtx?.activeWorkspace;
+  const avatarUrl = user?.avatar_url;
+  const displayName = user?.display_name || user?.handle || 'User';
+  const planLabel = activeWorkspace?.name || (activeWorkspace?.role ? `${activeWorkspace.role} Workspace` : 'Pro Workspace');
+  const initials = (() => {
+    const nameToUse = displayName.trim();
+    const parts = nameToUse.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return nameToUse.slice(0, 2).toUpperCase() || 'LM';
+  })();
+
   const [isExpanded, setIsExpanded] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -103,7 +117,12 @@ export default function StudioSidebar() {
             aria-expanded={mobileSheetOpen}
             data-action="open-profile-menu-mobile"
           >
-            <span className="avatar-initials">LM</span>
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatarUrl} alt={displayName} className="mobile-avatar-img" />
+            ) : (
+              <span className="avatar-initials">{initials}</span>
+            )}
             <span className="status-dot" />
           </button>
         </div>
@@ -421,12 +440,17 @@ export default function StudioSidebar() {
               data-action="toggle-profile-popover"
             >
               <div className="avatar-wrapper" aria-hidden="true">
-                <span className="avatar-initials">LM</span>
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarUrl} alt={displayName} className="user-avatar-img" />
+                ) : (
+                  <span className="avatar-initials">{initials}</span>
+                )}
                 <span className="status-dot" />
               </div>
               <div className="user-meta">
-                <span className="user-display-name">Behroz</span>
-                <span className="user-plan-label">Pro Workspace</span>
+                <span className="user-display-name">{displayName}</span>
+                <span className="user-plan-label">{planLabel}</span>
               </div>
             </button>
 
@@ -785,6 +809,15 @@ export default function StudioSidebar() {
           font-family: var(--lemmo-font-heading, 'Oddval', 'Morabba', sans-serif);
           font-weight: 700;
           font-size: 0.8125rem;
+          overflow: hidden;
+        }
+
+        :global(.user-avatar-img) {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: inherit;
+          display: block;
         }
 
         .status-dot {

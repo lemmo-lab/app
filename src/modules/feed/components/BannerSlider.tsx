@@ -30,7 +30,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
 import { sdk } from '@/sdk';
-import { FeatureAnnouncement } from '../constants/announcements';
+import { FeatureAnnouncement, DEFAULT_FEATURE_ANNOUNCEMENTS } from '../constants/announcements';
 import DialPagination from './DialPagination';
 
 export default function BannerSlider() {
@@ -65,7 +65,7 @@ export default function BannerSlider() {
         image: f.image,
       }));
     }
-    return [];
+    return DEFAULT_FEATURE_ANNOUNCEMENTS;
   }, [contentResult]);
 
   const slidesCount = slides.length;

@@ -18,6 +18,35 @@ import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
 import { sdk, QuickTool } from '@/sdk';
 
+const DEFAULT_QUICK_TOOLS: QuickTool[] = [
+  {
+    id: 'tool-bg-remove',
+    name: 'Remove Background',
+    nameFa: 'حذف پس‌زمینه',
+    category: 'image-editing',
+    categoryFa: 'ویرایش تصویر',
+    description: 'Instantly isolate subject with one click',
+    descriptionFa: 'جداسازی فوری سوژه با یک کلیک',
+    image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80',
+    href: '/app/tools?tool=remove-background',
+    badge: 'Free',
+    isNew: false,
+  },
+  {
+    id: 'tool-flux',
+    name: 'Flux Image Generation',
+    nameFa: 'تولید تصویر فلوکس',
+    category: 'image-generation',
+    categoryFa: 'تولید تصویر',
+    description: 'High quality text to image rendering',
+    descriptionFa: 'تولید تصویر با کیفیت بالا از متن',
+    image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=400&q=80',
+    href: '/app/tools?tool=flux-dev',
+    badge: 'Popular',
+    isNew: true,
+  },
+];
+
 export default function QuickToolsSection() {
   const { locale, dir } = useUiStore();
   const isRtl = dir === 'rtl';
@@ -27,7 +56,10 @@ export default function QuickToolsSection() {
     queryFn: () => sdk.content.get(),
   });
 
-  const quickTools = contentResult?.quick_tools || [];
+  const quickTools =
+    contentResult?.quick_tools && contentResult.quick_tools.length > 0
+      ? contentResult.quick_tools
+      : DEFAULT_QUICK_TOOLS;
 
   if (!isLoading && quickTools.length === 0) {
     return null;

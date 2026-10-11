@@ -21,6 +21,25 @@ import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
 import { sdk, FeedItem, FeedResult } from '@/sdk';
 
+function isAvatarUrl(avatar?: string): boolean {
+  if (!avatar) return false;
+  return (
+    avatar.startsWith('http://') ||
+    avatar.startsWith('https://') ||
+    avatar.startsWith('/') ||
+    avatar.startsWith('data:image/')
+  );
+}
+
+function getAuthorInitials(author?: string, handle?: string, fallback = 'LM'): string {
+  const target = (author || handle || fallback).trim().replace(/^@/, '');
+  const parts = target.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return target.slice(0, 2).toUpperCase() || fallback;
+}
+
 export default function MasonryFeed() {
   const { locale } = useUiStore();
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -354,7 +373,21 @@ export default function MasonryFeed() {
                     <div className="card-footer-row">
                       {/* Author */}
                       <div className="card-author">
-                        <div className="author-avatar">{item.avatar}</div>
+                        <div className="author-avatar" title={item.author || item.authorHandle}>
+                          {isAvatarUrl(item.avatar) ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={item.avatar}
+                              alt={item.author || item.authorHandle || 'Author'}
+                              className="author-avatar-img"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <span className="author-avatar-initials">
+                              {item.avatar || getAuthorInitials(item.author, item.authorHandle)}
+                            </span>
+                          )}
+                        </div>
                         <span className="author-handle">{item.authorHandle}</span>
                       </div>
 
@@ -842,6 +875,16 @@ export default function MasonryFeed() {
           font-size: 0.5625rem;
           font-weight: 700;
           color: var(--lemmo-text-primary, #e1e1e3);
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+
+        :global(.author-avatar-img) {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: inherit;
+          display: block;
         }
 
         .author-handle {

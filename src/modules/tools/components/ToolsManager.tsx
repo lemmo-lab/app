@@ -53,7 +53,7 @@ function manifestToToolItem(m: ToolManifest): ToolItem {
     version: 'v1.0',
     coverImage: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=400&q=80',
     author: 'Lemmo Studio',
-    authorFa: 'استودیو لمو',
+    authorFa: 'استودیو لیمو',
     iconName,
     inputs: m.inputFields?.map((f) => f.label).join(', ') || 'Parameters',
     inputsFa: m.inputFields?.map((f) => f.labelFa || f.label).join('، ') || 'پارامترها',

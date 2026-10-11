@@ -48,6 +48,25 @@ import { useQuery } from '@tanstack/react-query';
 import { useUiStore } from '@/stores/uiStore';
 import { sdk, FeedItem } from '@/sdk';
 
+function isAvatarUrl(avatar?: string): boolean {
+  if (!avatar) return false;
+  return (
+    avatar.startsWith('http://') ||
+    avatar.startsWith('https://') ||
+    avatar.startsWith('/') ||
+    avatar.startsWith('data:image/')
+  );
+}
+
+function getAuthorInitials(author?: string, handle?: string, fallback = 'LM'): string {
+  const target = (author || handle || fallback).trim().replace(/^@/, '');
+  const parts = target.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return target.slice(0, 2).toUpperCase() || fallback;
+}
+
 export default function SingleImageFeedPage() {
   const params = useParams();
   const { locale, dir } = useUiStore();
@@ -404,7 +423,21 @@ export default function SingleImageFeedPage() {
               <div className="top_section">
                 {/* Author Badge */}
                 <div className="author-badge-card">
-                  <div className="author-avatar">{selectedItem.avatar}</div>
+                  <div className="author-avatar" title={selectedItem.author || selectedItem.authorHandle}>
+                    {isAvatarUrl(selectedItem.avatar) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={selectedItem.avatar}
+                        alt={selectedItem.author || selectedItem.authorHandle || 'Author'}
+                        className="author-avatar-img"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="author-avatar-initials">
+                        {selectedItem.avatar || getAuthorInitials(selectedItem.author, selectedItem.authorHandle)}
+                      </span>
+                    )}
+                  </div>
                   <div className="author-info">
                     <span className="author-name">{selectedItem.author}</span>
                     <span className="author-handle">{selectedItem.authorHandle}</span>
@@ -826,6 +859,16 @@ export default function SingleImageFeedPage() {
           font-size: 0.6875rem;
           font-weight: 700;
           color: var(--lemmo-surface-brand-background, #d1fe17);
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+
+        :global(.author-avatar-img) {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: inherit;
+          display: block;
         }
 
         .author-info {

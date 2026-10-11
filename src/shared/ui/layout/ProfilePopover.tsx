@@ -74,6 +74,18 @@ export default function ProfilePopover({
   const popoverRef = useRef<HTMLDivElement>(null);
   const langDropdownRef = useRef<HTMLDivElement>(null);
   const studioCtx = useOptionalStudioContext();
+  const user = studioCtx?.user;
+  const avatarUrl = user?.avatar_url;
+  const displayName = user?.display_name || user?.handle || 'User';
+  const userEmail = user?.email || 'user@example.com';
+  const roleBadge = studioCtx?.activeWorkspace?.role || 'PRO';
+  const initials = (() => {
+    const nameToUse = displayName.trim();
+    const parts = nameToUse.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return nameToUse.slice(0, 2).toUpperCase() || 'LM';
+  })();
+
   const { locale, dir, setLocale, defaultWorkspace, setDefaultWorkspace } = useUiStore();
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   const isRtl = dir === 'rtl';
@@ -179,15 +191,20 @@ export default function ProfilePopover({
         {/* ================= USER IDENTITY CARD ================= */}
         <div className="user-identity-card">
           <div className="user-avatar-mini" aria-hidden="true">
-            <span>LM</span>
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatarUrl} alt={displayName} className="user-avatar-img" />
+            ) : (
+              <span>{initials}</span>
+            )}
             <span className="online-indicator" />
           </div>
           <div className="user-info">
             <div className="name-row">
-              <span className="user-name">Behroz</span>
-              <span className="plan-badge">PRO</span>
+              <span className="user-name">{displayName}</span>
+              <span className="plan-badge">{roleBadge}</span>
             </div>
-            <span className="user-email">behroz@lemmo.space</span>
+            <span className="user-email">{userEmail}</span>
           </div>
         </div>
 
@@ -552,6 +569,15 @@ export default function ProfilePopover({
             color: var(--lemmo-text-primary, #e1e1e3);
             position: relative;
             flex-shrink: 0;
+            overflow: hidden;
+          }
+
+          :global(.user-avatar-img) {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: inherit;
+            display: block;
           }
 
           .online-indicator {

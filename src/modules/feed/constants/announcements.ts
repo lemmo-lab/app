@@ -23,7 +23,7 @@ export const DEFAULT_FEATURE_ANNOUNCEMENTS: FeatureAnnouncement[] = [
     tag: 'NEW ENGINE',
     tagFa: 'موتور جدید',
     title: 'Lemmo Diffusion 4.5 Turbo',
-    titleFa: 'موتور نسل جدید لمو توربو ۴.۵',
+    titleFa: 'موتور نسل جدید لیمو توربو ۴.۵',
     description:
       'Ultra-fast 4K generation in under 3 seconds with native spatial lighting and character consistency across styles.',
     descriptionFa:
