@@ -33,6 +33,7 @@ import {
   Maximize01,
 } from 'synthline/react';
 import { useUiStore, Locale, Direction } from '@/stores/uiStore';
+import { useOptionalStudioContext } from '@/shared/providers/StudioContextProvider';
 
 interface ProfilePopoverProps {
   isOpen: boolean;
@@ -72,6 +73,7 @@ export default function ProfilePopover({
 }: ProfilePopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
   const langDropdownRef = useRef<HTMLDivElement>(null);
+  const studioCtx = useOptionalStudioContext();
   const { locale, dir, setLocale, defaultWorkspace, setDefaultWorkspace } = useUiStore();
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   const isRtl = dir === 'rtl';
@@ -401,10 +403,15 @@ export default function ProfilePopover({
         <div className="menu-divider" role="separator" />
 
         {/* ================= LOGOUT ACTION ================= */}
-        <Link
-          href="/login"
+        <button
+          type="button"
           className="menu-item-btn logout"
-          onClick={onClose}
+          onClick={async () => {
+            onClose();
+            if (studioCtx) {
+              await studioCtx.logout();
+            }
+          }}
           role="menuitem"
           data-action="logout"
         >
@@ -414,7 +421,7 @@ export default function ProfilePopover({
           <span className="item-label">
             {locale === 'fa' ? 'خروج از حساب' : 'Log out'}
           </span>
-        </Link>
+        </button>
 
         <style jsx>{`
           /* ================= Mobile Bottom Sheet Backdrop ================= */

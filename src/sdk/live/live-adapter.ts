@@ -189,7 +189,8 @@ export const liveSdkAdapter: SdkClient = {
 
     get: async (id: string): Promise<Workspace> => {
       const res = await customFetch<{ workspace: Workspace }>(`/api/v1/workspaces/${encodeURIComponent(id)}`);
-      return res.workspace;
+      const payload = res as { data?: { workspace?: Workspace }; workspace?: Workspace };
+      return payload.data?.workspace || payload.workspace!;
     },
 
     update: async (id: string, input: { name?: string; slug?: string }): Promise<Workspace> => {
@@ -197,14 +198,16 @@ export const liveSdkAdapter: SdkClient = {
         method: 'PUT',
         body: JSON.stringify(input),
       });
-      return res.workspace;
+      const payload = res as { data?: { workspace?: Workspace }; workspace?: Workspace };
+      return payload.data?.workspace || payload.workspace!;
     },
 
     getMembers: async (workspaceId: string): Promise<import('../types').WorkspaceMemberInfo[]> => {
       const res = await customFetch<{ members: import('../types').WorkspaceMemberInfo[] }>(
         `/api/v1/workspaces/${encodeURIComponent(workspaceId)}/members`
       );
-      return res.members || [];
+      const payload = res as { data?: { members?: import('../types').WorkspaceMemberInfo[] }; members?: import('../types').WorkspaceMemberInfo[] };
+      return payload.data?.members || payload.members || [];
     },
 
     inviteMember: async (workspaceId: string, email: string, role: string): Promise<void> => {
@@ -231,7 +234,8 @@ export const liveSdkAdapter: SdkClient = {
       const res = await customFetch<{ settings: import('../types').WorkspaceSettingsData }>(
         `/api/v1/workspaces/${encodeURIComponent(workspaceId)}/settings`
       );
-      return res.settings || {};
+      const payload = res as { data?: { settings?: import('../types').WorkspaceSettingsData }; settings?: import('../types').WorkspaceSettingsData };
+      return payload.data?.settings || payload.settings || {};
     },
 
     updateSettings: async (
@@ -245,7 +249,8 @@ export const liveSdkAdapter: SdkClient = {
           body: JSON.stringify({ settings }),
         }
       );
-      return res.settings || {};
+      const payload = res as { data?: { settings?: import('../types').WorkspaceSettingsData }; settings?: import('../types').WorkspaceSettingsData };
+      return payload.data?.settings || payload.settings || {};
     },
   },
 
@@ -522,9 +527,9 @@ export const liveSdkAdapter: SdkClient = {
   quota: {
     getPricing: async (): Promise<import('../types').PricingRateCard> => {
       const res = await customFetch<{ pricing: import('../types').PricingRateCard }>('/api/v1/quota/pricing');
-      return (res as unknown as import('../types').PricingRateCard)?.version
-        ? (res as unknown as import('../types').PricingRateCard)
-        : res.pricing || { version: '1.0.0', currency: 'IRR', tools: {} };
+      const payload = res as { data?: { pricing?: import('../types').PricingRateCard }; pricing?: import('../types').PricingRateCard };
+      const card = payload.data?.pricing || payload.pricing;
+      return card?.version ? card : { version: '1.0.0', currency: 'IRR', tools: {} };
     },
   },
 

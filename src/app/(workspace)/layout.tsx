@@ -5,6 +5,7 @@
  */
 
 import type { Metadata } from 'next';
+import { StudioAuthGuard } from '@/shared/providers/StudioAuthGuard';
 import StudioSidebar from '@/shared/ui/layout/StudioSidebar';
 
 export const metadata: Metadata = {
@@ -20,14 +21,15 @@ export default function WorkspaceLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="studio-shell">
-      {/* Unified 72px Navigation Rail (docked at inline-start / left in LTR) */}
-      <StudioSidebar />
+    <StudioAuthGuard>
+      <div className="studio-shell">
+        {/* Unified 72px Navigation Rail (docked at inline-start / left in LTR) */}
+        <StudioSidebar />
 
-      {/* Main Content Area for Pages (independently scrollable viewport) */}
-      <main className="studio-viewport">{children}</main>
+        {/* Main Content Area for Pages (independently scrollable viewport) */}
+        <main className="studio-viewport">{children}</main>
 
-      <style>{`
+        <style>{`
         .studio-shell {
           display: flex;
           flex-direction: row;
@@ -63,6 +65,7 @@ export default function WorkspaceLayout({
           }
         }
       `}</style>
-    </div>
+      </div>
+    </StudioAuthGuard>
   );
 }
