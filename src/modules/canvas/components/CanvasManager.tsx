@@ -272,83 +272,89 @@ export default function CanvasManager() {
 
   if (!mounted) {
     return (
-      <div className="canvas-loading-skeleton" aria-busy="true">
-        <div className="skeleton-hero" />
-        <div className="skeleton-grid" />
+      <div className="canvas-index-root" dir={dir}>
+        <div className="canvas-main-body">
+          <div className="canvas-skeleton-banner" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="canvas-dashboard-root" dir={dir}>
-      {/* Toast Notification Notification Pill */}
+    <div className="canvas-index-root" dir={dir}>
+      {/* Toast Notification Alert */}
       {toastMessage && (
-        <div className="canvas-toast-banner" role="status" aria-live="polite">
-          <span className="toast-dot" />
-          <span className="toast-text">{toastMessage}</span>
+        <div className="canvas-toast-alert" role="status" aria-live="polite">
+          <span className="toast-dot" aria-hidden="true" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Top Hero Banner */}
-      <CanvasHeroBanner
-        locale={locale}
-        isRtl={isRtl}
-        onAddProject={handleAddBlankProject}
-        onWatchVideo={() => setIsVideoModalOpen(true)}
-      />
-
-      {/* Recommended Starter Templates Section */}
-      {showStarterTemplates && (
-        <CanvasStarterTemplates
+      {/* Main Content Area */}
+      <main className="canvas-main-body">
+        {/* Top Hero Banner */}
+        <CanvasHeroBanner
           locale={locale}
           isRtl={isRtl}
-          templates={CANVAS_STARTER_TEMPLATES}
-          onSelectTemplate={handleUseTemplate}
-          onDismiss={() => setShowStarterTemplates(false)}
+          onAddProject={handleAddBlankProject}
+          onWatchVideo={() => setIsVideoModalOpen(true)}
         />
-      )}
 
-      {/* Filter / Search / Action Toolstrip */}
-      <CanvasActionBar
-        locale={locale}
-        isRtl={isRtl}
-        activeTab={activeTab}
-        tabCounts={tabCounts}
-        searchQuery={searchQuery}
-        sortOption={sortOption}
-        onChangeTab={setActiveTab}
-        onChangeSearch={setSearchQuery}
-        onChangeSort={setSortOption}
-      />
+        {/* Recommended Starter Templates Section */}
+        {showStarterTemplates && (
+          <CanvasStarterTemplates
+            locale={locale}
+            isRtl={isRtl}
+            templates={CANVAS_STARTER_TEMPLATES}
+            onSelectTemplate={handleUseTemplate}
+            onDismiss={() => setShowStarterTemplates(false)}
+          />
+        )}
 
-      {/* Main Grid View */}
-      {filteredProjects.length > 0 ? (
-        <main
-          className="canvas-projects-grid"
-          aria-label={isFa ? 'لیست پروژه‌های بوم' : 'Canvas projects list'}
-        >
-          {filteredProjects.map((project) => (
-            <CanvasProjectCard
-              key={project.id}
-              project={project}
+        {/* Workflow Section (Filter Tabs, Search, Sort & Projects Grid) */}
+        <section className="canvas-workflow-section">
+          <CanvasActionBar
+            locale={locale}
+            isRtl={isRtl}
+            activeTab={activeTab}
+            tabCounts={tabCounts}
+            searchQuery={searchQuery}
+            sortOption={sortOption}
+            onChangeTab={setActiveTab}
+            onChangeSearch={setSearchQuery}
+            onChangeSort={setSortOption}
+          />
+
+          {/* Projects Grid */}
+          {filteredProjects.length > 0 ? (
+            <div
+              className="canvas-projects-grid"
+              aria-label={isFa ? 'لیست پروژه‌های بوم' : 'Canvas projects list'}
+            >
+              {filteredProjects.map((project) => (
+                <CanvasProjectCard
+                  key={project.id}
+                  project={project}
+                  locale={locale}
+                  isRtl={isRtl}
+                  onToggleFavorite={handleToggleFavorite}
+                  onDuplicate={handleDuplicate}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          ) : (
+            <CanvasEmptyState
               locale={locale}
               isRtl={isRtl}
-              onToggleFavorite={handleToggleFavorite}
-              onDuplicate={handleDuplicate}
-              onDelete={handleDelete}
+              isSearchEmpty={Boolean(searchQuery.trim())}
+              searchQuery={searchQuery}
+              onResetSearch={() => setSearchQuery('')}
+              onCreateNew={handleAddBlankProject}
             />
-          ))}
-        </main>
-      ) : (
-        <CanvasEmptyState
-          locale={locale}
-          isRtl={isRtl}
-          isSearchEmpty={Boolean(searchQuery.trim())}
-          searchQuery={searchQuery}
-          onResetSearch={() => setSearchQuery('')}
-          onCreateNew={handleAddBlankProject}
-        />
-      )}
+          )}
+        </section>
+      </main>
 
       {/* Video Modal Walkthrough */}
       <CanvasVideoModal
