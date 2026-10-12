@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUiStore } from '@/stores/uiStore';
 import {
@@ -10,6 +10,7 @@ import {
 import { AgentEmptyStateView } from './AgentEmptyStateView';
 import { AgentChatView } from './AgentChatView';
 import { AgentSingleContentView } from './AgentSingleContentView';
+import { AgentHistoryDrawer } from './AgentHistoryDrawer';
 
 interface AgentManagerProps {
   viewMode: 'empty' | 'chat' | 'single';
@@ -25,6 +26,46 @@ export default function AgentManager({
   const router = useRouter();
   const { dir, locale } = useUiStore();
   const isRtl = dir === 'rtl';
+
+  // Sub-sidebar drawer state
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const stored = localStorage.getItem('lemmo_agent_history_open');
+        if (stored !== null) {
+          setIsHistoryOpen(stored === 'true');
+        } else {
+          setIsHistoryOpen(false);
+        }
+      } catch {
+        // Safe fallback
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleToggleHistory = () => {
+    setIsHistoryOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('lemmo_agent_history_open', String(next));
+      } catch {
+        // Safe fallback
+      }
+      return next;
+    });
+  };
+
+  const handleCloseHistory = () => {
+    setIsHistoryOpen(false);
+    try {
+      localStorage.setItem('lemmo_agent_history_open', 'false');
+    } catch {
+      // Safe fallback
+    }
+  };
 
   // Empty state form states
   const [emptyPrompt, setEmptyPrompt] = useState('');
@@ -47,40 +88,57 @@ export default function AgentManager({
 
   return (
     <div className="agent-engine-root" dir={dir}>
-      {viewMode === 'empty' && (
-        <AgentEmptyStateView
-          prompt={emptyPrompt}
-          onChangePrompt={setEmptyPrompt}
-          references={emptyReferences}
-          onAddReference={(ref) => setEmptyReferences((prev) => [...prev, ref])}
-          onRemoveReference={(id) =>
-            setEmptyReferences((prev) => prev.filter((r) => r.id !== id))
-          }
-          config={emptyConfig}
-          onChangeConfig={setEmptyConfig}
-          onSubmit={handleEmptySubmit}
-          isSubmitting={isSubmitting}
+      <div className="agent-engine-layout">
+        <AgentHistoryDrawer
+          isOpen={isHistoryOpen}
+          onToggle={handleToggleHistory}
+          onClose={handleCloseHistory}
+          activeThreadId={viewMode === 'chat' ? currentId : undefined}
           locale={locale}
           isRtl={isRtl}
         />
-      )}
 
-      {viewMode === 'chat' && (
-        <AgentChatView
-          currentId={currentId}
-          initialPrompt={initialPrompt}
-          locale={locale}
-          isRtl={isRtl}
-        />
-      )}
+        <main className="agent-engine-content">
+          {viewMode === 'empty' && (
+            <AgentEmptyStateView
+              prompt={emptyPrompt}
+              onChangePrompt={setEmptyPrompt}
+              references={emptyReferences}
+              onAddReference={(ref) => setEmptyReferences((prev) => [...prev, ref])}
+              onRemoveReference={(id) =>
+                setEmptyReferences((prev) => prev.filter((r) => r.id !== id))
+              }
+              config={emptyConfig}
+              onChangeConfig={setEmptyConfig}
+              onSubmit={handleEmptySubmit}
+              isSubmitting={isSubmitting}
+              locale={locale}
+              isRtl={isRtl}
+              isHistoryOpen={isHistoryOpen}
+              onToggleHistory={handleToggleHistory}
+            />
+          )}
 
-      {viewMode === 'single' && (
-        <AgentSingleContentView
-          currentId={currentId}
-          locale={locale}
-          isRtl={isRtl}
-        />
-      )}
+          {viewMode === 'chat' && (
+            <AgentChatView
+              currentId={currentId}
+              initialPrompt={initialPrompt}
+              locale={locale}
+              isRtl={isRtl}
+              isHistoryOpen={isHistoryOpen}
+              onToggleHistory={handleToggleHistory}
+            />
+          )}
+
+          {viewMode === 'single' && (
+            <AgentSingleContentView
+              currentId={currentId}
+              locale={locale}
+              isRtl={isRtl}
+            />
+          )}
+        </main>
+      </div>
     </div>
   );
 }

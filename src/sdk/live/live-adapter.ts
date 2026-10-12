@@ -43,6 +43,10 @@ import {
   getContent,
   getFeed,
   getFeedItem,
+  renameChatThread,
+  deleteChatThread,
+  estimateQuotaCost,
+  getQuotaPricing,
   type GetMeContext200,
   type ListProjects200,
   type CreateProject201,
@@ -383,13 +387,10 @@ export const liveSdkAdapter: SdkClient = {
         expectedCost?: number;
       }
     ): Promise<SendMessageResponse> => {
+      void options;
       const response = await sendChatMessage({
         threadId: threadId ?? undefined,
         content,
-        model: options?.model,
-        aspectRatio: options?.aspectRatio,
-        numOutputs: options?.numOutputs,
-        expectedCost: options?.expectedCost,
       });
       if (response.status === 202) {
         return response.data as SendMessageResponse;
@@ -410,6 +411,16 @@ export const liveSdkAdapter: SdkClient = {
     getThread: async (threadId: string): Promise<Thread> => {
       const response = await getChatThread(threadId);
       return (response as { data: Thread }).data;
+    },
+
+    deleteThread: async (threadId: string): Promise<void> => {
+      await deleteChatThread(threadId);
+    },
+
+    renameThread: async (threadId: string, title: string): Promise<Thread> => {
+      const res = await renameChatThread(threadId, { title });
+      const payload = res as { data?: Thread } | Thread;
+      return ('data' in payload && payload.data) ? payload.data : (payload as Thread);
     },
 
     subscribe: (threadId: string, messageId: string, onEvent: (event: ChatEvent) => void): (() => void) => {
@@ -548,10 +559,14 @@ export const liveSdkAdapter: SdkClient = {
   // ================================================================ //
   quota: {
     getPricing: async (): Promise<import('../types').PricingRateCard> => {
-      const res = await customFetch<{ pricing: import('../types').PricingRateCard }>('/api/v1/quota/pricing');
-      const payload = res as { data?: { pricing?: import('../types').PricingRateCard }; pricing?: import('../types').PricingRateCard };
-      const card = payload.data?.pricing || payload.pricing;
-      return card?.version ? card : { version: '1.0.0', currency: 'IRR', tools: {} };
+      const res = await getQuotaPricing();
+      const payload = ((res as { data?: unknown }).data || res) as Record<string, unknown>;
+      const innerPricing = (payload.pricing as Record<string, unknown>) || payload;
+      return {
+        version: (innerPricing.version as string) || (payload.version as string) || 'v1.0',
+        currency: (innerPricing.currency as string) || (payload.currency as string) || 'lemmo_credits',
+        tools: (innerPricing.tools as Record<string, unknown>) || (payload.tools as Record<string, unknown>) || {},
+      };
     },
 
     estimate: async (params: {
@@ -567,23 +582,17 @@ export const liveSdkAdapter: SdkClient = {
       rateCardVersion: string;
       breakdown?: Record<string, unknown>;
     }> => {
-      const res = await customFetch<{
-        estimated_credits: number;
-        rate_card_version: string;
-        breakdown?: Record<string, unknown>;
-      }>('/api/v1/quota/estimate', {
-        method: 'POST',
-        body: JSON.stringify({
-          tool_id: params.toolId || 'image_generation',
-          model_id: params.modelId,
-          width: params.width || 1024,
-          height: params.height || 1024,
-          steps: params.steps || 28,
-          num_outputs: params.numOutputs || 1,
-          is_byo: params.isByo || false,
-        }),
+      const res = await estimateQuotaCost({
+        tool_id: params.toolId || 'text-to-image',
+        model_id: params.modelId,
+        width: params.width || 1024,
+        height: params.height || 1024,
+        steps: params.steps || 28,
+        num_outputs: params.numOutputs || 1,
+        is_byo: params.isByo || false,
       });
-      const data = ((res as { data?: Record<string, unknown> }).data || res) as Record<string, unknown>;
+      const resObj = res as unknown as { data?: Record<string, unknown> };
+      const data = (resObj.data || resObj) as Record<string, unknown>;
       return {
         estimatedCredits: (data.estimated_credits as number) ?? (data.estimatedCredits as number) ?? 20,
         rateCardVersion: (data.rate_card_version as string) ?? (data.rateCardVersion as string) ?? 'v1.0',

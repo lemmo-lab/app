@@ -15,7 +15,7 @@ export interface UseQuotaEstimateParams {
 }
 
 export function useQuotaEstimate({
-  toolId = 'image_generation',
+  toolId = 'text-to-image',
   modelId,
   width = 1024,
   height = 1024,

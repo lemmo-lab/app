@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Eye, RefreshCw } from 'synthline/react';
+import { ArrowLeft, ArrowRight, Eye, RefreshCw, Clock03 } from 'synthline/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { sdk, Message } from '@/sdk';
 import { useOptionalStudioContext } from '@/shared/providers/StudioContextProvider';
@@ -21,15 +21,32 @@ interface AgentChatViewProps {
   initialPrompt?: string;
   locale: string;
   isRtl: boolean;
+  isHistoryOpen?: boolean;
+  onToggleHistory?: () => void;
 }
 
 /**
  * Maps SDK Message domain model to AgentChatMessageItem UI presentation model.
+ * Fully supports both snake_case (PostgreSQL DB/REST) and camelCase (Proto/SDK) models.
  */
 function mapSdkMessageToAgentMessage(
   msg: Message,
   config?: AgentGenerationConfig
 ): AgentChatMessageItem {
+  const rawMsg = msg as unknown as Record<string, unknown>;
+  const rawCreatedAt =
+    msg.createdAt ||
+    (rawMsg.created_at as string | number) ||
+    Date.now();
+  const timestampDate = new Date(
+    typeof rawCreatedAt === 'number' && rawCreatedAt < 10000000000
+      ? rawCreatedAt * 1000
+      : rawCreatedAt
+  );
+  const formattedTime = !isNaN(timestampDate.getTime())
+    ? timestampDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   if (msg.role === 'user') {
     const refs: AgentReferenceItem[] = (msg.attachments || []).map((att) => ({
       id: att.id,
@@ -39,7 +56,7 @@ function mapSdkMessageToAgentMessage(
     return {
       id: msg.id,
       sender: 'user',
-      timestamp: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: formattedTime,
       prompt: msg.content,
       references: refs.length > 0 ? refs : undefined,
     };
@@ -47,19 +64,65 @@ function mapSdkMessageToAgentMessage(
 
   // Assistant response
   let mediaUrl = msg.attachments?.[0]?.url;
+
+  // Extract media URL directly from parts array if present
+  const rawParts = (msg.parts || (rawMsg.parts as Array<Record<string, unknown>>)) as
+    | Array<Record<string, unknown>>
+    | undefined;
+
+  if (!mediaUrl && Array.isArray(rawParts)) {
+    for (const part of rawParts) {
+      if (typeof part.url === 'string' && part.url) {
+        mediaUrl = part.url;
+        break;
+      }
+      if (typeof part.output_url === 'string' && part.output_url) {
+        mediaUrl = part.output_url;
+        break;
+      }
+      if (typeof part.preview_url === 'string' && part.preview_url) {
+        mediaUrl = part.preview_url;
+        break;
+      }
+    }
+  }
+
   if (mediaUrl && mediaUrl.includes('minio:9000')) {
     mediaUrl = mediaUrl.replace('minio:9000', 'localhost:9000');
   }
+
   const aspect =
     (msg.attachments?.[0]?.aspectRatio as AgentAspectRatio) ||
     config?.aspectRatio ||
     '3:4';
-  const firstJob = msg.jobs?.[0];
+
+  // Extract jobId supporting both camelCase and snake_case from jobs array and parts
+  const rawJobs = (msg.jobs || (rawMsg.jobs as Array<Record<string, unknown>>)) as
+    | Array<Record<string, unknown>>
+    | undefined;
+  const firstJob = rawJobs?.[0];
+  const jobRefPart = Array.isArray(rawParts)
+    ? rawParts.find((p) => p.type === 'job_ref' || p.job_id || p.jobId)
+    : undefined;
+
+  const resolvedJobId =
+    (firstJob?.jobId as string) ||
+    (firstJob?.job_id as string) ||
+    (jobRefPart?.job_id as string) ||
+    (jobRefPart?.jobId as string) ||
+    msg.jobId ||
+    (rawMsg.job_id as string);
+
+  const resolvedToolId =
+    (firstJob?.toolId as string) ||
+    (firstJob?.tool_id as string) ||
+    (jobRefPart?.tool_id as string) ||
+    (jobRefPart?.toolId as string);
 
   return {
     id: msg.id,
     sender: 'assistant',
-    timestamp: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    timestamp: formattedTime,
     text: msg.content,
     resultMediaUrl: mediaUrl,
     contentType: config?.contentType || 'image',
@@ -70,8 +133,8 @@ function mapSdkMessageToAgentMessage(
     creditsUsed: (config?.batchCount || 1) * 5,
     isFavorite: false,
     status: (msg.status as AgentChatMessageItem['status']) || 'completed',
-    jobId: firstJob?.jobId || msg.jobId,
-    toolId: firstJob?.toolId,
+    jobId: resolvedJobId,
+    toolId: resolvedToolId,
   };
 }
 
@@ -80,25 +143,29 @@ export function AgentChatView({
   initialPrompt,
   locale,
   isRtl,
+  isHistoryOpen,
+  onToggleHistory,
 }: AgentChatViewProps) {
   const queryClient = useQueryClient();
   const studioContext = useOptionalStudioContext();
   const activeWorkspaceId = studioContext?.activeWorkspace?.id || '';
+  const studioState = studioContext?.state || 'loading';
+  const isContextReady = studioState === 'ready' && Boolean(activeWorkspaceId);
 
   // 1. Fetch available chat threads to identify active thread ID (SEC-23: workspace-scoped)
   const { data: threads = [] } = useQuery({
     queryKey: ['workspace', activeWorkspaceId, 'chat-threads'],
     queryFn: () => sdk.chat.getThreads(),
-    enabled: Boolean(activeWorkspaceId),
+    enabled: isContextReady,
   });
 
-  const activeThreadId = currentId || threads[0]?.id || 'thread-001';
+  const activeThreadId = currentId || threads[0]?.id || '';
 
   // 2. Fetch messages for active thread from SDK (SEC-23: workspace-scoped)
   const { data: threadData } = useQuery({
     queryKey: ['workspace', activeWorkspaceId, 'chat-thread', activeThreadId],
     queryFn: () => sdk.chat.getThread(activeThreadId),
-    enabled: Boolean(activeThreadId && activeWorkspaceId),
+    enabled: isContextReady && Boolean(activeThreadId),
   });
 
   // Local session messages per thread
@@ -111,9 +178,28 @@ export function AgentChatView({
     return threadData.messages.map((m) => mapSdkMessageToAgentMessage(m));
   }, [threadData]);
 
-  // Combined messages sequence (server history + session messages)
+  // Combined messages sequence (server history + session messages with deduplication by ID)
   const messages: AgentChatMessageItem[] = useMemo(() => {
-    return [...initialMessages, ...sessionMessages];
+    const map = new Map<string, AgentChatMessageItem>();
+    for (const m of initialMessages) {
+      map.set(m.id, m);
+    }
+    for (const m of sessionMessages) {
+      const existing = map.get(m.id);
+      if (existing) {
+        map.set(m.id, {
+          ...existing,
+          ...m,
+          text: m.text || existing.text,
+          status: m.status || existing.status,
+          resultMediaUrl: m.resultMediaUrl || existing.resultMediaUrl,
+          jobId: m.jobId || existing.jobId,
+        });
+      } else {
+        map.set(m.id, m);
+      }
+    }
+    return Array.from(map.values());
   }, [initialMessages, sessionMessages]);
 
   const [prompt, setPrompt] = useState('');
@@ -232,6 +318,7 @@ export function AgentChatView({
             return { ...prev, [tid]: updated };
           });
           queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'chat-thread', tid] });
+          queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'chat-threads'] });
         } else if (event.type === 'message_failed') {
           setLocalMessages((prev) => {
             const currentList = prev[tid] || [];
@@ -285,11 +372,6 @@ export function AgentChatView({
       const cleanPrompt = initialPrompt.trim();
       if (!cleanPrompt) return;
 
-      // Remove searchParams from browser URL to prevent re-submission on refresh (F5)
-      if (typeof window !== 'undefined' && window.location.search) {
-        window.history.replaceState(null, '', window.location.pathname);
-      }
-
       const userMsg: AgentChatMessageItem = {
         id: `msg-${Date.now()}`,
         sender: 'user',
@@ -297,7 +379,7 @@ export function AgentChatView({
         prompt: cleanPrompt,
       };
 
-      queueMicrotask(() => {
+      const timer = setTimeout(() => {
         setLocalMessages((prev) => ({
           ...prev,
           [activeThreadId]: [...(prev[activeThreadId] || []), userMsg],
@@ -307,7 +389,14 @@ export function AgentChatView({
           threadId: activeThreadId,
           content: cleanPrompt,
         });
-      });
+
+        // Remove searchParams from browser URL AFTER dispatching to avoid canceling the initial render
+        if (typeof window !== 'undefined' && window.location.search) {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }, 0);
+
+      return () => clearTimeout(timer);
     }
   }, [initialPrompt, activeThreadId, sendMessageMutation]);
 
@@ -352,6 +441,17 @@ export function AgentChatView({
       {/* Header bar */}
       <header className="chat-thread-header">
         <div className="chat-title-group">
+          {onToggleHistory && (
+            <button
+              type="button"
+              className={`history-toggle-btn ${isHistoryOpen ? 'active' : ''}`}
+              onClick={onToggleHistory}
+              aria-label={locale === 'fa' ? 'تاریخچه گفتگوها' : 'Chat History'}
+              title={locale === 'fa' ? 'تاریخچه گفتگوها' : 'Chat History'}
+            >
+              <Clock03 size={16} strokeWidth={1.5} color="currentColor" />
+            </button>
+          )}
           <Link
             href="/app/agent"
             className="back-to-empty-btn"

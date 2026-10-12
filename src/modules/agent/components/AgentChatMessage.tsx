@@ -36,12 +36,77 @@ export function AgentChatMessage({
   const [jobProgress, setJobProgress] = useState<number>(0);
   const [jobStatus, setJobStatus] = useState<'idle' | 'running' | 'done' | 'failed'>('idle');
 
+  const activeJobId =
+    message.jobId ||
+    (message as unknown as { job_id?: string }).job_id;
   const mediaUrl = message.resultMediaUrl || jobMediaUrl;
 
   useEffect(() => {
-    if (!message.jobId || message.resultMediaUrl || jobMediaUrl) return;
+    if (!activeJobId || message.resultMediaUrl || jobMediaUrl) return;
 
-    const unsubscribe = sdk.jobs.subscribe(message.jobId, (event) => {
+    let isMounted = true;
+
+    // Helper to extract and normalize image URL from results payload
+    const extractUrlFromResults = (results?: Record<string, unknown>): string | undefined => {
+      if (!results) return undefined;
+      let url =
+        (results.url as string) ||
+        (results.output_url as string) ||
+        (results.preview_url as string);
+      if (!url && (results.object_key || results.output_object_key)) {
+        const key = (results.object_key || results.output_object_key) as string;
+        url = `http://localhost:9000/lemmo-artifacts/${key}`;
+      }
+      if (url && url.includes('minio:9000')) {
+        url = url.replace('minio:9000', 'localhost:9000');
+      }
+      return url;
+    };
+
+    // 1. Immediately query job state via REST (handles historical/completed messages)
+    sdk.jobs
+      .get(activeJobId)
+      .then((job) => {
+        if (!isMounted) return;
+        const jobResults = (job as unknown as { results?: Record<string, unknown> })?.results;
+        const status = job.status as string;
+        if (
+          status === 'done' ||
+          status === 'SUCCEEDED' ||
+          status === 'completed' ||
+          jobResults?.url ||
+          jobResults?.output_url
+        ) {
+          setJobStatus('done');
+          const url = extractUrlFromResults(jobResults);
+          if (url) {
+            setJobMediaUrl(url);
+            return;
+          }
+          if (job.resultAssetId || jobResults?.asset_id) {
+            const assetId = (job.resultAssetId || jobResults?.asset_id) as string;
+            sdk.assets
+              .get(assetId)
+              .then((asset) => {
+                if (isMounted && asset?.url) {
+                  let assetUrl = asset.url;
+                  if (assetUrl.includes('minio:9000')) {
+                    assetUrl = assetUrl.replace('minio:9000', 'localhost:9000');
+                  }
+                  setJobMediaUrl(assetUrl);
+                }
+              })
+              .catch(() => {});
+          }
+        }
+      })
+      .catch(() => {
+        // Fallback gracefully to live SSE stream
+      });
+
+    // 2. Subscribe to live progress feed
+    const unsubscribe = sdk.jobs.subscribe(activeJobId, (event) => {
+      if (!isMounted) return;
       setJobStatus('running');
       if (event.progressPercent !== undefined) {
         setJobProgress(event.progressPercent);
@@ -53,25 +118,22 @@ export function AgentChatMessage({
       ) {
         setJobStatus('done');
         const results = event.results as Record<string, unknown> | undefined;
-        let generatedUrl = (results?.url as string) || (results?.output_url as string) || (results?.preview_url as string);
-        if (!generatedUrl && (results?.object_key || results?.output_object_key)) {
-          const key = (results?.object_key || results?.output_object_key) as string;
-          generatedUrl = `http://localhost:9000/lemmo-artifacts/${key}`;
-        }
+        const generatedUrl = extractUrlFromResults(results);
         if (generatedUrl) {
-          if (generatedUrl.includes('minio:9000')) {
-            generatedUrl = generatedUrl.replace('minio:9000', 'localhost:9000');
-          }
           setJobMediaUrl(generatedUrl);
         } else if (results?.asset_id) {
           sdk.assets
             .get(results.asset_id as string)
             .then((asset) => {
-              if (asset?.url) setJobMediaUrl(asset.url);
+              if (isMounted && asset?.url) {
+                let assetUrl = asset.url;
+                if (assetUrl.includes('minio:9000')) {
+                  assetUrl = assetUrl.replace('minio:9000', 'localhost:9000');
+                }
+                setJobMediaUrl(assetUrl);
+              }
             })
-            .catch(() => {
-              // fallback
-            });
+            .catch(() => {});
         }
       } else if (event.status === 'failed' || event.status === 'FAILED') {
         setJobStatus('failed');
@@ -79,9 +141,10 @@ export function AgentChatMessage({
     });
 
     return () => {
+      isMounted = false;
       unsubscribe();
     };
-  }, [message.jobId, message.resultMediaUrl, jobMediaUrl]);
+  }, [activeJobId, message.resultMediaUrl, jobMediaUrl]);
 
   const handleCopy = (text?: string) => {
     if (!text) return;

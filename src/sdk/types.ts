@@ -418,6 +418,8 @@ export interface SdkClient {
     ) => Promise<SendMessageResponse>;
     getThreads: () => Promise<Thread[]>;
     getThread: (threadId: string) => Promise<Thread>;
+    deleteThread: (threadId: string) => Promise<void>;
+    renameThread: (threadId: string, title: string) => Promise<Thread>;
     subscribe: (threadId: string, messageId: string, onEvent: (event: ChatEvent) => void) => () => void;
     cancelMessage?: (threadId: string, messageId: string) => Promise<void>;
   };

@@ -7,4 +7,5 @@ export { AgentChatMessage } from './components/AgentChatMessage';
 export { AgentEmptyStateView } from './components/AgentEmptyStateView';
 export { AgentChatView } from './components/AgentChatView';
 export { AgentSingleContentView } from './components/AgentSingleContentView';
+export { AgentHistoryDrawer } from './components/AgentHistoryDrawer';
 export { default as AgentManager } from './components/AgentManager';

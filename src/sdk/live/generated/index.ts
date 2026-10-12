@@ -98,31 +98,6 @@ export interface Job {
   toolId: string;
 }
 
-export interface MessageJob {
-  jobId: string;
-  toolId: string;
-  toolVersion?: number;
-}
-
-export type SendMessageResponseStatus = typeof SendMessageResponseStatus[keyof typeof SendMessageResponseStatus];
-
-
-export const SendMessageResponseStatus = {
-  pending: 'pending',
-  streaming: 'streaming',
-  awaiting_confirmation: 'awaiting_confirmation',
-  completed: 'completed',
-  failed: 'failed',
-  cancelled: 'cancelled',
-} as const;
-
-export interface SendMessageResponse {
-  assistantMessageId: string;
-  status: SendMessageResponseStatus;
-  threadId: string;
-  userMessageId: string;
-}
-
 export type MessagePartsItem = { [key: string]: unknown };
 
 export type MessageRole = typeof MessageRole[keyof typeof MessageRole];
@@ -146,10 +121,17 @@ export const MessageStatus = {
   cancelled: 'cancelled',
 } as const;
 
+export interface MessageJob {
+  jobId: string;
+  toolId: string;
+  toolVersion?: number;
+}
+
 export interface Message {
   content: string;
   createdAt: number;
   id: string;
+  /** Deprecated single-job identifier for backwards compatibility. */
   jobId?: string;
   jobs?: MessageJob[];
   parts?: MessagePartsItem[];
@@ -208,6 +190,66 @@ export interface QuickTool {
   nameFa?: string;
 }
 
+export interface QuotaEstimateRequest {
+  /** Optional expected credit cost to safeguard against price changes or race conditions (ADR-021). */
+  expected_cost?: number;
+  /** Output image height in pixels. */
+  height?: number;
+  /** Whether caller brings their own API key. */
+  is_byo?: boolean;
+  /** AI model identifier. */
+  model_id?: string;
+  /** Number of generated outputs. */
+  num_outputs?: number;
+  /** Number of inference steps. */
+  steps?: number;
+  /** Canonical tool identifier matching the tools catalog (e.g. text-to-image). */
+  tool_id: string;
+  /** Output image width in pixels. */
+  width?: number;
+}
+
+/**
+ * Detailed breakdown of the estimated calculation.
+ */
+export type QuotaEstimateResponseBreakdown = { [key: string]: unknown };
+
+export interface QuotaEstimateResponse {
+  /** Detailed breakdown of the estimated calculation. */
+  breakdown?: QuotaEstimateResponseBreakdown;
+  /** Deterministic estimated credit amount. */
+  estimated_credits: number;
+  /** Active rate-card version used for calculation. */
+  rate_card_version: string;
+}
+
+export type QuotaPricingResponseTools = { [key: string]: unknown };
+
+export interface QuotaPricingResponse {
+  currency: string;
+  tools: QuotaPricingResponseTools;
+  version: string;
+}
+
+export type SendMessageResponseStatus = typeof SendMessageResponseStatus[keyof typeof SendMessageResponseStatus];
+
+
+export const SendMessageResponseStatus = {
+  pending: 'pending',
+  streaming: 'streaming',
+  awaiting_confirmation: 'awaiting_confirmation',
+  completed: 'completed',
+  failed: 'failed',
+  cancelled: 'cancelled',
+} as const;
+
+export interface SendMessageResponse {
+  assistantMessageId: string;
+  status: SendMessageResponseStatus;
+  threadId: string;
+  userMessageId: string;
+}
+
 export interface Thread {
   /** @nullable */
   activeMessageId?: string | null;
@@ -254,23 +296,31 @@ export const ToolManifestOutputType = {
   text: 'text',
 } as const;
 
+export type ToolManifestType = typeof ToolManifestType[keyof typeof ToolManifestType];
+
+
+export const ToolManifestType = {
+  generator: 'generator',
+  template: 'template',
+  workflow: 'workflow',
+} as const;
+
 export interface ToolManifest {
-  version?: number;
+  agent_visible?: boolean;
+  capability?: string;
   category: string;
-  type: string;
-  capability: string;
   chat_alias?: string[];
-  agent_visible: boolean;
-  llm_description?: string;
   description: string;
   descriptionFa: string;
   estimatedTokenCost?: number;
   icon?: string;
   id: string;
   inputFields: ToolField[];
+  llm_description?: string;
   name: string;
   nameFa: string;
   outputType: ToolManifestOutputType;
+  type?: ToolManifestType;
 }
 
 /**
@@ -395,13 +445,17 @@ export const SendChatMessageBodyMode = {
 
 export type SendChatMessageBody = {
   content: string;
+  mode?: SendChatMessageBodyMode;
   /** @nullable */
   threadId?: string | null;
-  mode?: SendChatMessageBodyMode;
-  model?: string;
-  aspectRatio?: string;
-  numOutputs?: number;
-  expectedCost?: number;
+};
+
+export type RenameChatThreadBody = {
+  /**
+     * @minLength 1
+     * @maxLength 255
+     */
+  title: string;
 };
 
 export type GetContent200 = {
@@ -552,6 +606,17 @@ export type CreateProject201 = {
   version: number;
 };
 
+export type GetQuotaPricing200Tools = { [key: string]: unknown };
+
+export type GetQuotaPricing200 = {
+  currency?: string;
+  tools?: GetQuotaPricing200Tools;
+  version?: string;
+};
+
+/**
+ * Explicit input classification per ADR-019.
+ */
 export type ExecuteToolBodyInputKind = typeof ExecuteToolBodyInputKind[keyof typeof ExecuteToolBodyInputKind];
 
 
@@ -561,16 +626,37 @@ export const ExecuteToolBodyInputKind = {
   natural_language: 'natural_language',
 } as const;
 
+/**
+ * Parameter dictionary for the tool.
+ */
 export type ExecuteToolBodyInputs = { [key: string]: unknown };
 
 export type ExecuteToolBody = {
+  /**
+     * Maximum user-approved cost threshold for price change protection.
+     * @nullable
+     */
+  expected_cost?: number | null;
+  /** Explicit input classification per ADR-019. */
   input_kind: ExecuteToolBodyInputKind;
-  expected_cost?: number;
-  run_id?: string;
-  parent_reservation_id?: string;
+  /** Parameter dictionary for the tool. */
   inputs?: ExecuteToolBodyInputs;
+  /**
+     * Run-level quota reservation ID to prevent double booking.
+     * @nullable
+     */
+  parent_reservation_id?: string | null;
+  /**
+     * Canvas workflow run ID if executed within a graph.
+     * @nullable
+     */
+  run_id?: string | null;
   [key: string]: unknown;
  };
+
+export type ExecuteTool200 = {
+  jobId: string;
+};
 
 export type ExecuteTool202 = {
   jobId: string;
@@ -1138,7 +1224,7 @@ export const getListChatThreadsUrl = () => {
 }
 
 /**
- * Returns conversation threads for the active workspace.
+ * Returns conversation threads for the active workspace and authenticated user.
  * @summary List Chat Threads
  */
 export const listChatThreads = async ( options?: Parameters<typeof customFetch>[1]): Promise<listChatThreadsResponse> => {
@@ -1147,6 +1233,50 @@ export const listChatThreads = async ( options?: Parameters<typeof customFetch>[
   {
     ...options,
     method: 'GET'
+
+
+  }
+);}
+
+
+
+export type deleteChatThreadResponse204 = {
+  data: void
+  status: 204
+}
+
+export type deleteChatThreadResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type deleteChatThreadResponseSuccess = (deleteChatThreadResponse204) & {
+  headers: Headers;
+};
+export type deleteChatThreadResponseError = (deleteChatThreadResponse404) & {
+  headers: Headers;
+};
+
+export type deleteChatThreadResponse = (deleteChatThreadResponseSuccess | deleteChatThreadResponseError)
+
+export const getDeleteChatThreadUrl = (threadId: string,) => {
+
+
+
+
+  return `/api/v1/chat/threads/${threadId}`
+}
+
+/**
+ * Soft deletes a conversation thread.
+ * @summary Delete Chat Thread
+ */
+export const deleteChatThread = async (threadId: string, options?: Parameters<typeof customFetch>[1]): Promise<deleteChatThreadResponse> => {
+
+  return customFetch<deleteChatThreadResponse>(getDeleteChatThreadUrl(threadId),
+  {
+    ...options,
+    method: 'DELETE'
 
 
   }
@@ -1198,47 +1328,65 @@ export const getChatThread = async (threadId: string, options?: Parameters<typeo
 
 
 
-export type streamChatMessageEventsResponse200 = {
-  data: string
+export type renameChatThreadResponse200 = {
+  data: Thread
   status: 200
 }
 
-export type streamChatMessageEventsResponse404 = {
+export type renameChatThreadResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type renameChatThreadResponse404 = {
   data: ProblemDetails
   status: 404
 }
 
-export type streamChatMessageEventsResponseSuccess = (streamChatMessageEventsResponse200) & {
+export type renameChatThreadResponseSuccess = (renameChatThreadResponse200) & {
   headers: Headers;
 };
-export type streamChatMessageEventsResponseError = (streamChatMessageEventsResponse404) & {
+export type renameChatThreadResponseError = (renameChatThreadResponse400 | renameChatThreadResponse404) & {
   headers: Headers;
 };
 
-export type streamChatMessageEventsResponse = (streamChatMessageEventsResponseSuccess | streamChatMessageEventsResponseError)
+export type renameChatThreadResponse = (renameChatThreadResponseSuccess | renameChatThreadResponseError)
 
-export const getStreamChatMessageEventsUrl = (threadId: string,
-    messageId: string,) => {
-
+export const getRenameChatThreadUrl = (threadId: string,) => {
 
 
 
-  return `/api/v1/chat/threads/${threadId}/messages/${messageId}/events`
+
+  return `/api/v1/chat/threads/${threadId}`
 }
 
 /**
- * Real-time Server-Sent Events (SSE) stream for a specific assistant message.
- * @summary Stream Chat Message Events
+ * Renames an existing chat thread.
+ * @summary Update Chat Thread Title
  */
-export const streamChatMessageEvents = async (threadId: string,
-    messageId: string, options?: Parameters<typeof customFetch>[1]): Promise<streamChatMessageEventsResponse> => {
+export const renameChatThread = async (threadId: string,
+    renameChatThreadBody: RenameChatThreadBody, options?: Parameters<typeof customFetch>[1]): Promise<renameChatThreadResponse> => {
 
-  return customFetch<streamChatMessageEventsResponse>(getStreamChatMessageEventsUrl(threadId,messageId),
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<renameChatThreadResponse>(getRenameChatThreadUrl(threadId),
   {
     ...options,
-    method: 'GET'
-
-
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(renameChatThreadBody)
   }
 );}
 
@@ -1283,6 +1431,52 @@ export const cancelChatMessage = async (threadId: string,
   {
     ...options,
     method: 'POST'
+
+
+  }
+);}
+
+
+
+export type streamChatMessageEventsResponse200 = {
+  data: string
+  status: 200
+}
+
+export type streamChatMessageEventsResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type streamChatMessageEventsResponseSuccess = (streamChatMessageEventsResponse200) & {
+  headers: Headers;
+};
+export type streamChatMessageEventsResponseError = (streamChatMessageEventsResponse404) & {
+  headers: Headers;
+};
+
+export type streamChatMessageEventsResponse = (streamChatMessageEventsResponseSuccess | streamChatMessageEventsResponseError)
+
+export const getStreamChatMessageEventsUrl = (threadId: string,
+    messageId: string,) => {
+
+
+
+
+  return `/api/v1/chat/threads/${threadId}/messages/${messageId}/events`
+}
+
+/**
+ * Real-time Server-Sent Events (SSE) stream for a specific assistant message.
+ * @summary Stream Chat Message Events
+ */
+export const streamChatMessageEvents = async (threadId: string,
+    messageId: string, options?: Parameters<typeof customFetch>[1]): Promise<streamChatMessageEventsResponse> => {
+
+  return customFetch<streamChatMessageEventsResponse>(getStreamChatMessageEventsUrl(threadId,messageId),
+  {
+    ...options,
+    method: 'GET'
 
 
   }
@@ -1747,6 +1941,111 @@ return customFetch<createProjectResponse>(getCreateProjectUrl(),
 
 
 
+export type estimateQuotaCostResponse200 = {
+  data: QuotaEstimateResponse
+  status: 200
+}
+
+export type estimateQuotaCostResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type estimateQuotaCostResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type estimateQuotaCostResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type estimateQuotaCostResponseSuccess = (estimateQuotaCostResponse200) & {
+  headers: Headers;
+};
+export type estimateQuotaCostResponseError = (estimateQuotaCostResponse400 | estimateQuotaCostResponse401 | estimateQuotaCostResponse404) & {
+  headers: Headers;
+};
+
+export type estimateQuotaCostResponse = (estimateQuotaCostResponseSuccess | estimateQuotaCostResponseError)
+
+export const getEstimateQuotaCostUrl = () => {
+
+
+
+
+  return `/api/v1/quota/estimate`
+}
+
+/**
+ * Calculates deterministic credit cost for executing a tool/model before invocation.
+ * @summary Estimate Quota Cost
+ */
+export const estimateQuotaCost = async (quotaEstimateRequest: QuotaEstimateRequest, options?: Parameters<typeof customFetch>[1]): Promise<estimateQuotaCostResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<estimateQuotaCostResponse>(getEstimateQuotaCostUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(quotaEstimateRequest)
+  }
+);}
+
+
+
+export type getQuotaPricingResponse200 = {
+  data: GetQuotaPricing200
+  status: 200
+}
+
+export type getQuotaPricingResponseSuccess = (getQuotaPricingResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getQuotaPricingResponse = (getQuotaPricingResponseSuccess)
+
+export const getGetQuotaPricingUrl = () => {
+
+
+
+
+  return `/api/v1/quota/pricing`
+}
+
+/**
+ * Returns public pricing summary for AI capabilities and tools from quota-service rate-card.
+ * @summary Get Rate Card Pricing
+ */
+export const getQuotaPricing = async ( options?: Parameters<typeof customFetch>[1]): Promise<getQuotaPricingResponse> => {
+
+  return customFetch<getQuotaPricingResponse>(getGetQuotaPricingUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export type listToolsResponse200 = {
   data: ToolManifest[]
   status: 200
@@ -1784,6 +2083,11 @@ export const listTools = async ( options?: Parameters<typeof customFetch>[1]): P
 
 
 
+export type executeToolResponse200 = {
+  data: ExecuteTool200
+  status: 200
+}
+
 export type executeToolResponse202 = {
   data: ExecuteTool202
   status: 202
@@ -1799,7 +2103,7 @@ export type executeToolResponse409 = {
   status: 409
 }
 
-export type executeToolResponseSuccess = (executeToolResponse202) & {
+export type executeToolResponseSuccess = (executeToolResponse200 | executeToolResponse202) & {
   headers: Headers;
 };
 export type executeToolResponseError = (executeToolResponse400 | executeToolResponse409) & {
