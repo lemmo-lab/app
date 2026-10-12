@@ -1,7 +1,7 @@
 # RULES.md — Frontend Engineering & Quality Governance (`/app`)
 
-> **وضعیت سند:** `پیش‌نویس حاکمیتی در انتظار تصویب (Governance Draft — Pending Final Ratification)`  
-> **مرجع تصمیم:** بررسی حاکمیت معماری Lemmo مورخ ۲۰۲۶-۱۰-۱۲  
+> **وضعیت سند:** `مصوب حاکمیتی (Approved — Ratified Governance Document)`  
+> **مرجع تصمیم:** ابلاغ تصویب نهایی حاکمیت مهندسی Lemmo مورخ ۲۰۲۶-۱۰-۱۲  
 > **دامنه اعمال:** کلیه توسعه‌دهندگان، عاملهای هوش مصنوعی و مشارکت‌کنندگان در مخزن فرانت‌اند استودیو (`app/`)  
 > **اسناد بالادستی حاکمیتی:** [`RULES.md`](../RULES.md) (بخش ۱۰)، [`AGENTS.md`](../AGENTS.md) (بند ۹) و [`DOC-FE-005`](../dotdive/docs/lemmo/02-frontend/style-guide.md)
 

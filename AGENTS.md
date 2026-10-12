@@ -2,7 +2,7 @@
 
 > **Package Root:** `lemmo/app` (Standalone Git Repository: `lemmo-lab/app.git`)  
 > **Role:** Active Workspace Studio Frontend (`lemmo-lab/app.git`)  
-> **Status:** `Draft (پیش‌نویس عملیاتی همگام‌شده با بازنگری حاکمیتی)`  
+> **Status:** `Approved (راهنمای عملیاتی مصوب حاکمیتی)`  
 > **Last Updated:** October 2026  
 > **Binding Governance:** [`RULES.md`](./RULES.md), [`../RULES.md`](../RULES.md) (Section 10), [`../AGENTS.md`](../AGENTS.md) (Section 9), and [`DOC-FE-005`](../dotdive/docs/lemmo/02-frontend/style-guide.md)
 
