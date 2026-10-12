@@ -30,6 +30,16 @@ import {
   createProject,
   listWorkspaces,
   createWorkspace,
+  getWorkspace,
+  updateWorkspace,
+  listWorkspaceMembers,
+  inviteWorkspaceMember,
+  removeWorkspaceMember,
+  updateWorkspaceMemberRole,
+  getWorkspaceSettings,
+  updateWorkspaceSettings,
+  updateUserProfile,
+  updateUserPreferences,
   listTools,
   executeTool,
   getJob,
@@ -54,9 +64,14 @@ import {
   type CreateWorkspace201,
   type GetContent200,
   type GetFeed200,
+  type getWorkspaceResponseSuccess,
+  type updateWorkspaceResponseSuccess,
+  type listWorkspaceMembersResponseSuccess,
+  type getWorkspaceSettingsResponseSuccess,
+  type updateWorkspaceSettingsResponseSuccess,
 } from './generated';
 
-import { onSignedOut, customFetch } from './transport';
+import { onSignedOut } from './transport';
 
 // Active SSE subscriptions tracking for automatic cleanup on session change
 const activeStreams = new Set<EventSource>();
@@ -192,69 +207,74 @@ export const liveSdkAdapter: SdkClient = {
     },
 
     get: async (id: string): Promise<Workspace> => {
-      const res = await customFetch<{ workspace: Workspace }>(`/api/v1/workspaces/${encodeURIComponent(id)}`);
-      const payload = res as { data?: { workspace?: Workspace }; workspace?: Workspace };
-      return payload.data?.workspace || payload.workspace!;
+      const res = await getWorkspace(id);
+      const data = (res as getWorkspaceResponseSuccess).data;
+      return {
+        id: data.id,
+        name: data.name,
+        type: data.type,
+      };
     },
 
     update: async (id: string, input: { name?: string; slug?: string }): Promise<Workspace> => {
-      const res = await customFetch<{ workspace: Workspace }>(`/api/v1/workspaces/${encodeURIComponent(id)}`, {
-        method: 'PUT',
-        body: JSON.stringify(input),
+      const res = await updateWorkspace(id, {
+        name: input.name ?? '',
+        ...(input.slug !== undefined ? { slug: input.slug } : {}),
       });
-      const payload = res as { data?: { workspace?: Workspace }; workspace?: Workspace };
-      return payload.data?.workspace || payload.workspace!;
+      const data = (res as updateWorkspaceResponseSuccess).data;
+      return {
+        id: data.id,
+        name: data.name,
+        type: data.type,
+      };
     },
 
     getMembers: async (workspaceId: string): Promise<import('../types').WorkspaceMemberInfo[]> => {
-      const res = await customFetch<{ members: import('../types').WorkspaceMemberInfo[] }>(
-        `/api/v1/workspaces/${encodeURIComponent(workspaceId)}/members`
-      );
-      const payload = res as { data?: { members?: import('../types').WorkspaceMemberInfo[] }; members?: import('../types').WorkspaceMemberInfo[] };
-      return payload.data?.members || payload.members || [];
+      const res = await listWorkspaceMembers(workspaceId);
+      const data = (res as listWorkspaceMembersResponseSuccess).data;
+      return (data?.members || []).map((m) => ({
+        id: m.id,
+        name: m.name,
+        email: m.email,
+        role: m.role,
+        initials: m.initials,
+        status: m.status,
+      }));
     },
 
     inviteMember: async (workspaceId: string, email: string, role: string): Promise<void> => {
-      await customFetch(`/api/v1/workspaces/${encodeURIComponent(workspaceId)}/members/invite`, {
-        method: 'POST',
-        body: JSON.stringify({ email, role }),
+      await inviteWorkspaceMember(workspaceId, {
+        email,
+        role: role as import('./generated').InviteWorkspaceMemberBodyRole,
       });
     },
 
     removeMember: async (workspaceId: string, memberId: string): Promise<void> => {
-      await customFetch(`/api/v1/workspaces/${encodeURIComponent(workspaceId)}/members/${encodeURIComponent(memberId)}`, {
-        method: 'DELETE',
-      });
+      await removeWorkspaceMember(workspaceId, memberId);
     },
 
     updateMemberRole: async (workspaceId: string, memberId: string, role: string): Promise<void> => {
-      await customFetch(`/api/v1/workspaces/${encodeURIComponent(workspaceId)}/members/${encodeURIComponent(memberId)}/role`, {
-        method: 'PUT',
-        body: JSON.stringify({ role }),
+      await updateWorkspaceMemberRole(workspaceId, memberId, {
+        role: role as import('./generated').UpdateWorkspaceMemberRoleBodyRole,
       });
     },
 
     getSettings: async (workspaceId: string): Promise<import('../types').WorkspaceSettingsData> => {
-      const res = await customFetch<{ settings: import('../types').WorkspaceSettingsData }>(
-        `/api/v1/workspaces/${encodeURIComponent(workspaceId)}/settings`
-      );
-      const payload = res as { data?: { settings?: import('../types').WorkspaceSettingsData }; settings?: import('../types').WorkspaceSettingsData };
-      return payload.data?.settings || payload.settings || {};
+      const res = await getWorkspaceSettings(workspaceId);
+      const data = (res as getWorkspaceSettingsResponseSuccess).data;
+      return (data as unknown as import('../types').WorkspaceSettingsData) || {};
     },
 
     updateSettings: async (
       workspaceId: string,
       settings: import('../types').WorkspaceSettingsData
     ): Promise<import('../types').WorkspaceSettingsData> => {
-      const res = await customFetch<{ settings: import('../types').WorkspaceSettingsData }>(
-        `/api/v1/workspaces/${encodeURIComponent(workspaceId)}/settings`,
-        {
-          method: 'PUT',
-          body: JSON.stringify({ settings }),
-        }
+      const res = await updateWorkspaceSettings(
+        workspaceId,
+        settings as unknown as import('./generated').WorkspaceSettings
       );
-      const payload = res as { data?: { settings?: import('../types').WorkspaceSettingsData }; settings?: import('../types').WorkspaceSettingsData };
-      return payload.data?.settings || payload.settings || {};
+      const data = (res as updateWorkspaceSettingsResponseSuccess).data;
+      return (data as unknown as import('../types').WorkspaceSettingsData) || {};
     },
   },
 
@@ -630,25 +650,17 @@ export const liveSdkAdapter: SdkClient = {
 
       // 1. Update core profile fields (display_name, handle, avatar_url)
       if (input.displayName !== undefined || input.handle !== undefined || input.avatarUrl !== undefined) {
-        await customFetch(`/api/v1/users/${encodeURIComponent(userId)}/profile`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            display_name: input.displayName ?? ctx.user.display_name,
-            handle: input.handle ?? ctx.user.handle,
-            avatar_url: input.avatarUrl ?? ctx.user.avatar_url,
-          }),
+        await updateUserProfile(userId, {
+          display_name: input.displayName ?? ctx.user.display_name,
+          handle: input.handle ?? ctx.user.handle,
+          avatar_url: input.avatarUrl ?? ctx.user.avatar_url,
         });
       }
 
-      // 2. Update bio if provided in preferences
+      // 2. Update bio via server-side deep merge (sending pure delta to prevent stale overwrite)
       if (input.bio !== undefined) {
-        const existingPrefs = (ctx.user.preferences as Record<string, unknown>) || {};
-        await customFetch(`/api/v1/users/${encodeURIComponent(userId)}/preferences`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            ...existingPrefs,
-            bio: input.bio,
-          }),
+        await updateUserPreferences(userId, {
+          bio: input.bio,
         });
       }
 

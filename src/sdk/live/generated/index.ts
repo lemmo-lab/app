@@ -323,6 +323,95 @@ export interface ToolManifest {
   type?: ToolManifestType;
 }
 
+export interface UpdateProfileInput {
+  avatar_url?: string;
+  display_name?: string;
+  handle?: string;
+}
+
+export interface User {
+  avatar_url?: string;
+  display_name?: string;
+  email: string;
+  handle?: string;
+  id: string;
+  /** Serialized JSON preferences string. */
+  preferences?: string;
+  status?: string;
+}
+
+export type WorkspaceDetailType = typeof WorkspaceDetailType[keyof typeof WorkspaceDetailType];
+
+
+export const WorkspaceDetailType = {
+  PERSONAL: 'PERSONAL',
+  TEAM: 'TEAM',
+} as const;
+
+export interface WorkspaceDetail {
+  createdAt: string;
+  id: string;
+  name: string;
+  ownerId: string;
+  slug?: string;
+  status: string;
+  type: WorkspaceDetailType;
+}
+
+export type WorkspaceMemberRole = typeof WorkspaceMemberRole[keyof typeof WorkspaceMemberRole];
+
+
+export const WorkspaceMemberRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  EDITOR: 'EDITOR',
+  RUNNER: 'RUNNER',
+  VIEWER: 'VIEWER',
+} as const;
+
+export interface WorkspaceMember {
+  email: string;
+  id: string;
+  initials: string;
+  name: string;
+  role: WorkspaceMemberRole;
+  status: string;
+}
+
+export interface WorkspaceSettings {
+  allowedModels: string[];
+  defaultResolution: string;
+  requireAdminApproval: boolean;
+  workspaceId: string;
+}
+
+export type WorkspaceSummaryRole = typeof WorkspaceSummaryRole[keyof typeof WorkspaceSummaryRole];
+
+
+export const WorkspaceSummaryRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  EDITOR: 'EDITOR',
+  RUNNER: 'RUNNER',
+  VIEWER: 'VIEWER',
+} as const;
+
+export type WorkspaceSummaryType = typeof WorkspaceSummaryType[keyof typeof WorkspaceSummaryType];
+
+
+export const WorkspaceSummaryType = {
+  PERSONAL: 'PERSONAL',
+  TEAM: 'TEAM',
+} as const;
+
+export interface WorkspaceSummary {
+  id: string;
+  name: string;
+  role?: WorkspaceSummaryRole;
+  slug?: string;
+  type: WorkspaceSummaryType;
+}
+
 /**
  * Opaque cursor string for cursor-based streaming pagination.
  */
@@ -662,6 +751,10 @@ export type ExecuteTool202 = {
   jobId: string;
 };
 
+export type GetUserPreferences200 = { [key: string]: unknown };
+
+export type UpdateUserPreferencesBody = { [key: string]: unknown };
+
 export type ListWorkspaces200WorkspacesItemRole = typeof ListWorkspaces200WorkspacesItemRole[keyof typeof ListWorkspaces200WorkspacesItemRole];
 
 
@@ -694,12 +787,69 @@ export type ListWorkspaces200 = {
 
 export type CreateWorkspaceBody = {
   name: string;
+  type?: string;
 };
 
 export type CreateWorkspace201 = {
   id: string;
   name: string;
+  role?: string;
   type: string;
+};
+
+export type UpdateWorkspaceBody = {
+  name: string;
+  slug?: string;
+};
+
+export type ListWorkspaceMembers200 = {
+  members: WorkspaceMember[];
+};
+
+export type RemoveWorkspaceMember200 = {
+  success: boolean;
+};
+
+export type UpdateWorkspaceMemberRoleBodyRole = typeof UpdateWorkspaceMemberRoleBodyRole[keyof typeof UpdateWorkspaceMemberRoleBodyRole];
+
+
+export const UpdateWorkspaceMemberRoleBodyRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  EDITOR: 'EDITOR',
+  RUNNER: 'RUNNER',
+  VIEWER: 'VIEWER',
+} as const;
+
+export type UpdateWorkspaceMemberRoleBody = {
+  role: UpdateWorkspaceMemberRoleBodyRole;
+};
+
+export type UpdateWorkspaceMemberRole200 = {
+  success: boolean;
+};
+
+export type InviteWorkspaceMemberBodyRole = typeof InviteWorkspaceMemberBodyRole[keyof typeof InviteWorkspaceMemberBodyRole];
+
+
+export const InviteWorkspaceMemberBodyRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  EDITOR: 'EDITOR',
+  RUNNER: 'RUNNER',
+  VIEWER: 'VIEWER',
+} as const;
+
+export type InviteWorkspaceMemberBody = {
+  email: string;
+  role: InviteWorkspaceMemberBodyRole;
+};
+
+export type InviteWorkspaceMember201 = {
+  email: string;
+  invitationId: string;
+  role: string;
+  token: string;
 };
 
 export type listAssetsResponse200 = {
@@ -1631,6 +1781,50 @@ export const getFeedItem = async (id: string, options?: Parameters<typeof custom
 
 
 
+export type getUserByHandleResponse200 = {
+  data: User
+  status: 200
+}
+
+export type getUserByHandleResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type getUserByHandleResponseSuccess = (getUserByHandleResponse200) & {
+  headers: Headers;
+};
+export type getUserByHandleResponseError = (getUserByHandleResponse404) & {
+  headers: Headers;
+};
+
+export type getUserByHandleResponse = (getUserByHandleResponseSuccess | getUserByHandleResponseError)
+
+export const getGetUserByHandleUrl = (handle: string,) => {
+
+
+
+
+  return `/api/v1/handles/${handle}`
+}
+
+/**
+ * Looks up public user information by unique handle.
+ * @summary Lookup User By Handle
+ */
+export const getUserByHandle = async (handle: string, options?: Parameters<typeof customFetch>[1]): Promise<getUserByHandleResponse> => {
+
+  return customFetch<getUserByHandleResponse>(getGetUserByHandleUrl(handle),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export type listJobsResponse200 = {
   data: Job[]
   status: 200
@@ -2152,6 +2346,306 @@ return customFetch<executeToolResponse>(getExecuteToolUrl(toolId),
 
 
 
+export type getUserResponse200 = {
+  data: User
+  status: 200
+}
+
+export type getUserResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type getUserResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type getUserResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type getUserResponseSuccess = (getUserResponse200) & {
+  headers: Headers;
+};
+export type getUserResponseError = (getUserResponse401 | getUserResponse403 | getUserResponse404) & {
+  headers: Headers;
+};
+
+export type getUserResponse = (getUserResponseSuccess | getUserResponseError)
+
+export const getGetUserUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/users/${id}`
+}
+
+/**
+ * Retrieves basic public user profile information. Protected against IDOR.
+ * @summary Get User Public Info
+ */
+export const getUser = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<getUserResponse> => {
+
+  return customFetch<getUserResponse>(getGetUserUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type getUserPreferencesResponse200 = {
+  data: GetUserPreferences200
+  status: 200
+}
+
+export type getUserPreferencesResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type getUserPreferencesResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type getUserPreferencesResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type getUserPreferencesResponseSuccess = (getUserPreferencesResponse200) & {
+  headers: Headers;
+};
+export type getUserPreferencesResponseError = (getUserPreferencesResponse401 | getUserPreferencesResponse403 | getUserPreferencesResponse404) & {
+  headers: Headers;
+};
+
+export type getUserPreferencesResponse = (getUserPreferencesResponseSuccess | getUserPreferencesResponseError)
+
+export const getGetUserPreferencesUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/users/${id}/preferences`
+}
+
+/**
+ * Retrieves JSON object of stored user preferences.
+ * @summary Get User Preferences
+ */
+export const getUserPreferences = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<getUserPreferencesResponse> => {
+
+  return customFetch<getUserPreferencesResponse>(getGetUserPreferencesUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type updateUserPreferencesResponse200 = {
+  data: User
+  status: 200
+}
+
+export type updateUserPreferencesResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type updateUserPreferencesResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type updateUserPreferencesResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type updateUserPreferencesResponseSuccess = (updateUserPreferencesResponse200) & {
+  headers: Headers;
+};
+export type updateUserPreferencesResponseError = (updateUserPreferencesResponse400 | updateUserPreferencesResponse401 | updateUserPreferencesResponse403) & {
+  headers: Headers;
+};
+
+export type updateUserPreferencesResponse = (updateUserPreferencesResponseSuccess | updateUserPreferencesResponseError)
+
+export const getUpdateUserPreferencesUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/users/${id}/preferences`
+}
+
+/**
+ * Replaces user preferences JSON payload. Caller must be the user.
+ * @summary Update User Preferences
+ */
+export const updateUserPreferences = async (id: string,
+    updateUserPreferencesBody: UpdateUserPreferencesBody, options?: Parameters<typeof customFetch>[1]): Promise<updateUserPreferencesResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<updateUserPreferencesResponse>(getUpdateUserPreferencesUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(updateUserPreferencesBody)
+  }
+);}
+
+
+
+export type getUserProfileResponse200 = {
+  data: User
+  status: 200
+}
+
+export type getUserProfileResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type getUserProfileResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type getUserProfileResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type getUserProfileResponseSuccess = (getUserProfileResponse200) & {
+  headers: Headers;
+};
+export type getUserProfileResponseError = (getUserProfileResponse401 | getUserProfileResponse403 | getUserProfileResponse404) & {
+  headers: Headers;
+};
+
+export type getUserProfileResponse = (getUserProfileResponseSuccess | getUserProfileResponseError)
+
+export const getGetUserProfileUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/users/${id}/profile`
+}
+
+/**
+ * Retrieves complete user profile for the authenticated user.
+ * @summary Get Full User Profile
+ */
+export const getUserProfile = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<getUserProfileResponse> => {
+
+  return customFetch<getUserProfileResponse>(getGetUserProfileUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type updateUserProfileResponse200 = {
+  data: User
+  status: 200
+}
+
+export type updateUserProfileResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type updateUserProfileResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type updateUserProfileResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type updateUserProfileResponseSuccess = (updateUserProfileResponse200) & {
+  headers: Headers;
+};
+export type updateUserProfileResponseError = (updateUserProfileResponse400 | updateUserProfileResponse401 | updateUserProfileResponse403) & {
+  headers: Headers;
+};
+
+export type updateUserProfileResponse = (updateUserProfileResponseSuccess | updateUserProfileResponseError)
+
+export const getUpdateUserProfileUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/users/${id}/profile`
+}
+
+/**
+ * Updates display name, avatar URL, or handle for the target user. Caller must be the user.
+ * @summary Update User Profile
+ */
+export const updateUserProfile = async (id: string,
+    updateProfileInput: UpdateProfileInput, options?: Parameters<typeof customFetch>[1]): Promise<updateUserProfileResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<updateUserProfileResponse>(getUpdateUserProfileUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(updateProfileInput)
+  }
+);}
+
+
+
 export type listWorkspacesResponse200 = {
   data: ListWorkspaces200
   status: 200
@@ -2206,10 +2700,15 @@ export type createWorkspaceResponse400 = {
   status: 400
 }
 
+export type createWorkspaceResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
 export type createWorkspaceResponseSuccess = (createWorkspaceResponse201) & {
   headers: Headers;
 };
-export type createWorkspaceResponseError = (createWorkspaceResponse400) & {
+export type createWorkspaceResponseError = (createWorkspaceResponse400 | createWorkspaceResponse401) & {
   headers: Headers;
 };
 
@@ -2249,5 +2748,481 @@ return customFetch<createWorkspaceResponse>(getCreateWorkspaceUrl(),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(createWorkspaceBody)
+  }
+);}
+
+
+
+export type getWorkspaceResponse200 = {
+  data: WorkspaceDetail
+  status: 200
+}
+
+export type getWorkspaceResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type getWorkspaceResponse500 = {
+  data: ProblemDetails
+  status: 500
+}
+
+export type getWorkspaceResponseSuccess = (getWorkspaceResponse200) & {
+  headers: Headers;
+};
+export type getWorkspaceResponseError = (getWorkspaceResponse404 | getWorkspaceResponse500) & {
+  headers: Headers;
+};
+
+export type getWorkspaceResponse = (getWorkspaceResponseSuccess | getWorkspaceResponseError)
+
+export const getGetWorkspaceUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/workspaces/${id}`
+}
+
+/**
+ * Retrieves details of a specific workspace by ID.
+ * @summary Get Workspace Details
+ */
+export const getWorkspace = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<getWorkspaceResponse> => {
+
+  return customFetch<getWorkspaceResponse>(getGetWorkspaceUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type updateWorkspaceResponse200 = {
+  data: WorkspaceSummary
+  status: 200
+}
+
+export type updateWorkspaceResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type updateWorkspaceResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type updateWorkspaceResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type updateWorkspaceResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type updateWorkspaceResponseSuccess = (updateWorkspaceResponse200) & {
+  headers: Headers;
+};
+export type updateWorkspaceResponseError = (updateWorkspaceResponse400 | updateWorkspaceResponse401 | updateWorkspaceResponse403 | updateWorkspaceResponse404) & {
+  headers: Headers;
+};
+
+export type updateWorkspaceResponse = (updateWorkspaceResponseSuccess | updateWorkspaceResponseError)
+
+export const getUpdateWorkspaceUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/workspaces/${id}`
+}
+
+/**
+ * Updates workspace name and/or slug. Caller must be OWNER or ADMIN.
+ * @summary Update Workspace Info
+ */
+export const updateWorkspace = async (id: string,
+    updateWorkspaceBody: UpdateWorkspaceBody, options?: Parameters<typeof customFetch>[1]): Promise<updateWorkspaceResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<updateWorkspaceResponse>(getUpdateWorkspaceUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(updateWorkspaceBody)
+  }
+);}
+
+
+
+export type listWorkspaceMembersResponse200 = {
+  data: ListWorkspaceMembers200
+  status: 200
+}
+
+export type listWorkspaceMembersResponse500 = {
+  data: ProblemDetails
+  status: 500
+}
+
+export type listWorkspaceMembersResponseSuccess = (listWorkspaceMembersResponse200) & {
+  headers: Headers;
+};
+export type listWorkspaceMembersResponseError = (listWorkspaceMembersResponse500) & {
+  headers: Headers;
+};
+
+export type listWorkspaceMembersResponse = (listWorkspaceMembersResponseSuccess | listWorkspaceMembersResponseError)
+
+export const getListWorkspaceMembersUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/workspaces/${id}/members`
+}
+
+/**
+ * Retrieves active members of the workspace.
+ * @summary List Workspace Members
+ */
+export const listWorkspaceMembers = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<listWorkspaceMembersResponse> => {
+
+  return customFetch<listWorkspaceMembersResponse>(getListWorkspaceMembersUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type removeWorkspaceMemberResponse200 = {
+  data: RemoveWorkspaceMember200
+  status: 200
+}
+
+export type removeWorkspaceMemberResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type removeWorkspaceMemberResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type removeWorkspaceMemberResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type removeWorkspaceMemberResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type removeWorkspaceMemberResponseSuccess = (removeWorkspaceMemberResponse200) & {
+  headers: Headers;
+};
+export type removeWorkspaceMemberResponseError = (removeWorkspaceMemberResponse400 | removeWorkspaceMemberResponse401 | removeWorkspaceMemberResponse403 | removeWorkspaceMemberResponse404) & {
+  headers: Headers;
+};
+
+export type removeWorkspaceMemberResponse = (removeWorkspaceMemberResponseSuccess | removeWorkspaceMemberResponseError)
+
+export const getRemoveWorkspaceMemberUrl = (id: string,
+    userId: string,) => {
+
+
+
+
+  return `/api/v1/workspaces/${id}/members/${userId}`
+}
+
+/**
+ * Removes a member from the workspace. Caller must be OWNER or ADMIN.
+ * @summary Remove Workspace Member
+ */
+export const removeWorkspaceMember = async (id: string,
+    userId: string, options?: Parameters<typeof customFetch>[1]): Promise<removeWorkspaceMemberResponse> => {
+
+  return customFetch<removeWorkspaceMemberResponse>(getRemoveWorkspaceMemberUrl(id,userId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export type updateWorkspaceMemberRoleResponse200 = {
+  data: UpdateWorkspaceMemberRole200
+  status: 200
+}
+
+export type updateWorkspaceMemberRoleResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type updateWorkspaceMemberRoleResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type updateWorkspaceMemberRoleResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type updateWorkspaceMemberRoleResponse404 = {
+  data: ProblemDetails
+  status: 404
+}
+
+export type updateWorkspaceMemberRoleResponseSuccess = (updateWorkspaceMemberRoleResponse200) & {
+  headers: Headers;
+};
+export type updateWorkspaceMemberRoleResponseError = (updateWorkspaceMemberRoleResponse400 | updateWorkspaceMemberRoleResponse401 | updateWorkspaceMemberRoleResponse403 | updateWorkspaceMemberRoleResponse404) & {
+  headers: Headers;
+};
+
+export type updateWorkspaceMemberRoleResponse = (updateWorkspaceMemberRoleResponseSuccess | updateWorkspaceMemberRoleResponseError)
+
+export const getUpdateWorkspaceMemberRoleUrl = (id: string,
+    userId: string,) => {
+
+
+
+
+  return `/api/v1/workspaces/${id}/members/${userId}/role`
+}
+
+/**
+ * Updates the role of an existing workspace member. Caller must be OWNER or ADMIN.
+ * @summary Update Member Role
+ */
+export const updateWorkspaceMemberRole = async (id: string,
+    userId: string,
+    updateWorkspaceMemberRoleBody: UpdateWorkspaceMemberRoleBody, options?: Parameters<typeof customFetch>[1]): Promise<updateWorkspaceMemberRoleResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<updateWorkspaceMemberRoleResponse>(getUpdateWorkspaceMemberRoleUrl(id,userId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(updateWorkspaceMemberRoleBody)
+  }
+);}
+
+
+
+export type inviteWorkspaceMemberResponse201 = {
+  data: InviteWorkspaceMember201
+  status: 201
+}
+
+export type inviteWorkspaceMemberResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type inviteWorkspaceMemberResponse401 = {
+  data: ProblemDetails
+  status: 401
+}
+
+export type inviteWorkspaceMemberResponse403 = {
+  data: ProblemDetails
+  status: 403
+}
+
+export type inviteWorkspaceMemberResponseSuccess = (inviteWorkspaceMemberResponse201) & {
+  headers: Headers;
+};
+export type inviteWorkspaceMemberResponseError = (inviteWorkspaceMemberResponse400 | inviteWorkspaceMemberResponse401 | inviteWorkspaceMemberResponse403) & {
+  headers: Headers;
+};
+
+export type inviteWorkspaceMemberResponse = (inviteWorkspaceMemberResponseSuccess | inviteWorkspaceMemberResponseError)
+
+export const getInviteWorkspaceMemberUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/workspaces/${id}/members/invite`
+}
+
+/**
+ * Invites a new user by email with an assigned role. Caller must be OWNER or ADMIN.
+ * @summary Invite Workspace Member
+ */
+export const inviteWorkspaceMember = async (id: string,
+    inviteWorkspaceMemberBody: InviteWorkspaceMemberBody, options?: Parameters<typeof customFetch>[1]): Promise<inviteWorkspaceMemberResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<inviteWorkspaceMemberResponse>(getInviteWorkspaceMemberUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(inviteWorkspaceMemberBody)
+  }
+);}
+
+
+
+export type getWorkspaceSettingsResponse200 = {
+  data: WorkspaceSettings
+  status: 200
+}
+
+export type getWorkspaceSettingsResponse500 = {
+  data: ProblemDetails
+  status: 500
+}
+
+export type getWorkspaceSettingsResponseSuccess = (getWorkspaceSettingsResponse200) & {
+  headers: Headers;
+};
+export type getWorkspaceSettingsResponseError = (getWorkspaceSettingsResponse500) & {
+  headers: Headers;
+};
+
+export type getWorkspaceSettingsResponse = (getWorkspaceSettingsResponseSuccess | getWorkspaceSettingsResponseError)
+
+export const getGetWorkspaceSettingsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/workspaces/${id}/settings`
+}
+
+/**
+ * Retrieves workspace governance settings (allowed models, resolution, admin approval).
+ * @summary Get Workspace Settings
+ */
+export const getWorkspaceSettings = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<getWorkspaceSettingsResponse> => {
+
+  return customFetch<getWorkspaceSettingsResponse>(getGetWorkspaceSettingsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export type updateWorkspaceSettingsResponse200 = {
+  data: WorkspaceSettings
+  status: 200
+}
+
+export type updateWorkspaceSettingsResponse400 = {
+  data: ProblemDetails
+  status: 400
+}
+
+export type updateWorkspaceSettingsResponseSuccess = (updateWorkspaceSettingsResponse200) & {
+  headers: Headers;
+};
+export type updateWorkspaceSettingsResponseError = (updateWorkspaceSettingsResponse400) & {
+  headers: Headers;
+};
+
+export type updateWorkspaceSettingsResponse = (updateWorkspaceSettingsResponseSuccess | updateWorkspaceSettingsResponseError)
+
+export const getUpdateWorkspaceSettingsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/workspaces/${id}/settings`
+}
+
+/**
+ * Updates governance settings for the workspace.
+ * @summary Update Workspace Settings
+ */
+export const updateWorkspaceSettings = async (id: string,
+    workspaceSettings: WorkspaceSettings, options?: Parameters<typeof customFetch>[1]): Promise<updateWorkspaceSettingsResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<updateWorkspaceSettingsResponse>(getUpdateWorkspaceSettingsUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(workspaceSettings)
   }
 );}
