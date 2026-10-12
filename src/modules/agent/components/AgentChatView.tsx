@@ -150,13 +150,14 @@ export function AgentChatView({
   const router = useRouter();
   const queryClient = useQueryClient();
   const studioContext = useOptionalStudioContext();
+  const userId = studioContext?.user?.id || '';
   const activeWorkspaceId = studioContext?.activeWorkspace?.id || '';
   const studioState = studioContext?.state || 'loading';
-  const isContextReady = studioState === 'ready' && Boolean(activeWorkspaceId);
+  const isContextReady = studioState === 'ready' && Boolean(userId) && Boolean(activeWorkspaceId);
 
-  // 1. Fetch available chat threads to identify active thread ID (SEC-23: workspace-scoped)
+  // 1. Fetch available chat threads to identify active thread ID (SEC-23: workspace-scoped & user-scoped)
   const { data: threads = [] } = useQuery({
-    queryKey: ['workspace', activeWorkspaceId, 'chat-threads'],
+    queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'],
     queryFn: () => sdk.chat.getThreads(),
     enabled: isContextReady,
   });
@@ -165,9 +166,9 @@ export function AgentChatView({
   const activeThreadId = existingThread ? existingThread.id : (currentId || threads[0]?.id || '');
   const isServerThread = Boolean(threads.some((t) => t.id === activeThreadId));
 
-  // 2. Fetch messages for active thread from SDK (SEC-23: workspace-scoped)
+  // 2. Fetch messages for active thread from SDK (SEC-23: workspace-scoped & user-scoped)
   const { data: threadData } = useQuery({
-    queryKey: ['workspace', activeWorkspaceId, 'chat-thread', activeThreadId],
+    queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-thread', activeThreadId],
     queryFn: () => sdk.chat.getThread(activeThreadId),
     enabled: isContextReady && isServerThread && Boolean(activeThreadId),
   });
@@ -324,8 +325,8 @@ export function AgentChatView({
             });
             return { ...prev, [tid]: updated };
           });
-          queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'chat-thread', tid] });
-          queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'chat-threads'] });
+          queryClient.invalidateQueries({ queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-thread', tid] });
+          queryClient.invalidateQueries({ queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'] });
         } else if (event.type === 'message_failed') {
           setLocalMessages((prev) => {
             const currentList = prev[tid] || [];
@@ -356,7 +357,7 @@ export function AgentChatView({
       setActiveSubscription(() => unsubscribe);
 
       if (threadId && threadId !== activeThreadId) {
-        queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'chat-threads'] });
+        queryClient.invalidateQueries({ queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'] });
         router.push(`/app/agent/${threadId}`);
       }
     },

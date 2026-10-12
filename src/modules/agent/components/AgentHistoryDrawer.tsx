@@ -36,20 +36,28 @@ interface GroupedThreads {
 
 /**
  * Parses timestamp value from either seconds, milliseconds, or ISO date string.
+ * Returns null if timestamp is missing or unparseable (strictly adheres to No Synthetic Data policy).
  */
-function parseTimestamp(thread: Thread): number {
+export function parseTimestamp(thread: Thread): number | null {
   const raw =
     thread.createdAt ||
     (thread as unknown as { created_at?: string | number }).created_at ||
     thread.updatedAt ||
     (thread as unknown as { updated_at?: string | number }).updated_at;
 
-  if (!raw) return Date.now();
+  if (!raw) {
+    console.warn(`[Contract Deficiency] Thread ${thread.id} is missing mandatory timestamp field.`);
+    return null;
+  }
   if (typeof raw === 'number') {
     return raw < 10000000000 ? raw * 1000 : raw;
   }
   const parsed = new Date(raw).getTime();
-  return Number.isNaN(parsed) ? Date.now() : parsed;
+  if (Number.isNaN(parsed)) {
+    console.warn(`[Contract Deficiency] Thread ${thread.id} has unparseable timestamp value:`, raw);
+    return null;
+  }
+  return parsed;
 }
 
 export function AgentHistoryDrawer({
@@ -62,9 +70,10 @@ export function AgentHistoryDrawer({
   const router = useRouter();
   const queryClient = useQueryClient();
   const studioContext = useOptionalStudioContext();
+  const userId = studioContext?.user?.id || '';
   const activeWorkspaceId = studioContext?.activeWorkspace?.id || '';
   const studioState = studioContext?.state || 'loading';
-  const isContextReady = studioState === 'ready' && Boolean(activeWorkspaceId);
+  const isContextReady = studioState === 'ready' && Boolean(userId) && Boolean(activeWorkspaceId);
 
   // Local state
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,9 +120,9 @@ export function AgentHistoryDrawer({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, editingThreadId, deletingThreadId]);
 
-  // Fetch threads for workspace (ADR-016: gated on 6-state machine ready)
+  // Fetch threads for workspace (ADR-016: gated on 6-state machine ready and user/workspace identity)
   const { data: threads = [], isLoading, error: threadsError } = useQuery({
-    queryKey: ['workspace', activeWorkspaceId, 'chat-threads'],
+    queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'],
     queryFn: () => sdk.chat.getThreads(),
     enabled: isContextReady,
   });
@@ -125,10 +134,10 @@ export function AgentHistoryDrawer({
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['workspace', activeWorkspaceId, 'chat-threads'],
+        queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'],
       });
       queryClient.invalidateQueries({
-        queryKey: ['workspace', activeWorkspaceId, 'chat-thread', variables.threadId],
+        queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-thread', variables.threadId],
       });
       setEditingThreadId(null);
     },
@@ -141,7 +150,10 @@ export function AgentHistoryDrawer({
     },
     onSuccess: (_, deletedThreadId) => {
       queryClient.invalidateQueries({
-        queryKey: ['workspace', activeWorkspaceId, 'chat-threads'],
+        queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-thread', deletedThreadId],
       });
       setDeletingThreadId(null);
       if (activeThreadId === deletedThreadId) {
@@ -158,7 +170,16 @@ export function AgentHistoryDrawer({
       return (t.title || '').toLowerCase().includes(q);
     });
 
-    const sorted = [...filtered].sort((a, b) => parseTimestamp(b) - parseTimestamp(a));
+    const sorted = [...filtered].sort((a, b) => {
+      const timeA = parseTimestamp(a);
+      const timeB = parseTimestamp(b);
+      if (timeA !== null && timeB !== null) {
+        return timeB - timeA;
+      }
+      if (timeA !== null) return -1;
+      if (timeB !== null) return 1;
+      return (b.id || '').localeCompare(a.id || '');
+    });
 
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -174,7 +195,9 @@ export function AgentHistoryDrawer({
 
     for (const thread of sorted) {
       const time = parseTimestamp(thread);
-      if (time >= startOfToday) {
+      if (time === null) {
+        groups.older.push(thread);
+      } else if (time >= startOfToday) {
         groups.today.push(thread);
       } else if (time >= startOfYesterday) {
         groups.yesterday.push(thread);
@@ -342,10 +365,10 @@ export function AgentHistoryDrawer({
 
   return (
     <>
-      {/* Mobile Backdrop */}
+      {/* Mobile Backdrop (strictly unblocked on desktop) */}
       {isOpen && (
         <div
-          className="history-drawer-backdrop"
+          className="history-drawer-backdrop lg:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
