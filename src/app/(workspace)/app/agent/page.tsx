@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Agent Studio Page — Production Implementation
  * Route: /app/agent
@@ -7,15 +9,20 @@
  * - 100% token coverage from @lemmo-lab/tokens
  */
 
-import React from 'react';
-import type { Metadata } from 'next';
+import React, { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AgentManager } from '@/modules/agent';
 
-export const metadata: Metadata = {
-  title: 'Agent Studio | Lemmo Studio',
-  description: 'AI generative agent workspace for multi-modal synthesis and style exploration.',
-};
+function AgentPageContent() {
+  const searchParams = useSearchParams();
+  const prompt = searchParams.get('prompt') || undefined;
+  return <AgentManager viewMode={prompt ? 'chat' : 'empty'} initialPrompt={prompt} />;
+}
 
 export default function AgentPage() {
-  return <AgentManager viewMode="empty" />;
+  return (
+    <Suspense fallback={<AgentManager viewMode="empty" />}>
+      <AgentPageContent />
+    </Suspense>
+  );
 }

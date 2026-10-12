@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Eye, RefreshCw, Clock03 } from 'synthline/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { sdk, Message } from '@/sdk';
@@ -146,6 +147,7 @@ export function AgentChatView({
   isHistoryOpen,
   onToggleHistory,
 }: AgentChatViewProps) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const studioContext = useOptionalStudioContext();
   const activeWorkspaceId = studioContext?.activeWorkspace?.id || '';
@@ -159,18 +161,23 @@ export function AgentChatView({
     enabled: isContextReady,
   });
 
-  const activeThreadId = currentId || threads[0]?.id || '';
+  const existingThread = currentId ? threads.find((t) => t.id === currentId) : undefined;
+  const activeThreadId = existingThread ? existingThread.id : (currentId || threads[0]?.id || '');
+  const isServerThread = Boolean(threads.some((t) => t.id === activeThreadId));
 
   // 2. Fetch messages for active thread from SDK (SEC-23: workspace-scoped)
   const { data: threadData } = useQuery({
     queryKey: ['workspace', activeWorkspaceId, 'chat-thread', activeThreadId],
     queryFn: () => sdk.chat.getThread(activeThreadId),
-    enabled: isContextReady && Boolean(activeThreadId),
+    enabled: isContextReady && isServerThread && Boolean(activeThreadId),
   });
 
   // Local session messages per thread
   const [localMessages, setLocalMessages] = useState<Record<string, AgentChatMessageItem[]>>({});
-  const sessionMessages = useMemo(() => localMessages[activeThreadId] || [], [localMessages, activeThreadId]);
+  const sessionMessages = useMemo(
+    () => localMessages[activeThreadId] || localMessages['pending-thread'] || [],
+    [localMessages, activeThreadId]
+  );
 
   // Messages loaded from SDK query
   const initialMessages = useMemo(() => {
@@ -347,19 +354,25 @@ export function AgentChatView({
       });
 
       setActiveSubscription(() => unsubscribe);
+
+      if (threadId && threadId !== activeThreadId) {
+        queryClient.invalidateQueries({ queryKey: ['workspace', activeWorkspaceId, 'chat-threads'] });
+        router.push(`/app/agent/${threadId}`);
+      }
     },
     onError: (err: unknown) => {
       const rawError = err instanceof Error ? err.message : 'Failed to send message';
       const errorMsg = formatAgentErrorMessage(rawError, locale);
+      const keyForLocal = activeThreadId || 'pending-thread';
       setLocalMessages((prev) => {
-        const currentList = prev[activeThreadId] || [];
+        const currentList = prev[keyForLocal] || [];
         const updated = currentList.map((m) => {
           if (m.status === 'streaming') {
             return { ...m, status: 'failed' as const, text: errorMsg };
           }
           return m;
         });
-        return { ...prev, [activeThreadId]: updated };
+        return { ...prev, [keyForLocal]: updated };
       });
     },
   });
@@ -379,14 +392,17 @@ export function AgentChatView({
         prompt: cleanPrompt,
       };
 
+      const threadIdToSend = isServerThread ? activeThreadId : null;
+      const keyForLocal = activeThreadId || 'pending-thread';
+
       const timer = setTimeout(() => {
         setLocalMessages((prev) => ({
           ...prev,
-          [activeThreadId]: [...(prev[activeThreadId] || []), userMsg],
+          [keyForLocal]: [...(prev[keyForLocal] || []), userMsg],
         }));
 
         sendMessageMutation.mutate({
-          threadId: activeThreadId,
+          threadId: threadIdToSend,
           content: cleanPrompt,
         });
 
@@ -398,7 +414,7 @@ export function AgentChatView({
 
       return () => clearTimeout(timer);
     }
-  }, [initialPrompt, activeThreadId, sendMessageMutation]);
+  }, [initialPrompt, activeThreadId, isServerThread, sendMessageMutation]);
 
   const isSubmitting = sendMessageMutation.isPending;
 
@@ -417,16 +433,19 @@ export function AgentChatView({
       references: currentRefs,
     };
 
+    const threadIdToSend = isServerThread ? activeThreadId : null;
+    const keyForLocal = activeThreadId || 'pending-thread';
+
     setLocalMessages((prev) => ({
       ...prev,
-      [activeThreadId]: [...(prev[activeThreadId] || []), userMsg],
+      [keyForLocal]: [...(prev[keyForLocal] || []), userMsg],
     }));
     setPrompt('');
     setReferences([]);
 
     // Dispatch via SDK chat client
     sendMessageMutation.mutate({
-      threadId: activeThreadId,
+      threadId: threadIdToSend,
       content: newPromptText,
       expectedCost,
     });

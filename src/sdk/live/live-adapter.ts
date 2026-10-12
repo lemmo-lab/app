@@ -401,16 +401,20 @@ export const liveSdkAdapter: SdkClient = {
     },
 
     getThreads: async (): Promise<Thread[]> => {
-      const response = await listChatThreads();
-      if ('data' in response && Array.isArray(response.data)) {
-        return response.data;
+      const res = await listChatThreads();
+      if (Array.isArray(res)) return res;
+      if (res && 'data' in res && Array.isArray((res as { data?: unknown }).data)) {
+        return (res as { data: Thread[] }).data;
       }
       return [];
     },
 
     getThread: async (threadId: string): Promise<Thread> => {
-      const response = await getChatThread(threadId);
-      return (response as { data: Thread }).data;
+      const res = await getChatThread(threadId);
+      if (res && 'data' in res && (res as { data?: unknown }).data) {
+        return (res as { data: Thread }).data;
+      }
+      return res as unknown as Thread;
     },
 
     deleteThread: async (threadId: string): Promise<void> => {

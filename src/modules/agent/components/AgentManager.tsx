@@ -20,7 +20,7 @@ interface AgentManagerProps {
 
 export default function AgentManager({
   viewMode,
-  currentId = 'chat-01',
+  currentId,
   initialPrompt,
 }: AgentManagerProps) {
   const router = useRouter();
@@ -81,9 +81,8 @@ export default function AgentManager({
   const handleEmptySubmit = (expectedCost?: number) => {
     if (!emptyPrompt.trim() && emptyReferences.length === 0) return;
     setIsSubmitting(true);
-    const chatId = `chat-${Date.now()}`;
     const costParam = expectedCost ? `&expectedCost=${expectedCost}` : '';
-    router.push(`/app/agent/${chatId}?prompt=${encodeURIComponent(emptyPrompt.trim())}${costParam}`);
+    router.push(`/app/agent?prompt=${encodeURIComponent(emptyPrompt.trim())}${costParam}`);
   };
 
   return (

@@ -20,7 +20,7 @@ export default function DynamicAgentPage({
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = use(params);
-  const id = resolvedParams.id || 'chat-01';
+  const id = resolvedParams.id;
   const searchParams = useSearchParams();
   const viewQuery = searchParams.get('view');
 
