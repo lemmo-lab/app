@@ -1,182 +1,86 @@
-# AGENTS.md — Lemmo Workspace App (`/app`)
+# AGENTS.md — Operational Guide for Lemmo Studio App (`/app`)
 
-> This project is in the **planning/pre-initialization phase**. No source code exists yet. All docs here define what to build. Read this file before writing any code.
-
----
-
-## 1. Repo context
-
-This is one package inside the `lemu` monorepo at `/home/behroz/Documents/Git/lemu/`. Sibling packages you need to know:
-
-| Path | Role |
-|---|---|
-| `../tokens/` | `@lemmo-lab/tokens` — design token source. NEVER edit generated `dist/`. Rebuild with `pnpm build` inside that repo. |
-| `../fonts/fonts/` | Local WOFF2 webfonts. Copy into `public/fonts/` and load with `next/font/local`. |
-| `../landing/` | Marketing site (Vite + React 19, port 3000). Reference only for brand alignment. |
-| `../docs/` | Architecture SSOT. If prose conflicts with config, trust config. |
-| `../ui/` | **Inactive.** Do NOT import from it. |
-
-The root `opencode.json` (at `/home/behroz/Documents/Git/lemu/opencode.json`) configures Playwright and Chrome DevTools MCP servers for browser-based tasks.
+> **Package Root:** `lemmo/app` (Standalone Git Repository: `lemmo-lab/app.git`)  
+> **Role:** Active Workspace Studio Frontend (`lemmo-lab/app.git`)  
+> **Status:** `Draft (پیش‌نویس عملیاتی همگام‌شده با بازنگری حاکمیتی)`  
+> **Last Updated:** October 2026  
+> **Binding Governance:** [`RULES.md`](./RULES.md), [`../RULES.md`](../RULES.md) (Section 10), [`../AGENTS.md`](../AGENTS.md) (Section 9), and [`DOC-FE-005`](../dotdive/docs/lemmo/02-frontend/style-guide.md)
 
 ---
 
-## 2. What to build
+## ۱. زمینه و پکیج‌های وابسته (Workspace Context)
+این ریپوزیتوری فرانت‌اند استودیو پلتفرم Lemmo است که بر پایه Next.js 16 App Router، React 19، Zustand، `@tanstack/react-query` و توکن‌های طراحی `@lemmo-lab/tokens` توسعه می‌یابد.
 
-**Stack (mandated by BLUEPRINT.md):**
-- **Next.js App Router** (not Vite/Pages Router) — React 19.3.0, TypeScript `strict: true`
-- **State:** Zustand (`uiStore`, `jobStore`) for client state; `@tanstack/react-query` for server cache
-- **Icons:** `synthline/react` **only** — always `strokeWidth={1.5}`, `color="currentColor"`, sizes: `12|16|20|24|28`px
-- **Design tokens:** `@lemmo-lab/tokens` — import `@lemmo-lab/tokens/css/variables.css` in `globals.css`
-- **Package manager:** `pnpm`
-
-**Root HTML tag convention (non-negotiable):**
-```html
-<html lang="fa" dir="rtl" data-theme="default">
-```
-Switch to `lang="en" dir="ltr"` via a client store — never hardcode direction per page.
-
----
-
-## 3. Architecture rules that differ from defaults
-
-### SDK gateway (Single Network Client & Zero-Client-Mock, ADR-016)
-All data fetching routes exclusively through `@/sdk`. No component, hook, or page may import from a path containing the word `mock` or `generated`. Client-side mock adapters, in-memory datasets, and `NEXT_PUBLIC_API_MODE` are permanently eradicated.
-
-The SDK operates as a single network client routing all calls via Kong Edge Gateway:
-```typescript
-// src/sdk/index.ts
-import { liveSdkAdapter } from './live/live-adapter';
-export const sdk: SdkClient = liveSdkAdapter;
-```
-All endpoints connect to live Go microservices or the schema-driven backend Prism mock container (`lemmo-mock-content`).
-
-### CSS: use logical properties everywhere
-Never use `left`/`right` CSS properties. Always use `margin-inline-start`, `padding-inline-end`, `inset-inline-start`, etc. — required for RTL/LTR flip to work without any CSS changes.
-
-### Dependency direction (one-way, never reversed)
-```
-app/ → modules/ → tool-engine/ → sdk/ → backend
-shared/ has no domain knowledge
-stores/ has no module imports
-```
-
----
-
-## 4. Directory layout to initialize
-
-```
-src/
-├── app/
-│   ├── (workspace)/layout.tsx        # Studio shell: sidebar + header + job monitor
-│   ├── (workspace)/chat/[[...threadId]]/page.tsx
-│   ├── (workspace)/canvas/[[...boardId]]/page.tsx
-│   ├── (workspace)/gallery/page.tsx
-│   ├── (workspace)/assets/page.tsx
-│   ├── (workspace)/settings/billing/page.tsx
-│   ├── (auth)/login/page.tsx
-│   ├── layout.tsx                    # Root layout: sets <html dir= lang= data-theme=>
-│   └── globals.css                   # @import token CSS here
-├── modules/
-│   ├── tool-engine/
-│   │   ├── registry/                 # Manifest loader + cache
-│   │   ├── schema-renderer/          # FieldRenderer.tsx + field components
-│   │   └── job-manager/              # Zustand jobStore
-│   ├── chat/
-│   ├── canvas/
-│   ├── assets/
-│   └── billing/
-├── sdk/
-│   ├── index.ts                      # Single export: sdk object + adapter switch
-│   ├── types.ts                      # SdkClient interface
-│   ├── mock/
-│   │   ├── mock-adapter.ts
-│   │   ├── mock-tools.ts             # 4 tool manifests (flux-dev, remove-bg, upscale, face-swap)
-│   │   ├── mock-jobs.ts              # Job lifecycle simulator with timers
-│   │   └── mock-user.ts
-│   └── interceptors/                 # INSUFFICIENT_TOKENS → redirect /settings/billing
-├── shared/
-│   ├── ui/
-│   │   ├── primitives/               # Button, Input, Slider, Modal, Badge (forwardRef + asChild)
-│   │   └── wireframes/               # WireframeBox, WireframePill, etc. (dashed border skeletons)
-│   ├── hooks/                        # useDirection, useMediaQuery, useDebounce
-│   └── lib/                          # Pure utility functions
-└── stores/                           # uiStore, themeStore (Zustand)
-```
-
----
-
-## 5. Milestone order (do not skip)
-
-1. **M1 — Foundation:** Next.js init, token CSS import, 4 local fonts via `next/font/local`, RTL/LTR store, synthline install
-2. **M2 — Wireframes:** Geometric skeleton components in `shared/ui/wireframes/` — dashed grey boxes only, no real components yet. Test all 4 breakpoints: 320px / 768px / 1280px / 1920px
-3. **M3 — Studio shell:** Replace wireframes with real sidebar, header (`ActiveJobIndicator`, language toggle, token balance), surface switcher
-4. **M4 — Mock SDK:** `@/sdk` gateway + `jobStore` with simulated latency (300–800ms) and progress: `Pending → 45% → 100% → inject into assets`
-5. **M5 — Tool engine:** Schema-driven `FieldRenderer` mapping manifest field types to form controls
-6. **M6 — Chat + Canvas surfaces**
-7. **M7 — Assets, Gallery, Billing**
-8. **M8 — Integration gate:** All flows validated with mock data
-9. **M9 — Flip `NEXT_PUBLIC_API_MODE=live`**
-
----
-
-## 6. Tool manifest shape (reference for schema-renderer)
-
-```json
-{
-  "id": "flux-dev",
-  "command": "/flux",
-  "surfaces": ["chat", "canvas"],
-  "inputs": [
-    { "name": "prompt", "type": "string", "required": true },
-    { "name": "aspect_ratio", "type": "select", "options": ["1:1", "16:9", "9:16"] },
-    { "name": "steps", "type": "slider", "min": 20, "max": 50, "default": 28 }
-  ],
-  "outputs": [{ "name": "generated_image", "type": "image" }],
-  "endpoint": "tools.fluxGenerate"
-}
-```
-
-Field type → component mapping: `string→TextField`, `select→SelectField`, `slider→SliderField`, `image→ImageUploadField`, `boolean→ToggleField`
-
----
-
-## 7. Typography (fonts to copy from `../fonts/fonts/`)
-
-| File | Language | Usage |
+### پکیج‌های برادر در فضای کاری چتری (Umbrella Workspace):
+| مسیر نسبی | مخزن / پکیج | نقش و کاربرد |
 |---|---|---|
-| `iransans/IRANSansXV.woff2` | FA | Body text (variable 100–1000) |
-| `morabba/Morabba-*.woff2` | FA | Headings (400/500/600/700) |
-| `oddval/Oddval-SemiBold.woff2` | EN | Large headings, logotype (600 only) |
-| `satoshi/Satoshi-Variable*.woff2` | EN | Body, numbers, code (300–900) |
-
-Load via `next/font/local` in `src/app/layout.tsx` — do NOT use Google Fonts or CDN.
-
----
-
-## 8. Design token naming rules
-
-- All CSS custom properties: `--lemmo-*` — **the brand is spelled `lemmo` (two m's), never `lemu`**
-- Token CSS sourced from `@lemmo-lab/tokens` — never write raw hex values in component CSS
-- Default theme: dark (`#131517` canvas background, `#d1fe17` lime accent)
+| `../tokens/` | `lemmo-lab/tokens.git` | منبع توکن‌های طراحی دیزاین سیستم (`@lemmo-lab/tokens`). ویرایش مستقیم پوشه `dist/` آن ممنوع است. |
+| `../fonts/` | `lemmo-lab/fonts.git` | فونت‌های وب محلی (IRANSansX, Morabba, Satoshi). لود از طریق `next/font/local`. |
+| `../dotdive/` | `itstalentnet/dotdive.git` | **منبع موثق مستندات (SSOT)** پلتفرم در `dotdive/docs/lemmo/`. |
+| `../api/` | `lemmo-lab/api.git` | میکروسرویس‌های بک‌اند، درگاه Kong و فایل قرارداد `api/infra/gateway/docs/openapi.yaml`. |
+| `../auth/` | `lemmo-lab/auth.git` | سرویس میکروفرانت‌اند احراز هویت. |
+| `../ui/` | — | **غیرفعال.** از آن ایمپورت نکنید. |
 
 ---
 
-## 9. What NOT to do
+## ۲. دستورات عملیاتی خط فرمان (Developer Commands)
 
-- Do **not** scaffold with Vite — this project must be **Next.js App Router**
-- Do **not** import from `../ui/` (inactive sibling package)
-- Do **not** use any icon library other than `synthline/react`
-- Do **not** use `left`/`right` in CSS — breaks RTL/LTR support
-- Do **not** let any file outside `src/sdk/` import from a path containing `mock`
-- Do **not** hard-code API endpoints in components — all calls go through `sdk.*` methods
-- Do **not** add raw hex/px values to component CSS — use `--lemmo-*` tokens
+### حالت الف: اجرا از ریشه فضای کاری چتری (Umbrella Workspace Root)
+```bash
+# اجرای سرور توسعه
+cd app && pnpm dev          # استارت سرور توسعه Next.js (پورت ۳۰۰۰)
 
-<!-- BEGIN:nextjs-agent-rules -->
+# ارزیابی کیفیت و بیلد
+cd app && pnpm build        # بیلد استندالون پروداکشن
+cd app && pnpm lint         # اجرای ESLint و بررسی رول‌های معماری
+cd app && pnpm test         # اجرای تست‌های واحد با Vitest
 
-# This is NOT the Next.js you know
+# تولید خودکار کلاینت قراردادها (Orval)
+cd app && pnpm codegen      # بازتولید کلاینت در src/sdk/live/generated/ از روی openapi.yaml
+```
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+### حالت ب: اجرا از داخل پوشه مخزن مستقل فرانت‌اند (`app/`)
+```bash
+# اجرای سرور توسعه
+pnpm dev                    # استارت سرور توسعه Next.js (پورت ۳۰۰۰)
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+# ارزیابی کیفیت و بیلد
+pnpm build                  # بیلد استندالون پروداکشن
+pnpm lint                   # اجرای ESLint و بررسی رول‌های معماری
+pnpm test                   # اجرای تست‌های واحد با Vitest
 
-<!-- END:nextjs-agent-rules -->
+# تولید خودکار کلاینت قراردادها (Orval)
+pnpm codegen                # بازتولید کلاینت در src/sdk/live/generated/ از روی openapi.yaml
+```
+
+---
+
+## ۳. مرزهای معماری و قوانین بدون استثنا
+
+### ۳.۱. کپسوله‌سازی شبکه و گلوگاه SDK (Zero-Endpoint Awareness)
+- کامپوننت‌ها و ویوهای UI تحت هیچ شرایطی نباید آدرس‌های شبکه (`/api/v1/*`)، متدهای ترانسپورت یا کدهای تولیدی Orval را بشناسند.
+- تمام واکشی‌ها و تعاملات سرور منحصراً از مرز پایدار و تایپ‌شده `@/sdk` عبور می‌کنند.
+- مدیریت داده‌های دارای وضعیت، استریم‌ها و کش سرور به عنوان یک الگوی معماری استاندارد و توصیه‌شده درون **هوک‌های دامنه (Domain Hooks)** با TanStack Query سازماندهی می‌شود؛ بااین‌حال، فراخوانی مستقیم متدهای `@/sdk` برای اکشن‌های ساده و رویدادمحور مجاز است.
+
+### ۳.۲. ممنوعیت داده‌های ماک در کلاینت (Zero-Client-Mock per ADR-016)
+- وجود هرگونه پوشه `mock/`، آداپتور شبیه‌سازی محلی یا فلگ `API_MODE` در کلاینت منقرض و ممنوع است.
+- کلاینت استودیو به عنوان یک Single Network Client عمل کرده و تمام ترافیک را از طریق پروکسی Next.js به درگاه Kong (پورت ۸۰۰۰) ارسال می‌کند.
+
+### ۳.۳. استایل‌های منطقی و طراحی دوجهته (RTL/LTR)
+- تگ ریشه به صورت `<html lang="fa" dir="rtl" data-theme="default">` تنظیم شده است.
+- استفاده از `left` و `right` فیزیکی در CSS به کلی ممنوع است؛ همواره از خواص منطقی (`margin-inline-*`, `inset-inline-*`) استفاده کنید.
+- سیستم مختصات آزاد دکارتی در کانواس با `transform: translate(x, y)` مدیریت شده و وضعیت قطعی استثنای آن در OQ-061 در دست بررسی است.
+
+### ۳.۴. جهت وابستگی یک‌طرفه (One-Way Dependency)
+```
+app/ (مسیرها) → modules/ (ویوها و هوک‌ها) → tool-engine/ → sdk/ → backend
+shared/ فاقد دانش دامنه است
+stores/ فاقد ایمپورت ماژول‌های بیزینس است
+```
+
+---
+
+## ۴. اقدامات پیش از توسعه و پروتکل رفع تعارض
+1. **بررسی قراردادها:** پیش از نوشتن کدهای جدید در فرانت‌اند، مطمئن شوید که اندپوینت و فیلدهای مورد نظر در `openapi.yaml` ثبت شده و `pnpm codegen` اجرا شده باشد.
+2. **پروتکل تعارض:** در صورت وجود ابهام میان دستور تسک و چک‌لیست انطباق، توسعه‌دهنده مجاز به اعمال تفسیر شخصی نیست و موظف است طبق بند ۸ در `AGENTS.md` مادر، سوال باز (Open Question) ثبت کند.
+3. **پایان تسک:** هر تغییر باید با اجرای سبز `pnpm lint` و `pnpm build` همراه بوده و چک‌لیست انطباق تسک با ارائه شواهد پر شود.
