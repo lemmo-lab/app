@@ -14,11 +14,13 @@ import { AgentSingleContentView } from './AgentSingleContentView';
 interface AgentManagerProps {
   viewMode: 'empty' | 'chat' | 'single';
   currentId?: string;
+  initialPrompt?: string;
 }
 
 export default function AgentManager({
   viewMode,
   currentId = 'chat-01',
+  initialPrompt,
 }: AgentManagerProps) {
   const router = useRouter();
   const { dir, locale } = useUiStore();
@@ -30,15 +32,17 @@ export default function AgentManager({
   const [emptyConfig, setEmptyConfig] = useState<AgentGenerationConfig>({
     contentType: 'image',
     aspectRatio: '1:1',
-    modelId: 'flux-1-dev',
+    modelId: 'gpt-image-2',
     batchCount: 1,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleEmptySubmit = () => {
+  const handleEmptySubmit = (expectedCost?: number) => {
+    if (!emptyPrompt.trim() && emptyReferences.length === 0) return;
     setIsSubmitting(true);
-    // Transition to the chat conversation view
-    router.push('/app/agent/chat-01');
+    const chatId = `chat-${Date.now()}`;
+    const costParam = expectedCost ? `&expectedCost=${expectedCost}` : '';
+    router.push(`/app/agent/${chatId}?prompt=${encodeURIComponent(emptyPrompt.trim())}${costParam}`);
   };
 
   return (
@@ -64,6 +68,7 @@ export default function AgentManager({
       {viewMode === 'chat' && (
         <AgentChatView
           currentId={currentId}
+          initialPrompt={initialPrompt}
           locale={locale}
           isRtl={isRtl}
         />

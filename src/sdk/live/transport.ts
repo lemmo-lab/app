@@ -95,6 +95,9 @@ function notifyStepUpRequired(): Promise<void> {
 
 function notifySignedOut(): void {
   currentWorkspaceId = null;
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('lemmo_active_workspace');
+  }
   cancelProactiveRefresh();
   signedOutListeners.forEach((listener) => listener());
 }
@@ -240,8 +243,15 @@ export async function customFetch<T>(
 
     // 2. Sanitize and inject verified workspace header
     const headers = sanitizeHeaders(options.headers);
-    if (snapshotWorkspaceId) {
-      headers.set('X-Workspace-ID', snapshotWorkspaceId);
+    const effectiveWorkspaceId =
+      snapshotWorkspaceId ||
+      (typeof window !== 'undefined'
+        ? localStorage.getItem('lemmo_active_workspace') ||
+          (document.cookie.match(/lemmo_workspace_id=([^;]+)/)?.[1] ?? null)
+        : null);
+
+    if (effectiveWorkspaceId) {
+      headers.set('X-Workspace-ID', effectiveWorkspaceId);
     }
 
     if (!headers.has('Content-Type') && options.body && !(options.body instanceof FormData)) {

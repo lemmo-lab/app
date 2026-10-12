@@ -14,9 +14,11 @@ import {
 } from '../types';
 import { AgentChatMessage } from './AgentChatMessage';
 import { AgentInputBar } from './AgentInputBar';
+import { formatAgentErrorMessage } from '../utils/errorMapping';
 
 interface AgentChatViewProps {
   currentId?: string;
+  initialPrompt?: string;
   locale: string;
   isRtl: boolean;
 }
@@ -44,7 +46,10 @@ function mapSdkMessageToAgentMessage(
   }
 
   // Assistant response
-  const mediaUrl = msg.attachments?.[0]?.url;
+  let mediaUrl = msg.attachments?.[0]?.url;
+  if (mediaUrl && mediaUrl.includes('minio:9000')) {
+    mediaUrl = mediaUrl.replace('minio:9000', 'localhost:9000');
+  }
   const aspect =
     (msg.attachments?.[0]?.aspectRatio as AgentAspectRatio) ||
     config?.aspectRatio ||
@@ -72,17 +77,19 @@ function mapSdkMessageToAgentMessage(
 
 export function AgentChatView({
   currentId,
+  initialPrompt,
   locale,
   isRtl,
 }: AgentChatViewProps) {
   const queryClient = useQueryClient();
   const studioContext = useOptionalStudioContext();
-  const activeWorkspaceId = studioContext?.activeWorkspace?.id ?? 'default';
+  const activeWorkspaceId = studioContext?.activeWorkspace?.id || '';
 
   // 1. Fetch available chat threads to identify active thread ID (SEC-23: workspace-scoped)
   const { data: threads = [] } = useQuery({
     queryKey: ['workspace', activeWorkspaceId, 'chat-threads'],
     queryFn: () => sdk.chat.getThreads(),
+    enabled: Boolean(activeWorkspaceId),
   });
 
   const activeThreadId = currentId || threads[0]?.id || 'thread-001';
@@ -91,7 +98,7 @@ export function AgentChatView({
   const { data: threadData } = useQuery({
     queryKey: ['workspace', activeWorkspaceId, 'chat-thread', activeThreadId],
     queryFn: () => sdk.chat.getThread(activeThreadId),
-    enabled: Boolean(activeThreadId),
+    enabled: Boolean(activeThreadId && activeWorkspaceId),
   });
 
   // Local session messages per thread
@@ -113,8 +120,8 @@ export function AgentChatView({
   const [references, setReferences] = useState<AgentReferenceItem[]>([]);
   const [config, setConfig] = useState<AgentGenerationConfig>({
     contentType: 'image',
-    aspectRatio: '3:4',
-    modelId: 'flux-1-dev',
+    aspectRatio: '1:1',
+    modelId: 'gpt-image-2',
     batchCount: 1,
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -148,8 +155,21 @@ export function AgentChatView({
 
   // 3. Send message mutation via sdk.chat.sendMessage
   const sendMessageMutation = useMutation({
-    mutationFn: async ({ threadId, content }: { threadId: string | null; content: string }) => {
-      return sdk.chat.sendMessage(threadId, content);
+    mutationFn: async ({
+      threadId,
+      content,
+      expectedCost,
+    }: {
+      threadId: string | null;
+      content: string;
+      expectedCost?: number;
+    }) => {
+      return sdk.chat.sendMessage(threadId, content, {
+        model: config.modelId,
+        aspectRatio: config.aspectRatio,
+        numOutputs: config.batchCount,
+        expectedCost,
+      });
     },
     onSuccess: (res) => {
       const { threadId, assistantMessageId } = res;
@@ -164,7 +184,7 @@ export function AgentChatView({
         status: 'streaming',
         contentType: config.contentType,
         aspectRatio: config.aspectRatio,
-        modelUsed: config.modelId === 'flux-1-dev' ? 'FLUX.1 [dev]' : 'Lemmo Realism v2',
+        modelUsed: config.modelId,
         seed: Math.floor(Math.random() * 900000000) + 100000000,
         generationDurationSec: 2.8,
         creditsUsed: (config.batchCount || 1) * 5,
@@ -215,9 +235,11 @@ export function AgentChatView({
         } else if (event.type === 'message_failed') {
           setLocalMessages((prev) => {
             const currentList = prev[tid] || [];
+            const rawError = event.error || (event.data as { reason?: string })?.reason || (typeof event.data === 'string' ? event.data : undefined);
+            const errorMsg = formatAgentErrorMessage(rawError, locale);
             const updated = currentList.map((m) => {
               if (m.id === assistantMessageId) {
-                return { ...m, status: 'failed' as const, text: m.text || event.error || 'Generation failed' };
+                return { ...m, status: 'failed' as const, text: errorMsg };
               }
               return m;
             });
@@ -239,11 +261,59 @@ export function AgentChatView({
 
       setActiveSubscription(() => unsubscribe);
     },
+    onError: (err: unknown) => {
+      const rawError = err instanceof Error ? err.message : 'Failed to send message';
+      const errorMsg = formatAgentErrorMessage(rawError, locale);
+      setLocalMessages((prev) => {
+        const currentList = prev[activeThreadId] || [];
+        const updated = currentList.map((m) => {
+          if (m.status === 'streaming') {
+            return { ...m, status: 'failed' as const, text: errorMsg };
+          }
+          return m;
+        });
+        return { ...prev, [activeThreadId]: updated };
+      });
+    },
   });
+
+  const hasAutoSubmittedRef = useRef(false);
+
+  useEffect(() => {
+    if (initialPrompt && !hasAutoSubmittedRef.current) {
+      hasAutoSubmittedRef.current = true;
+      const cleanPrompt = initialPrompt.trim();
+      if (!cleanPrompt) return;
+
+      // Remove searchParams from browser URL to prevent re-submission on refresh (F5)
+      if (typeof window !== 'undefined' && window.location.search) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+
+      const userMsg: AgentChatMessageItem = {
+        id: `msg-${Date.now()}`,
+        sender: 'user',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        prompt: cleanPrompt,
+      };
+
+      queueMicrotask(() => {
+        setLocalMessages((prev) => ({
+          ...prev,
+          [activeThreadId]: [...(prev[activeThreadId] || []), userMsg],
+        }));
+
+        sendMessageMutation.mutate({
+          threadId: activeThreadId,
+          content: cleanPrompt,
+        });
+      });
+    }
+  }, [initialPrompt, activeThreadId, sendMessageMutation]);
 
   const isSubmitting = sendMessageMutation.isPending;
 
-  const handleSubmit = () => {
+  const handleSubmit = (expectedCost?: number) => {
     if (!prompt.trim() && references.length === 0) return;
 
     const newPromptText = prompt.trim();
@@ -269,6 +339,7 @@ export function AgentChatView({
     sendMessageMutation.mutate({
       threadId: activeThreadId,
       content: newPromptText,
+      expectedCost,
     });
   };
 

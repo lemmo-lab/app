@@ -15,7 +15,8 @@ import { AgentConfigPopover } from './AgentConfigPopover';
 import { AgentCommandPalette } from './AgentCommandPalette';
 import { AgentActiveToolStrip } from './AgentActiveToolStrip';
 import { useAgentSlashCommands } from '../hooks/useAgentSlashCommands';
-import { AGENT_MODELS } from '../constants/presets';
+import { useTools } from '@/modules/tools/hooks/useTools';
+import { useQuotaEstimate } from '@/modules/tools/hooks/useQuotaEstimate';
 
 interface AgentInputBarProps {
   prompt: string;
@@ -25,7 +26,7 @@ interface AgentInputBarProps {
   onRemoveReference: (id: string) => void;
   config: AgentGenerationConfig;
   onChangeConfig: (updater: (prev: AgentGenerationConfig) => AgentGenerationConfig) => void;
-  onSubmit: () => void;
+  onSubmit: (expectedCost?: number) => void;
   isSubmitting?: boolean;
   locale: string;
   isRtl: boolean;
@@ -82,6 +83,19 @@ export function AgentInputBar({
   const canSubmit = (prompt.trim().length > 0 || references.length > 0 || activeTool !== null) && !isSubmitting;
   const isButtonDisabled = !mounted ? true : !canSubmit;
 
+  const { data: tools = [] } = useTools();
+  const activeToolDef = tools.find((t) => t.outputType === config.contentType) || tools[0];
+  const currentModelOption =
+    activeToolDef?.models?.find((m) => m.model_ref === config.modelId) ||
+    activeToolDef?.models?.[0];
+  const modelDisplayName = currentModelOption?.model_ref || config.modelId || 'GPT Image 2';
+
+  const { estimatedCredits } = useQuotaEstimate({
+    toolId: activeToolDef?.id,
+    modelId: config.modelId || currentModelOption?.model_ref || 'gpt-image-2',
+    numOutputs: config.batchCount,
+  });
+
   const handleTriggerSubmit = () => {
     if (!canSubmit) return;
 
@@ -90,10 +104,10 @@ export function AgentInputBar({
       onChangePrompt(fullPrompt);
       handleRemoveActiveTool();
       setTimeout(() => {
-        onSubmit();
+        onSubmit(estimatedCredits);
       }, 0);
     } else {
-      onSubmit();
+      onSubmit(estimatedCredits);
     }
   };
 
@@ -124,8 +138,6 @@ export function AgentInputBar({
       e.target.value = '';
     }
   };
-
-  const currentModel = AGENT_MODELS.find((m) => m.id === config.modelId) || AGENT_MODELS[0];
 
   const defaultPlaceholder = activeTool
     ? locale === 'fa'
@@ -246,12 +258,15 @@ export function AgentInputBar({
                 aria-haspopup="dialog"
                 aria-expanded={configOpen}
               >
-                <Sliders01 size={14} strokeWidth={2} color="currentColor" />
+                <Sliders01 size={14} strokeWidth={1.5} color="currentColor" />
                 <span className="config-trigger-model-name">
-                  {currentModel.name}
+                  {modelDisplayName}
                 </span>
                 <span className="config-trigger-ratio">
                   {config.aspectRatio}
+                </span>
+                <span className="config-trigger-credits">
+                  {estimatedCredits}c
                 </span>
               </button>
 

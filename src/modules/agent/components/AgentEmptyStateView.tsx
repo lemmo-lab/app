@@ -17,7 +17,7 @@ interface AgentEmptyStateViewProps {
   onRemoveReference: (id: string) => void;
   config: AgentGenerationConfig;
   onChangeConfig: (updater: (prev: AgentGenerationConfig) => AgentGenerationConfig) => void;
-  onSubmit: () => void;
+  onSubmit: (expectedCost?: number) => void;
   isSubmitting?: boolean;
   locale: string;
   isRtl: boolean;

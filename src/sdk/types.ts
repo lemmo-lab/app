@@ -63,11 +63,23 @@ export type FieldType =
   | 'image-upload'
   | 'slider'
   | 'select'
-  | 'toggle';
+  | 'toggle'
+  | 'aspect_ratio'
+  | 'segmented_number'
+  | 'model_select'
+  | 'seed';
 
 export interface FieldOption {
   label: string;
   value: string;
+}
+
+export interface ToolModelOption {
+  model_ref: string;
+  default?: boolean;
+  order?: number;
+  badge?: string;
+  field_overrides?: Record<string, unknown>;
 }
 
 export interface ToolField {
@@ -91,6 +103,7 @@ export type OutputType = 'image' | 'video' | 'text';
 
 export interface ToolManifest {
   id: string;
+  version?: number;
   name: string;
   nameFa: string;
   description: string;
@@ -100,7 +113,12 @@ export interface ToolManifest {
   inputFields: ToolField[];
   outputType: OutputType;
   /** Approximate token cost per execution */
-  estimatedTokenCost: number;
+  estimatedTokenCost?: number;
+  models?: ToolModelOption[];
+  type?: string;
+  capability?: string;
+  chat_alias?: string[];
+  status?: string;
 }
 
 // ================================================================== //
@@ -388,7 +406,16 @@ export interface SdkClient {
     subscribe: (jobId: string, onEvent: (event: JobEvent) => void) => () => void;
   };
   chat: {
-    sendMessage: (threadId: string | null, content: string) => Promise<SendMessageResponse>;
+    sendMessage: (
+      threadId: string | null,
+      content: string,
+      options?: {
+        model?: string;
+        aspectRatio?: string;
+        numOutputs?: number;
+        expectedCost?: number;
+      }
+    ) => Promise<SendMessageResponse>;
     getThreads: () => Promise<Thread[]>;
     getThread: (threadId: string) => Promise<Thread>;
     subscribe: (threadId: string, messageId: string, onEvent: (event: ChatEvent) => void) => () => void;
@@ -405,8 +432,21 @@ export interface SdkClient {
     list: (params?: { category?: string; limit?: number; cursor?: string }) => Promise<FeedResult>;
     get: (id: string) => Promise<FeedItem>;
   };
-  quota?: {
+  quota: {
     getPricing: () => Promise<PricingRateCard>;
+    estimate: (params: {
+      toolId?: string;
+      modelId: string;
+      width?: number;
+      height?: number;
+      steps?: number;
+      numOutputs?: number;
+      isByo?: boolean;
+    }) => Promise<{
+      estimatedCredits: number;
+      rateCardVersion: string;
+      breakdown?: Record<string, unknown>;
+    }>;
   };
   user: {
     getProfile: () => Promise<UserProfile>;

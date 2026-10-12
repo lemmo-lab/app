@@ -87,6 +87,9 @@ export function StudioContextProvider({ children }: StudioContextProviderProps) 
         res.workspaces[0];
 
       setTransportContext(targetWorkspace.id, callGen);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('lemmo_active_workspace', targetWorkspace.id);
+      }
       setState('ready');
     } catch (err: unknown) {
       if (getSessionGenerationId() !== callGen) {

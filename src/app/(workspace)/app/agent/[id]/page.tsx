@@ -39,6 +39,7 @@ export default function DynamicAgentPage({
     <AgentManager
       viewMode={isFileView ? 'single' : 'chat'}
       currentId={id}
+      initialPrompt={searchParams.get('prompt') || undefined}
     />
   );
 }

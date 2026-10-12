@@ -398,6 +398,10 @@ export type SendChatMessageBody = {
   /** @nullable */
   threadId?: string | null;
   mode?: SendChatMessageBodyMode;
+  model?: string;
+  aspectRatio?: string;
+  numOutputs?: number;
+  expectedCost?: number;
 };
 
 export type GetContent200 = {

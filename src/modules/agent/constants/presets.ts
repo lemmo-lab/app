@@ -1,36 +1,7 @@
 import {
-  AgentModel,
   AgentStylePreset,
   AgentReferenceItem,
 } from '../types';
-
-export const AGENT_MODELS: AgentModel[] = [
-  {
-    id: 'flux-1-dev',
-    name: 'FLUX.1 [dev]',
-    provider: 'Black Forest Labs',
-    badge: 'Flagship',
-    isDefault: true,
-  },
-  {
-    id: 'lemmo-realism-v2',
-    name: 'Lemmo Realism v2',
-    provider: 'Lemmo Studio Engine',
-    badge: 'Pro',
-  },
-  {
-    id: 'sdxl-turbo',
-    name: 'SDXL Turbo Lightning',
-    provider: 'Stability AI',
-    badge: 'Fast',
-  },
-  {
-    id: 'midjourney-v6',
-    name: 'Midjourney v6.1 Refined',
-    provider: 'Midjourney Proxy',
-    badge: 'Artistic',
-  },
-];
 
 export const AGENT_STYLE_PRESETS: AgentStylePreset[] = [
   {

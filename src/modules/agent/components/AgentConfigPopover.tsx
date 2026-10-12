@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   Image03,
   VideoCamera,
@@ -12,7 +12,9 @@ import {
   AgentGenerationConfig,
   AgentAspectRatio,
 } from '../types';
-import { AGENT_MODELS } from '../constants/presets';
+import { useTools } from '@/modules/tools/hooks/useTools';
+import { useQuotaEstimate } from '@/modules/tools/hooks/useQuotaEstimate';
+import { resolveFormState } from '@/modules/tools/utils/formState';
 
 interface AgentConfigPopoverProps {
   config: AgentGenerationConfig;
@@ -39,6 +41,51 @@ export function AgentConfigPopover({
 }: AgentConfigPopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
   const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
+
+  // Dynamic server-driven tool manifests (Zero-Mock per ADR-016 & ADR-021)
+  const { data: tools = [] } = useTools();
+
+  const activeTool = useMemo(() => {
+    return tools.find((t) => t.outputType === config.contentType) || tools[0];
+  }, [tools, config.contentType]);
+
+  const availableMediaTypes = useMemo(() => {
+    const types = new Set(tools.map((t) => t.outputType));
+    return types.size > 0 ? Array.from(types) : ['image'];
+  }, [tools]);
+
+  const availableModels = useMemo(() => {
+    if (activeTool?.models && activeTool.models.length > 0) {
+      return activeTool.models.map((m) => ({
+        id: m.model_ref,
+        name: m.model_ref,
+        provider: activeTool.name || 'AI Engine',
+        badge: m.badge,
+        isDefault: m.default,
+      }));
+    }
+    return [
+      {
+        id: config.modelId || 'gpt-image-2',
+        name: config.modelId || 'gpt-image-2',
+        provider: 'AI Engine',
+        badge: 'Live',
+        isDefault: true,
+      },
+    ];
+  }, [activeTool, config.modelId]);
+
+  const currentModel = useMemo(() => {
+    return availableModels.find((m) => m.id === config.modelId) || availableModels[0];
+  }, [availableModels, config.modelId]);
+
+  // Dynamic quota estimation from backend with debouncing
+  const { estimatedCredits } = useQuotaEstimate({
+    toolId: activeTool?.id,
+    modelId: config.modelId || currentModel.id,
+    numOutputs: config.batchCount,
+    enabled: isOpen,
+  });
 
   // Close when clicked outside
   useEffect(() => {
@@ -73,8 +120,23 @@ export function AgentConfigPopover({
 
   if (!isOpen) return null;
 
-  const currentModel =
-    AGENT_MODELS.find((m) => m.id === config.modelId) || AGENT_MODELS[0];
+  const handleSelectModel = (modelId: string) => {
+    if (activeTool) {
+      const reconciled = resolveFormState(activeTool, modelId, {
+        aspect_ratio: config.aspectRatio,
+        num_outputs: config.batchCount,
+      });
+      onChangeConfig((prev) => ({
+        ...prev,
+        modelId,
+        aspectRatio: (reconciled.aspect_ratio as AgentAspectRatio) || prev.aspectRatio,
+        batchCount: (reconciled.num_outputs as 1 | 2 | 3 | 4) || prev.batchCount,
+      }));
+    } else {
+      onChangeConfig((prev) => ({ ...prev, modelId }));
+    }
+    setIsModelDropdownOpen(false);
+  };
 
   return (
     <div
@@ -83,33 +145,37 @@ export function AgentConfigPopover({
       role="dialog"
       aria-label={locale === 'fa' ? 'تنظیمات تولید ایجنت' : 'Agent Generation Settings'}
     >
-      {/* 1. Media Type Switcher (Image vs Video) */}
+      {/* 1. Media Type Switcher (Dynamically derived from active tools per ADR-021 M6) */}
       <div className="config-section type-switcher-section">
         <div className="type-toggle-track">
-          <button
-            type="button"
-            className={`type-toggle-btn ${config.contentType === 'image' ? 'active' : ''}`}
-            onClick={() =>
-              onChangeConfig((prev) => ({ ...prev, contentType: 'image' }))
-            }
-          >
-            <Image03 size={14} strokeWidth={2} color="currentColor" />
-            <span>{locale === 'fa' ? 'تصویر' : 'Image'}</span>
-          </button>
-          <button
-            type="button"
-            className={`type-toggle-btn ${config.contentType === 'video' ? 'active' : ''}`}
-            onClick={() =>
-              onChangeConfig((prev) => ({ ...prev, contentType: 'video' }))
-            }
-          >
-            <VideoCamera size={14} strokeWidth={2} color="currentColor" />
-            <span>{locale === 'fa' ? 'ویدیو' : 'Video'}</span>
-          </button>
+          {availableMediaTypes.includes('image') && (
+            <button
+              type="button"
+              className={`type-toggle-btn ${config.contentType === 'image' ? 'active' : ''}`}
+              onClick={() =>
+                onChangeConfig((prev) => ({ ...prev, contentType: 'image' }))
+              }
+            >
+              <Image03 size={14} strokeWidth={1.5} color="currentColor" />
+              <span>{locale === 'fa' ? 'تصویر' : 'Image'}</span>
+            </button>
+          )}
+          {availableMediaTypes.includes('video') && (
+            <button
+              type="button"
+              className={`type-toggle-btn ${config.contentType === 'video' ? 'active' : ''}`}
+              onClick={() =>
+                onChangeConfig((prev) => ({ ...prev, contentType: 'video' }))
+              }
+            >
+              <VideoCamera size={14} strokeWidth={1.5} color="currentColor" />
+              <span>{locale === 'fa' ? 'ویدیو' : 'Video'}</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* 2. Aspect Ratio Selector (5 frames matching wireframe .frame-choice) */}
+      {/* 2. Aspect Ratio Selector */}
       <div className="config-section">
         <div className="config-section-header">
           <span className="config-section-label">
@@ -141,7 +207,7 @@ export function AgentConfigPopover({
         </div>
       </div>
 
-      {/* 3. AI Model Selector (Dropdown Menu matching wireframe .model-dropdown) */}
+      {/* 3. AI Model Selector (Server-Driven models from active tool catalog) */}
       <div className="config-section model-section">
         <div className="config-section-header">
           <span className="config-section-label">
@@ -161,7 +227,7 @@ export function AgentConfigPopover({
             <div className="model-trigger-start">
               <Sparks
                 size={14}
-                strokeWidth={2.2}
+                strokeWidth={1.5}
                 color="var(--lemmo-surface-brand-background, #d1fe17)"
               />
               <span className="model-trigger-name">{currentModel.name}</span>
@@ -173,7 +239,7 @@ export function AgentConfigPopover({
               )}
               <ChevronSelectorVertical
                 size={14}
-                strokeWidth={2}
+                strokeWidth={1.5}
                 color="var(--lemmo-text-muted, #898a8b)"
               />
             </div>
@@ -182,17 +248,14 @@ export function AgentConfigPopover({
           {/* Dropdown Popover List */}
           {isModelDropdownOpen && (
             <div className="model-dropdown-menu" role="listbox">
-              {AGENT_MODELS.map((model) => {
+              {availableModels.map((model) => {
                 const isSelected = config.modelId === model.id;
                 return (
                   <button
                     key={model.id}
                     type="button"
                     className={`model-dropdown-item ${isSelected ? 'selected' : ''}`}
-                    onClick={() => {
-                      onChangeConfig((prev) => ({ ...prev, modelId: model.id }));
-                      setIsModelDropdownOpen(false);
-                    }}
+                    onClick={() => handleSelectModel(model.id)}
                     role="option"
                     aria-selected={isSelected}
                   >
@@ -208,7 +271,7 @@ export function AgentConfigPopover({
                       {isSelected && (
                         <Check01
                           size={14}
-                          strokeWidth={2.4}
+                          strokeWidth={1.5}
                           color="var(--lemmo-surface-brand-background, #d1fe17)"
                         />
                       )}
@@ -221,7 +284,7 @@ export function AgentConfigPopover({
         </div>
       </div>
 
-      {/* 4. Batch Count (1, 2, 3, 4 matching wireframe .number-result) */}
+      {/* 4. Batch Count (num_outputs: 1, 2, 3, 4) */}
       <div className="config-section">
         <div className="config-section-header">
           <span className="config-section-label">
@@ -247,18 +310,18 @@ export function AgentConfigPopover({
         </div>
       </div>
 
-      {/* 5. Credit Cost Footer (matching wireframe .creadit) */}
+      {/* 5. Credit Cost Footer — Dynamically fetched from quota-service /estimate */}
       <div className="config-footer">
         <div className="credits-badge">
           <Sparks
             size={13}
-            strokeWidth={2.2}
+            strokeWidth={1.5}
             color="var(--lemmo-surface-brand-background, #d1fe17)"
           />
           <span>
             {locale === 'fa'
-              ? `${config.batchCount * 5} کردیت در هر تولید`
-              : `${config.batchCount * 5} credits per generation`}
+              ? `${estimatedCredits} کردیت تخمینی در هر تولید`
+              : `${estimatedCredits} credits per generation`}
           </span>
         </div>
       </div>

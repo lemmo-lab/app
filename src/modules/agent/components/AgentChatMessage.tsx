@@ -53,8 +53,15 @@ export function AgentChatMessage({
       ) {
         setJobStatus('done');
         const results = event.results as Record<string, unknown> | undefined;
-        const generatedUrl = (results?.url as string) || (results?.preview_url as string);
+        let generatedUrl = (results?.url as string) || (results?.output_url as string) || (results?.preview_url as string);
+        if (!generatedUrl && (results?.object_key || results?.output_object_key)) {
+          const key = (results?.object_key || results?.output_object_key) as string;
+          generatedUrl = `http://localhost:9000/lemmo-artifacts/${key}`;
+        }
         if (generatedUrl) {
+          if (generatedUrl.includes('minio:9000')) {
+            generatedUrl = generatedUrl.replace('minio:9000', 'localhost:9000');
+          }
           setJobMediaUrl(generatedUrl);
         } else if (results?.asset_id) {
           sdk.assets

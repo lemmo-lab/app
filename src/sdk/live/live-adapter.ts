@@ -373,10 +373,23 @@ export const liveSdkAdapter: SdkClient = {
   // CHAT (Live Agent Service — Dispatched to agent-service via Kong)  //
   // ================================================================ //
   chat: {
-    sendMessage: async (threadId: string | null, content: string): Promise<SendMessageResponse> => {
+    sendMessage: async (
+      threadId: string | null,
+      content: string,
+      options?: {
+        model?: string;
+        aspectRatio?: string;
+        numOutputs?: number;
+        expectedCost?: number;
+      }
+    ): Promise<SendMessageResponse> => {
       const response = await sendChatMessage({
         threadId: threadId ?? undefined,
         content,
+        model: options?.model,
+        aspectRatio: options?.aspectRatio,
+        numOutputs: options?.numOutputs,
+        expectedCost: options?.expectedCost,
       });
       if (response.status === 202) {
         return response.data as SendMessageResponse;
@@ -422,21 +435,30 @@ export const liveSdkAdapter: SdkClient = {
 
       const handleParsed = (eventType: ChatEvent['type'], dataStr: string) => {
         try {
-          const payload = JSON.parse(dataStr);
+          const payload = typeof dataStr === 'string' && (dataStr.startsWith('{') || dataStr.startsWith('['))
+            ? JSON.parse(dataStr)
+            : { error: dataStr };
           onEvent({
             type: eventType,
             threadId,
             messageId,
-            token: payload.token,
+            token: payload.token || payload.delta,
             jobId: payload.job_id || payload.jobId,
             toolId: payload.tool_id || payload.toolId,
             toolVersion: payload.tool_version || payload.toolVersion,
-            error: payload.error,
+            error: payload.error || payload.reason || (typeof payload === 'string' ? payload : undefined),
             data: payload,
             raw: payload,
           });
         } catch {
-          // ignore parsing error
+          onEvent({
+            type: eventType,
+            threadId,
+            messageId,
+            error: eventType === 'message_failed' ? dataStr : undefined,
+            data: { error: dataStr },
+            raw: dataStr,
+          });
         }
       };
 
@@ -530,6 +552,43 @@ export const liveSdkAdapter: SdkClient = {
       const payload = res as { data?: { pricing?: import('../types').PricingRateCard }; pricing?: import('../types').PricingRateCard };
       const card = payload.data?.pricing || payload.pricing;
       return card?.version ? card : { version: '1.0.0', currency: 'IRR', tools: {} };
+    },
+
+    estimate: async (params: {
+      toolId?: string;
+      modelId: string;
+      width?: number;
+      height?: number;
+      steps?: number;
+      numOutputs?: number;
+      isByo?: boolean;
+    }): Promise<{
+      estimatedCredits: number;
+      rateCardVersion: string;
+      breakdown?: Record<string, unknown>;
+    }> => {
+      const res = await customFetch<{
+        estimated_credits: number;
+        rate_card_version: string;
+        breakdown?: Record<string, unknown>;
+      }>('/api/v1/quota/estimate', {
+        method: 'POST',
+        body: JSON.stringify({
+          tool_id: params.toolId || 'image_generation',
+          model_id: params.modelId,
+          width: params.width || 1024,
+          height: params.height || 1024,
+          steps: params.steps || 28,
+          num_outputs: params.numOutputs || 1,
+          is_byo: params.isByo || false,
+        }),
+      });
+      const data = ((res as { data?: Record<string, unknown> }).data || res) as Record<string, unknown>;
+      return {
+        estimatedCredits: (data.estimated_credits as number) ?? (data.estimatedCredits as number) ?? 20,
+        rateCardVersion: (data.rate_card_version as string) ?? (data.rateCardVersion as string) ?? 'v1.0',
+        breakdown: data.breakdown as Record<string, unknown> | undefined,
+      };
     },
   },
 
