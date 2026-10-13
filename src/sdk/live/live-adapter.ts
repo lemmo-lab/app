@@ -69,6 +69,7 @@ import {
   type listWorkspaceMembersResponseSuccess,
   type getWorkspaceSettingsResponseSuccess,
   type updateWorkspaceSettingsResponseSuccess,
+  type SendChatMessageBodyAspectRatio,
 } from './generated';
 
 import { onSignedOut } from './transport';
@@ -407,10 +408,13 @@ export const liveSdkAdapter: SdkClient = {
         expectedCost?: number;
       }
     ): Promise<SendMessageResponse> => {
-      void options;
       const response = await sendChatMessage({
         threadId: threadId ?? undefined,
         content,
+        model: options?.model,
+        aspectRatio: options?.aspectRatio as SendChatMessageBodyAspectRatio | undefined,
+        numOutputs: options?.numOutputs,
+        expectedCost: options?.expectedCost,
       });
       if (response.status === 202) {
         return response.data as SendMessageResponse;

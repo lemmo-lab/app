@@ -523,6 +523,18 @@ export type AuthVerify200 = {
   user_id: string;
 };
 
+/**
+ * Target aspect ratio for synthesized image artifacts.
+ */
+export type SendChatMessageBodyAspectRatio = typeof SendChatMessageBodyAspectRatio[keyof typeof SendChatMessageBodyAspectRatio];
+
+
+export const SendChatMessageBodyAspectRatio = {
+  '1:1': '1:1',
+  '16:9': '16:9',
+  '9:16': '9:16',
+} as const;
+
 export type SendChatMessageBodyMode = typeof SendChatMessageBodyMode[keyof typeof SendChatMessageBodyMode];
 
 
@@ -533,9 +545,27 @@ export const SendChatMessageBodyMode = {
 } as const;
 
 export type SendChatMessageBody = {
+  /** Target aspect ratio for synthesized image artifacts. */
+  aspectRatio?: SendChatMessageBodyAspectRatio;
+  /** Text prompt or command for the message. */
   content: string;
+  /** Optional client-side expected quota cost. */
+  expectedCost?: number;
   mode?: SendChatMessageBodyMode;
-  /** @nullable */
+  /** Specific AI model identifier (e.g. gpt-image-2, fal-ai/flux-dev). */
+  model?: string;
+  /** Alias identifier for model. */
+  modelId?: string;
+  /**
+     * Number of outputs to synthesize.
+     * @minimum 1
+     * @maximum 4
+     */
+  numOutputs?: number;
+  /**
+     * Optional ID of an existing thread. If omitted or null, a new thread is created automatically.
+     * @nullable
+     */
   threadId?: string | null;
 };
 
