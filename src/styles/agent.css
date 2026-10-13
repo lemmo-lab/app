@@ -1338,6 +1338,11 @@
   margin-bottom: 12px;
 }
 
+.assistant-text-bubble.failed-bubble {
+  border-color: rgba(255, 84, 98, 0.4);
+  background: rgba(255, 84, 98, 0.06);
+}
+
 .assistant-text-content {
   font-size: 0.9375rem;
   line-height: 1.6;

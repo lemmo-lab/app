@@ -27,6 +27,26 @@ describe('formatAgentErrorMessage', () => {
     expect(formatAgentErrorMessage('', 'en')).toBe('Generation failed');
   });
 
+  it('maps WORKSPACE_FORBIDDEN / 403 to friendly message in Persian and English', () => {
+    const rawError = 'ERROR_REASON_WORKSPACE_FORBIDDEN';
+
+    const faMsg = formatAgentErrorMessage(rawError, 'fa');
+    expect(faMsg).toBe('شما به این فضای کاری دسترسی ندارید یا وضعیت عضویت نامعتبر است.');
+
+    const enMsg = formatAgentErrorMessage(rawError, 'en');
+    expect(enMsg).toBe('You do not have access to this workspace or membership is invalid.');
+  });
+
+  it('maps UNAUTHENTICATED / 401 to friendly message in Persian and English', () => {
+    const rawError = '401 UNAUTHENTICATED';
+
+    const faMsg = formatAgentErrorMessage(rawError, 'fa');
+    expect(faMsg).toBe('نشست کاربری شما معتبر نیست. لطفاً مجدداً وارد حساب کاربری خود شوید.');
+
+    const enMsg = formatAgentErrorMessage(rawError, 'en');
+    expect(enMsg).toBe('Your session is not valid. Please log in again.');
+  });
+
   it('returns raw error for other generic error strings', () => {
     const raw = 'Custom backend error occurred';
     expect(formatAgentErrorMessage(raw, 'en')).toBe(raw);

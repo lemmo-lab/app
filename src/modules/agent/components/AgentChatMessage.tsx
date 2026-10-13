@@ -28,6 +28,7 @@ interface AgentChatMessageProps {
 export function AgentChatMessage({
   message,
   locale,
+  onRemix,
 }: AgentChatMessageProps) {
   const [isCopied, setIsCopied] = useState(false);
   const [isFavorited, setIsFavorited] = useState(message.isFavorite || false);
@@ -227,15 +228,46 @@ export function AgentChatMessage({
   // 2. Assistant Generated Output Message Row
   return (
     <div className="agent-chat-row assistant-row">
-      {/* 2a. Text response bubble (streaming or completed) */}
-      {message.text && (
-        <div className="assistant-text-bubble">
+      {/* 2a. Text response bubble (streaming, completed, or failed) */}
+      {(Boolean(message.text) || message.status === 'streaming' || message.status === 'failed') && (
+        <div className={`assistant-text-bubble ${message.status === 'failed' ? 'failed-bubble' : ''}`}>
           <p className="assistant-text-content">
-            {message.text}
+            {message.status === 'failed' ? (
+              <span className="text-error" style={{ color: 'var(--lemmo-text-danger, #ff5462)' }}>
+                {message.text || (locale === 'fa' ? 'خطا در ارسال یا پردازش درخواست.' : 'Failed to send or process prompt.')}
+              </span>
+            ) : (
+              message.text
+            )}
             {message.status === 'streaming' && (
               <span className="streaming-cursor animate-pulse">▋</span>
             )}
           </p>
+          {message.status === 'failed' && onRemix && message.prompt && (
+            <div className="assistant-error-actions" style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                className="assistant-retry-btn"
+                onClick={() => onRemix(message.prompt || '')}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.8125rem',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  backgroundColor: 'rgba(255, 84, 98, 0.12)',
+                  color: 'var(--lemmo-text-danger, #ff5462)',
+                  border: '1px solid rgba(255, 84, 98, 0.3)',
+                  cursor: 'pointer',
+                  fontWeight: 500,
+                }}
+              >
+                <RefreshCw size={13} strokeWidth={2} color="currentColor" />
+                <span>{locale === 'fa' ? 'تلاش مجدد' : 'Retry'}</span>
+              </button>
+            </div>
+          )}
         </div>
       )}
 

@@ -10,6 +10,10 @@
  * - GUARD-CHK-2: Full Skeleton on Loading State
  */
 
+import { useUiStore } from '@/stores/uiStore';
+import { contextErrors } from '@/shared/locales/contextErrors';
+import { PlatformApiError } from '@/sdk';
+
 import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useStudioContext } from './StudioContextProvider';
@@ -17,6 +21,11 @@ import { useStudioContext } from './StudioContextProvider';
 export function StudioAuthGuard({ children }: { children: React.ReactNode }) {
   const { state, error, retry } = useStudioContext();
   const pathname = usePathname();
+  const locale = useUiStore((store) => store.locale);
+  const copy = contextErrors[locale === 'fa' ? 'fa' : 'en'];
+  const unavailable = error instanceof PlatformApiError && error.status === 503;
+  const unavailableMessage = error instanceof PlatformApiError && error.reason === 'ERROR_REASON_USER_RECORD_NOT_FOUND'
+    ? copy.missingUser : copy.connecting;
 
   useEffect(() => {
     if (state === 'signed-out') {
@@ -120,16 +129,16 @@ export function StudioAuthGuard({ children }: { children: React.ReactNode }) {
     return (
       <div className="studio-auth-error-screen" role="alert">
         <div className="error-card">
-          <h3 className="error-heading">Connection Error</h3>
+          <h3 className="error-heading">{unavailable ? copy.title : 'Connection Error'}</h3>
           <p className="error-label">
-            {error?.message || 'Unable to connect to platform services.'}
+            {unavailable ? unavailableMessage : error?.message || 'Unable to connect to platform services.'}
           </p>
           <button
             type="button"
             className="btn-retry"
             onClick={() => void retry()}
           >
-            Retry Connection
+            {copy.retry}
           </button>
         </div>
         <style jsx>{`

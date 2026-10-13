@@ -42,5 +42,48 @@ export function formatAgentErrorMessage(rawError?: string | null, locale = 'en')
       : 'Operation timed out. Please try again.';
   }
 
+  if (
+    rawError.includes('WORKSPACE_FORBIDDEN') ||
+    rawError.includes('PERMISSION_DENIED') ||
+    rawError.includes('403') ||
+    rawError.includes('Forbidden') ||
+    rawError.includes('not a member')
+  ) {
+    return isFa
+      ? 'شما به این فضای کاری دسترسی ندارید یا وضعیت عضویت نامعتبر است.'
+      : 'You do not have access to this workspace or membership is invalid.';
+  }
+
+  if (
+    rawError.includes('UNAUTHENTICATED') ||
+    rawError.includes('401') ||
+    rawError.includes('Unauthorized') ||
+    rawError.includes('session')
+  ) {
+    return isFa
+      ? 'نشست کاربری شما معتبر نیست. لطفاً مجدداً وارد حساب کاربری خود شوید.'
+      : 'Your session is not valid. Please log in again.';
+  }
+
+  if (
+    rawError.includes('INVALID_ARGUMENT') ||
+    rawError.includes('400') ||
+    rawError.includes('Bad Request')
+  ) {
+    return isFa
+      ? 'درخواست ارسالی نامعتبر است. لطفاً گزینه‌ها و متن پرامپت را بررسی کنید.'
+      : 'Invalid request. Please verify your prompt and generation options.';
+  }
+
+  if (
+    rawError.includes('INTERNAL') ||
+    rawError.includes('500') ||
+    rawError.includes('Internal Server Error')
+  ) {
+    return isFa
+      ? 'خطای داخلی سرویس. لطفاً لحظاتی بعد مجدداً تلاش نمایید.'
+      : 'Internal service error. Please try again in a few moments.';
+  }
+
   return rawError;
 }

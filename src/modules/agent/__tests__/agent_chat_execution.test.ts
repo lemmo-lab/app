@@ -113,4 +113,35 @@ describe('Stage 17B: Agent Chat & Capability Invocation Verification', () => {
     expect(jobEvents[2].status).toBe('SUCCEEDED');
     expect(finalUrl).toBe(expectedOutputUrl);
   });
+
+  it('handles message_failed event gracefully and formats workspace permission denied', async () => {
+    const threadId = 'thread-fail-001';
+    const assistantMsgId = 'msg-asst-fail';
+
+    let capturedError: string | undefined;
+
+    vi.spyOn(sdk.chat, 'subscribe').mockImplementation((tId, mId, onEvent) => {
+      setTimeout(() => {
+        onEvent({
+          type: 'message_failed',
+          threadId: tId,
+          messageId: mId,
+          error: 'ERROR_REASON_WORKSPACE_FORBIDDEN',
+        });
+      }, 10);
+      return () => {};
+    });
+
+    await new Promise<void>((resolve) => {
+      const unsub = sdk.chat.subscribe(threadId, assistantMsgId, (event) => {
+        if (event.type === 'message_failed') {
+          capturedError = event.error;
+          unsub();
+          resolve();
+        }
+      });
+    });
+
+    expect(capturedError).toBe('ERROR_REASON_WORKSPACE_FORBIDDEN');
+  });
 });

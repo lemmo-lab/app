@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Eye, RefreshCw, Clock03 } from 'synthline/react';
@@ -162,15 +162,22 @@ export function AgentChatView({
     enabled: isContextReady,
   });
 
-  const existingThread = currentId ? threads.find((t) => t.id === currentId) : undefined;
-  const activeThreadId = existingThread ? existingThread.id : (currentId || threads[0]?.id || '');
+  const [createdThreadId, setCreatedThreadId] = useState<string | null>(null);
+
+  const existingThread = currentId
+    ? threads.find((t) => t.id === currentId)
+    : (createdThreadId ? threads.find((t) => t.id === createdThreadId) : undefined);
+  const activeThreadId = existingThread
+    ? existingThread.id
+    : (currentId || createdThreadId || threads[0]?.id || '');
   const isServerThread = Boolean(threads.some((t) => t.id === activeThreadId));
+  const shouldFetchThread = Boolean(activeThreadId) && (isServerThread || Boolean(currentId) || Boolean(createdThreadId));
 
   // 2. Fetch messages for active thread from SDK (SEC-23: workspace-scoped & user-scoped)
-  const { data: threadData } = useQuery({
+  const { data: threadData, isLoading: isLoadingThread } = useQuery({
     queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-thread', activeThreadId],
     queryFn: () => sdk.chat.getThread(activeThreadId),
-    enabled: isContextReady && isServerThread && Boolean(activeThreadId),
+    enabled: isContextReady && shouldFetchThread,
   });
 
   // Local session messages per thread
@@ -236,16 +243,131 @@ export function AgentChatView({
     setReferences((prev) => prev.filter((r) => r.id !== id));
   };
 
-  const [activeSubscription, setActiveSubscription] = useState<(() => void) | null>(null);
+  const activeSubscriptionRef = useRef<{ threadId: string; messageId: string; unsubscribe: () => void } | null>(null);
 
-  // Cleanup active SSE subscription on unmount
+  const subscribeToStream = useCallback((tid: string, mid: string) => {
+    if (!tid || !mid) return;
+    if (
+      activeSubscriptionRef.current &&
+      activeSubscriptionRef.current.threadId === tid &&
+      activeSubscriptionRef.current.messageId === mid
+    ) {
+      return;
+    }
+
+    if (activeSubscriptionRef.current) {
+      activeSubscriptionRef.current.unsubscribe();
+      activeSubscriptionRef.current = null;
+    }
+
+    const unsubscribe = sdk.chat.subscribe(tid, mid, (event) => {
+      if (event.type === 'token') {
+        setLocalMessages((prev) => {
+          const currentList = prev[tid] || prev['pending-thread'] || [];
+          const updated = currentList.map((m) => {
+            if (m.id === mid) {
+              return { ...m, text: (m.text || '') + (event.token || ''), status: 'streaming' as const };
+            }
+            return m;
+          });
+          return { ...prev, [tid]: updated };
+        });
+      } else if (event.type === 'job_dispatched') {
+        setLocalMessages((prev) => {
+          const currentList = prev[tid] || prev['pending-thread'] || [];
+          const updated = currentList.map((m) => {
+            if (m.id === mid) {
+              return { ...m, jobId: event.jobId, toolId: event.toolId };
+            }
+            return m;
+          });
+          return { ...prev, [tid]: updated };
+        });
+      } else if (event.type === 'message_done') {
+        setLocalMessages((prev) => {
+          const currentList = prev[tid] || prev['pending-thread'] || [];
+          const updated = currentList.map((m) => {
+            if (m.id === mid) {
+              return { ...m, status: 'completed' as const };
+            }
+            return m;
+          });
+          return { ...prev, [tid]: updated };
+        });
+        if (activeSubscriptionRef.current?.messageId === mid) {
+          activeSubscriptionRef.current = null;
+        }
+        queryClient.invalidateQueries({
+          queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-thread', tid],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'],
+        });
+      } else if (event.type === 'message_failed') {
+        setLocalMessages((prev) => {
+          const currentList = prev[tid] || prev['pending-thread'] || [];
+          const rawError =
+            event.error ||
+            (event.data as { reason?: string })?.reason ||
+            (typeof event.data === 'string' ? event.data : undefined);
+          const errorMsg = formatAgentErrorMessage(rawError, locale);
+          const updated = currentList.map((m) => {
+            if (m.id === mid) {
+              return { ...m, status: 'failed' as const, text: errorMsg };
+            }
+            return m;
+          });
+          return { ...prev, [tid]: updated };
+        });
+        if (activeSubscriptionRef.current?.messageId === mid) {
+          activeSubscriptionRef.current = null;
+        }
+      } else if (event.type === 'message_cancelled') {
+        setLocalMessages((prev) => {
+          const currentList = prev[tid] || prev['pending-thread'] || [];
+          const updated = currentList.map((m) => {
+            if (m.id === mid) {
+              return { ...m, status: 'cancelled' as const };
+            }
+            return m;
+          });
+          return { ...prev, [tid]: updated };
+        });
+        if (activeSubscriptionRef.current?.messageId === mid) {
+          activeSubscriptionRef.current = null;
+        }
+      }
+    });
+
+    activeSubscriptionRef.current = { threadId: tid, messageId: mid, unsubscribe };
+  }, [locale, queryClient, userId, activeWorkspaceId]);
+
   useEffect(() => {
     return () => {
-      if (activeSubscription) {
-        activeSubscription();
+      if (activeSubscriptionRef.current) {
+        activeSubscriptionRef.current.unsubscribe();
+        activeSubscriptionRef.current = null;
       }
     };
-  }, [activeSubscription]);
+  }, []);
+
+  // Centralized stream listener: detects any in-flight streaming assistant message (F5 refresh or newly mounted)
+  useEffect(() => {
+    if (!activeThreadId) return;
+    const streamingMsg = messages.find(
+      (m) =>
+        m.sender === 'assistant' &&
+        (m.status === 'streaming' || (m as unknown as { status: string }).status === 'pending')
+    );
+    if (
+      streamingMsg &&
+      (!activeSubscriptionRef.current ||
+        activeSubscriptionRef.current.threadId !== activeThreadId ||
+        activeSubscriptionRef.current.messageId !== streamingMsg.id)
+    ) {
+      subscribeToStream(activeThreadId, streamingMsg.id);
+    }
+  }, [messages, activeThreadId, subscribeToStream]);
 
   // 3. Send message mutation via sdk.chat.sendMessage
   const sendMessageMutation = useMutation({
@@ -265,11 +387,62 @@ export function AgentChatView({
         expectedCost,
       });
     },
-    onSuccess: (res) => {
+    onMutate: (variables) => {
+      const userMsg: AgentChatMessageItem = {
+        id: `msg-${Date.now()}`,
+        sender: 'user',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        prompt: variables.content,
+      };
+      const keyForLocal = variables.threadId || activeThreadId || 'pending-thread';
+      setLocalMessages((prev) => ({
+        ...prev,
+        [keyForLocal]: [...(prev[keyForLocal] || []), userMsg],
+      }));
+    },
+    onSuccess: (res, variables) => {
       const { threadId, assistantMessageId } = res;
-      const tid = threadId || activeThreadId;
+      const tid = threadId || activeThreadId || 'pending-thread';
 
-      // Add placeholder assistant message in local state
+      if (threadId && threadId !== activeThreadId) {
+        setCreatedThreadId(threadId);
+        queryClient.setQueryData(
+          ['user', userId, 'workspace', activeWorkspaceId, 'chat-thread', threadId],
+          (old: unknown) => {
+            const existing = (old as { messages?: Message[] })?.messages || [];
+            return {
+              id: threadId,
+              title: variables.content.slice(0, 30),
+              messages: [
+                ...existing,
+                {
+                  id: `user-${Date.now()}`,
+                  role: 'user',
+                  content: variables.content,
+                  createdAt: Date.now(),
+                },
+                {
+                  id: assistantMessageId,
+                  role: 'assistant',
+                  content: '',
+                  status: 'streaming',
+                  createdAt: Date.now(),
+                },
+              ],
+            };
+          }
+        );
+        queryClient.invalidateQueries({
+          queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'],
+        });
+        router.replace(`/app/agent/${threadId}`);
+      }
+
+      // Clear searchParams from browser URL if present
+      if (typeof window !== 'undefined' && window.location.search) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+
       const assistantItem: AgentChatMessageItem = {
         id: assistantMessageId,
         sender: 'assistant',
@@ -283,97 +456,47 @@ export function AgentChatView({
         generationDurationSec: 2.8,
         creditsUsed: (config.batchCount || 1) * 5,
         isFavorite: false,
+        prompt: variables?.content,
       };
 
-      setLocalMessages((prev) => ({
-        ...prev,
-        [tid]: [...(prev[tid] || []), assistantItem],
-      }));
-
-      // Connect to SSE stream
-      const unsubscribe = sdk.chat.subscribe(tid, assistantMessageId, (event) => {
-        if (event.type === 'token') {
-          setLocalMessages((prev) => {
-            const currentList = prev[tid] || [];
-            const updated = currentList.map((m) => {
-              if (m.id === assistantMessageId) {
-                return { ...m, text: (m.text || '') + (event.token || ''), status: 'streaming' as const };
-              }
-              return m;
-            });
-            return { ...prev, [tid]: updated };
-          });
-        } else if (event.type === 'job_dispatched') {
-          setLocalMessages((prev) => {
-            const currentList = prev[tid] || [];
-            const updated = currentList.map((m) => {
-              if (m.id === assistantMessageId) {
-                return { ...m, jobId: event.jobId, toolId: event.toolId };
-              }
-              return m;
-            });
-            return { ...prev, [tid]: updated };
-          });
-        } else if (event.type === 'message_done') {
-          setLocalMessages((prev) => {
-            const currentList = prev[tid] || [];
-            const updated = currentList.map((m) => {
-              if (m.id === assistantMessageId) {
-                return { ...m, status: 'completed' as const };
-              }
-              return m;
-            });
-            return { ...prev, [tid]: updated };
-          });
-          queryClient.invalidateQueries({ queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-thread', tid] });
-          queryClient.invalidateQueries({ queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'] });
-        } else if (event.type === 'message_failed') {
-          setLocalMessages((prev) => {
-            const currentList = prev[tid] || [];
-            const rawError = event.error || (event.data as { reason?: string })?.reason || (typeof event.data === 'string' ? event.data : undefined);
-            const errorMsg = formatAgentErrorMessage(rawError, locale);
-            const updated = currentList.map((m) => {
-              if (m.id === assistantMessageId) {
-                return { ...m, status: 'failed' as const, text: errorMsg };
-              }
-              return m;
-            });
-            return { ...prev, [tid]: updated };
-          });
-        } else if (event.type === 'message_cancelled') {
-          setLocalMessages((prev) => {
-            const currentList = prev[tid] || [];
-            const updated = currentList.map((m) => {
-              if (m.id === assistantMessageId) {
-                return { ...m, status: 'cancelled' as const };
-              }
-              return m;
-            });
-            return { ...prev, [tid]: updated };
-          });
-        }
+      setLocalMessages((prev) => {
+        const pending = prev['pending-thread'] || [];
+        const existing = prev[tid] || [];
+        const combined = [...existing, ...pending.filter((p) => !existing.some((e) => e.id === p.id)), assistantItem];
+        return {
+          ...prev,
+          [tid]: combined,
+        };
       });
 
-      setActiveSubscription(() => unsubscribe);
-
-      if (threadId && threadId !== activeThreadId) {
-        queryClient.invalidateQueries({ queryKey: ['user', userId, 'workspace', activeWorkspaceId, 'chat-threads'] });
-        router.push(`/app/agent/${threadId}`);
-      }
+      subscribeToStream(tid, assistantMessageId);
     },
-    onError: (err: unknown) => {
+    onError: (err: unknown, variables) => {
       const rawError = err instanceof Error ? err.message : 'Failed to send message';
       const errorMsg = formatAgentErrorMessage(rawError, locale);
       const keyForLocal = activeThreadId || 'pending-thread';
+
+      if (variables?.content) {
+        setPrompt(variables.content);
+      }
+      hasAutoSubmittedRef.current = false;
+
+      const assistantErrorItem: AgentChatMessageItem = {
+        id: `err-${Date.now()}`,
+        sender: 'assistant',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: errorMsg,
+        status: 'failed',
+        prompt: variables?.content,
+      };
+
       setLocalMessages((prev) => {
         const currentList = prev[keyForLocal] || [];
-        const updated = currentList.map((m) => {
-          if (m.status === 'streaming') {
-            return { ...m, status: 'failed' as const, text: errorMsg };
-          }
-          return m;
-        });
-        return { ...prev, [keyForLocal]: updated };
+        const filtered = currentList.filter((m) => m.status !== 'streaming');
+        return {
+          ...prev,
+          [keyForLocal]: [...filtered, assistantErrorItem],
+        };
       });
     },
   });
@@ -381,41 +504,25 @@ export function AgentChatView({
   const hasAutoSubmittedRef = useRef(false);
 
   useEffect(() => {
-    if (initialPrompt && !hasAutoSubmittedRef.current) {
-      hasAutoSubmittedRef.current = true;
-      const cleanPrompt = initialPrompt.trim();
-      if (!cleanPrompt) return;
-
-      const userMsg: AgentChatMessageItem = {
-        id: `msg-${Date.now()}`,
-        sender: 'user',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        prompt: cleanPrompt,
-      };
-
-      const threadIdToSend = isServerThread ? activeThreadId : null;
-      const keyForLocal = activeThreadId || 'pending-thread';
-
-      const timer = setTimeout(() => {
-        setLocalMessages((prev) => ({
-          ...prev,
-          [keyForLocal]: [...(prev[keyForLocal] || []), userMsg],
-        }));
-
-        sendMessageMutation.mutate({
-          threadId: threadIdToSend,
-          content: cleanPrompt,
-        });
-
-        // Remove searchParams from browser URL AFTER dispatching to avoid canceling the initial render
-        if (typeof window !== 'undefined' && window.location.search) {
-          window.history.replaceState(null, '', window.location.pathname);
-        }
-      }, 0);
-
-      return () => clearTimeout(timer);
+    if (!initialPrompt || hasAutoSubmittedRef.current || !isContextReady) {
+      return;
     }
-  }, [initialPrompt, activeThreadId, isServerThread, sendMessageMutation]);
+
+    const cleanPrompt = initialPrompt.trim();
+    if (!cleanPrompt) {
+      hasAutoSubmittedRef.current = true;
+      return;
+    }
+
+    hasAutoSubmittedRef.current = true;
+
+    const threadIdToSend = isServerThread ? activeThreadId : null;
+
+    sendMessageMutation.mutate({
+      threadId: threadIdToSend,
+      content: cleanPrompt,
+    });
+  }, [initialPrompt, isContextReady, isServerThread, activeThreadId, sendMessageMutation]);
 
   const isSubmitting = sendMessageMutation.isPending;
 
@@ -423,28 +530,11 @@ export function AgentChatView({
     if (!prompt.trim() && references.length === 0) return;
 
     const newPromptText = prompt.trim();
-    const currentRefs = [...references];
-
-    // Optimistically add user message to conversation list
-    const userMsg: AgentChatMessageItem = {
-      id: `msg-${Date.now()}`,
-      sender: 'user',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      prompt: newPromptText,
-      references: currentRefs,
-    };
-
-    const threadIdToSend = isServerThread ? activeThreadId : null;
-    const keyForLocal = activeThreadId || 'pending-thread';
-
-    setLocalMessages((prev) => ({
-      ...prev,
-      [keyForLocal]: [...(prev[keyForLocal] || []), userMsg],
-    }));
     setPrompt('');
     setReferences([]);
 
-    // Dispatch via SDK chat client
+    const threadIdToSend = isServerThread ? activeThreadId : null;
+
     sendMessageMutation.mutate({
       threadId: threadIdToSend,
       content: newPromptText,
@@ -504,7 +594,7 @@ export function AgentChatView({
       {/* Scrollable Conversation Thread */}
       <div className="chat-messages-container">
         <div className="chat-messages-inner">
-          {messages.length === 0 && !isSubmitting && (
+          {messages.length === 0 && !isSubmitting && !isLoadingThread && (
             <div className="agent-empty-thread-notice">
               <p>
                 {locale === 'fa'
@@ -518,6 +608,7 @@ export function AgentChatView({
             <AgentChatMessage
               key={msg.id}
               message={msg}
+              onRemix={(p) => setPrompt(p)}
               locale={locale}
               isRtl={isRtl}
             />
