@@ -23,6 +23,7 @@ export {
   getSessionGenerationId,
   onStepUpAuthRequired,
   onSignedOut,
+  clearStaleWorkspaceScope,
   scheduleProactiveRefresh,
   cancelProactiveRefresh,
   type StepUpAuthRequest,

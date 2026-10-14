@@ -17,8 +17,12 @@ export default function BillingPanel({ onShowToast }: BillingPanelProps) {
   const { locale } = useUiStore();
   const { context } = useStudioContext();
 
-  const tier = context?.entitlements?.tier || 'FREE';
-  const walletBalance = context?.entitlements?.wallet_balance ?? 0;
+  // Never fabricate a plan/balance when entitlement is degraded or unknown.
+  const entitlements = context?.entitlements;
+  const entitlementsKnown = entitlements?.status === 'available';
+  const tier = entitlementsKnown ? entitlements?.tier : undefined;
+  const walletBalance = entitlementsKnown ? entitlements?.wallet_balance : undefined;
+  const unknownLabel = locale === 'fa' ? 'نامعلوم' : 'Unknown';
 
   const [rateCard, setRateCard] = useState<import('@/sdk').PricingRateCard | null>(null);
 
@@ -28,8 +32,9 @@ export default function BillingPanel({ onShowToast }: BillingPanelProps) {
       .catch((err) => console.error('Failed to load quota pricing:', err));
   }, []);
 
-  const planName = tier === 'ENTERPRISE' ? 'Studio Enterprise' : tier === 'PRO' ? 'Studio Pro' : 'Studio Free';
-  const planPrice = tier === 'ENTERPRISE' ? '$99' : tier === 'PRO' ? '$29' : '$0';
+  const planName =
+    tier === 'ENTERPRISE' ? 'Studio Enterprise' : tier === 'PRO' ? 'Studio Pro' : tier === 'FREE' ? 'Studio Free' : unknownLabel;
+  const planPrice = tier === 'ENTERPRISE' ? '$99' : tier === 'PRO' ? '$29' : tier === 'FREE' ? '$0' : '—';
 
   return (
     <div className="panel-container">
@@ -52,7 +57,11 @@ export default function BillingPanel({ onShowToast }: BillingPanelProps) {
               <span className="wallet-label">
                 {locale === 'fa' ? 'موجودی توکن / کردیت' : 'Available Token Balance'}
               </span>
-              <span className="wallet-amount">{walletBalance.toLocaleString()} {rateCard?.currency || 'IRR'}</span>
+              <span className="wallet-amount">
+                {typeof walletBalance === 'number'
+                  ? `${walletBalance.toLocaleString()}${rateCard?.currency ? ` ${rateCard.currency}` : ''}`
+                  : '—'}
+              </span>
             </div>
           </div>
         </div>
@@ -62,14 +71,20 @@ export default function BillingPanel({ onShowToast }: BillingPanelProps) {
         <div className="plan-card">
           <div className="plan-badge-row">
             <span className="plan-name">{planName}</span>
-            <span className="plan-active-tag">
-              <Check01 size={12} strokeWidth={2.4} />
-              <span>{locale === 'fa' ? 'فعال' : 'Active'}</span>
-            </span>
+            {entitlementsKnown && (
+              <span className="plan-active-tag">
+                <Check01 size={12} strokeWidth={2.4} />
+                <span>{locale === 'fa' ? 'فعال' : 'Active'}</span>
+              </span>
+            )}
           </div>
 
           <p className="plan-description">
-            {tier === 'ENTERPRISE'
+            {!entitlementsKnown
+              ? locale === 'fa'
+                ? 'جزئیات پلن در حال حاضر در دسترس نیست.'
+                : 'Plan details are currently unavailable.'
+              : tier === 'ENTERPRISE'
               ? locale === 'fa'
                 ? 'دسترسی سازمانی نامحدود، پردازش اختصاصی H100 و قرارداد SLA.'
                 : 'Enterprise cluster access, dedicated H100 capacity, and custom SLA.'

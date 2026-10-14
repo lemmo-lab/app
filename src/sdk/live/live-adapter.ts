@@ -22,6 +22,7 @@ import type {
   BillingInfo,
   SendMessageResponse,
   ChatEvent,
+  EntitlementStatus,
 } from '../types';
 
 import {
@@ -101,6 +102,11 @@ export const liveSdkAdapter: SdkClient = {
     get: async (): Promise<ContextResult> => {
       const response = await getMeContext();
       const res = (response as { data: GetMeContext200 }).data;
+      // Entitlement availability is explicit in the contract. Fall back for
+      // older payloads: a present balance implies `available`, otherwise unknown.
+      const entitlementStatus: EntitlementStatus =
+        res.entitlements.status ??
+        (typeof res.entitlements.wallet_balance === 'number' ? 'available' : 'degraded');
       return {
         user: {
           id: res.user.id,
@@ -126,9 +132,10 @@ export const liveSdkAdapter: SdkClient = {
           role: w.role,
         })),
         entitlements: {
-          tier: (res.entitlements.tier as 'FREE' | 'PRO' | 'ENTERPRISE') || 'FREE',
-          wallet_balance: res.entitlements.wallet_balance || 0,
-          features: res.entitlements.features || [],
+          status: entitlementStatus,
+          tier: entitlementStatus === 'available' ? res.entitlements.tier : undefined,
+          wallet_balance: entitlementStatus === 'available' ? res.entitlements.wallet_balance : undefined,
+          features: entitlementStatus === 'available' ? res.entitlements.features : undefined,
         },
         onboarding: {
           completed: Boolean(res.onboarding.completed),
@@ -606,8 +613,8 @@ export const liveSdkAdapter: SdkClient = {
       numOutputs?: number;
       isByo?: boolean;
     }): Promise<{
-      estimatedCredits: number;
-      rateCardVersion: string;
+      estimatedCredits: number | null;
+      rateCardVersion: string | null;
       breakdown?: Record<string, unknown>;
     }> => {
       const res = await estimateQuotaCost({
@@ -622,8 +629,8 @@ export const liveSdkAdapter: SdkClient = {
       const resObj = res as unknown as { data?: Record<string, unknown> };
       const data = (resObj.data || resObj) as Record<string, unknown>;
       return {
-        estimatedCredits: (data.estimated_credits as number) ?? (data.estimatedCredits as number) ?? 20,
-        rateCardVersion: (data.rate_card_version as string) ?? (data.rateCardVersion as string) ?? 'v1.0',
+        estimatedCredits: (data.estimated_credits as number) ?? (data.estimatedCredits as number) ?? null,
+        rateCardVersion: (data.rate_card_version as string) ?? (data.rateCardVersion as string) ?? null,
         breakdown: data.breakdown as Record<string, unknown> | undefined,
       };
     },
@@ -681,8 +688,8 @@ export const liveSdkAdapter: SdkClient = {
     getBillingInfo: async (): Promise<BillingInfo> => {
       const ctx = await liveSdkAdapter.context.get();
       return {
-        tokenBalance: ctx.entitlements.wallet_balance || 0,
-        plan: (ctx.entitlements.tier?.toLowerCase() as 'free' | 'pro' | 'enterprise') || 'free',
+        tokenBalance: ctx.entitlements.wallet_balance ?? null,
+        plan: (ctx.entitlements.tier?.toLowerCase() as 'free' | 'pro' | 'enterprise' | undefined) ?? null,
       };
     },
   },

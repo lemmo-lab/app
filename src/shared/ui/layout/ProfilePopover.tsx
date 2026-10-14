@@ -77,8 +77,11 @@ export default function ProfilePopover({
   const user = studioCtx?.user;
   const avatarUrl = user?.avatar_url;
   const displayName = user?.display_name || user?.handle || 'User';
-  const userEmail = user?.email || 'user@example.com';
-  const roleBadge = studioCtx?.activeWorkspace?.role || 'PRO';
+  const userEmail = user?.email || '';
+  const roleBadge = studioCtx?.activeWorkspace?.role || '—';
+  const entitlementsKnown = studioCtx?.context?.entitlements?.status === 'available';
+  const walletBalance = entitlementsKnown ? studioCtx?.context?.entitlements?.wallet_balance : undefined;
+  const usageAmount = typeof walletBalance === 'number' ? walletBalance.toLocaleString() : '—';
   const initials = (() => {
     const nameToUse = displayName.trim();
     const parts = nameToUse.split(/\s+/).filter(Boolean);
@@ -204,7 +207,7 @@ export default function ProfilePopover({
               <span className="user-name">{displayName}</span>
               <span className="plan-badge">{roleBadge}</span>
             </div>
-            <span className="user-email">{userEmail}</span>
+            {userEmail && <span className="user-email">{userEmail}</span>}
           </div>
         </div>
 
@@ -218,14 +221,11 @@ export default function ProfilePopover({
         >
           <div className="usage-header">
             <span className="usage-title">
-              {locale === 'fa' ? 'اعتبار توکن ماهانه' : 'Monthly Token Credits'}
+              {locale === 'fa' ? 'اعتبار توکن' : 'Token Credits'}
             </span>
             <span className="usage-amount" data-numeric>
-              2,450 / 5,000
+              {usageAmount}
             </span>
-          </div>
-          <div className="progress-bar-track" aria-label="49% of monthly tokens remaining">
-            <div className="progress-bar-fill" style={{ width: '49%' }} />
           </div>
         </Link>
 

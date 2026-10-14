@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Eye, RefreshCw, Clock03 } from 'synthline/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { sdk, Message } from '@/sdk';
+import { sdk, Message, PlatformApiError } from '@/sdk';
 import { useOptionalStudioContext } from '@/shared/providers/StudioContextProvider';
 import {
   AgentChatMessageItem,
@@ -217,7 +217,7 @@ export function AgentChatView({
     return Array.from(map.values());
   }, [initialMessages, sessionMessages]);
 
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState(() => initialPrompt?.trim() ?? '');
   const [references, setReferences] = useState<AgentReferenceItem[]>([]);
   const [config, setConfig] = useState<AgentGenerationConfig>({
     contentType: 'image',
@@ -479,7 +479,6 @@ export function AgentChatView({
       if (variables?.content) {
         setPrompt(variables.content);
       }
-      hasAutoSubmittedRef.current = false;
 
       const assistantErrorItem: AgentChatMessageItem = {
         id: `err-${Date.now()}`,
@@ -501,28 +500,25 @@ export function AgentChatView({
     },
   });
 
-  const hasAutoSubmittedRef = useRef(false);
+  // P08 Requirement 1: initialPrompt is displayed EXCLUSIVELY as a draft in the
+  // prompt input (seeded via the lazy useState initializer above). Auto-send on
+  // login, refresh, hydration, or strict mode is completely eradicated.
+  //
+  // The search query is intentionally NOT stripped from the URL here: doing so
+  // mutates the route that the Agent page derives `viewMode` from, which would
+  // unmount this view and discard the seeded draft. The query is cleared
+  // naturally when a thread is created (see `router.replace` on submit).
 
-  useEffect(() => {
-    if (!initialPrompt || hasAutoSubmittedRef.current || !isContextReady) {
-      return;
-    }
-
-    const cleanPrompt = initialPrompt.trim();
-    if (!cleanPrompt) {
-      hasAutoSubmittedRef.current = true;
-      return;
-    }
-
-    hasAutoSubmittedRef.current = true;
-
-    const threadIdToSend = isServerThread ? activeThreadId : null;
-
-    sendMessageMutation.mutate({
-      threadId: threadIdToSend,
-      content: cleanPrompt,
-    });
-  }, [initialPrompt, isContextReady, isServerThread, activeThreadId, sendMessageMutation]);
+  const buildError = sendMessageMutation.error;
+  const buildReason = buildError instanceof PlatformApiError ? buildError.reason : undefined;
+  // Degraded when the finance/quota service is unavailable (context reports
+  // `degraded`), or when a send attempt itself was rejected as degraded.
+  const isDegraded =
+    studioContext?.financeDegraded === true ||
+    buildReason === 'ERROR_REASON_SERVICE_DEGRADED' ||
+    buildReason === 'SERVICE_DEGRADED' ||
+    (buildError instanceof PlatformApiError && buildError.status === 503) ||
+    (buildError instanceof Error && /SERVICE_DEGRADED|DEGRADED/.test(buildError.message));
 
   const isSubmitting = sendMessageMutation.isPending;
 
@@ -647,6 +643,7 @@ export function AgentChatView({
         onChangeConfig={setConfig}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        isDegraded={isDegraded}
         locale={locale}
         isRtl={isRtl}
         placeholder={

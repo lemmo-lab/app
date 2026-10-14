@@ -33,6 +33,7 @@ import {
   Edit01,
 } from 'synthline/react';
 import { CanvasLayer } from '../types';
+import { useOptionalStudioContext } from '@/shared/providers/StudioContextProvider';
 
 interface CanvasWorkspaceSidePanelProps {
   sideWidth: number;
@@ -70,6 +71,10 @@ export function CanvasWorkspaceSidePanel({
   isRtl,
 }: CanvasWorkspaceSidePanelProps) {
   const isFa = locale === 'fa';
+  const studioCtx = useOptionalStudioContext();
+  const entitlementsKnown = studioCtx?.context?.entitlements?.status === 'available';
+  const walletBalance = entitlementsKnown ? studioCtx?.context?.entitlements?.wallet_balance : undefined;
+  const creditsLabel = typeof walletBalance === 'number' ? walletBalance.toLocaleString() : '—';
 
   // Title inline editing state
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -436,20 +441,10 @@ export function CanvasWorkspaceSidePanel({
               title={isFa ? 'شارژ حساب و بسته‌ها' : 'Upgrade balance'}
               data-numeric="true"
             >
-              {isFa ? '۲,۴۵۰ / ۵,۰۰۰' : '2,450 / 5,000'}
+              {creditsLabel}
             </Link>
           </div>
 
-          <div className="credits-progress-track">
-            <div
-              className="credits-progress-fill"
-              style={{ width: '49%' }}
-              aria-valuenow={49}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              role="progressbar"
-            />
-          </div>
         </div>
       </div>
 

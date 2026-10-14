@@ -59,8 +59,10 @@ export function useQuotaEstimate({
   });
 
   return {
-    estimatedCredits: query.data?.estimatedCredits ?? (numOutputs * 20),
-    rateCardVersion: query.data?.rateCardVersion ?? 'v1.0',
+    // No fabricated fallback: when the estimate is unavailable the cost is
+    // unknown (null), never a made-up number.
+    estimatedCredits: query.data?.estimatedCredits ?? null,
+    rateCardVersion: query.data?.rateCardVersion ?? null,
     breakdown: query.data?.breakdown,
     isLoading: query.isLoading,
     isFetching: query.isFetching,

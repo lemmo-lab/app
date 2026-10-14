@@ -319,7 +319,11 @@ export function AgentConfigPopover({
             color="var(--lemmo-surface-brand-background, #d1fe17)"
           />
           <span>
-            {locale === 'fa'
+            {estimatedCredits == null
+              ? locale === 'fa'
+                ? 'هزینه تخمینی در دسترس نیست'
+                : 'Estimated cost unavailable'
+              : locale === 'fa'
               ? `${estimatedCredits} کردیت تخمینی در هر تولید`
               : `${estimatedCredits} credits per generation`}
           </span>

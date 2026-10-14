@@ -199,6 +199,33 @@ function resolveUrl(url: string): string {
   return url;
 }
 
+const NIL_WORKSPACE_ID = '00000000-0000-0000-0000-000000000000';
+const WORKSPACE_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * A persisted workspace scope is only trustworthy when it is a real, non-nil UUID.
+ * Placeholder/sentinel values (e.g. the nil UUID left behind by a previous
+ * session) or malformed strings must never be turned into an `X-Workspace-ID`
+ * header: doing so scopes a user-level request to a workspace the user does not
+ * belong to and the gateway answers 403 WORKSPACE_FORBIDDEN instead of returning
+ * the user's real context.
+ */
+function isUsableWorkspaceId(id: string | null | undefined): id is string {
+  return typeof id === 'string' && WORKSPACE_ID_PATTERN.test(id) && id.toLowerCase() !== NIL_WORKSPACE_ID;
+}
+
+/**
+ * Clears any stale client-side workspace scope left over from a previous
+ * session or account (localStorage + readable cookie).
+ */
+export function clearStaleWorkspaceScope(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  localStorage.removeItem('lemmo_active_workspace');
+  document.cookie = 'lemmo_workspace_id=; Max-Age=0; path=/';
+}
+
 /**
  * Sanitizes headers to eliminate raw X-Workspace-ID and X-Workspace-Policy provided by callers (ADR-016 Section 2.3, SEC-24).
  */
@@ -243,12 +270,20 @@ export async function customFetch<T>(
 
     // 2. Sanitize and inject verified workspace header
     const headers = sanitizeHeaders(options.headers);
-    const effectiveWorkspaceId =
+    let effectiveWorkspaceId =
       snapshotWorkspaceId ||
       (typeof window !== 'undefined'
         ? localStorage.getItem('lemmo_active_workspace') ||
           (document.cookie.match(/lemmo_workspace_id=([^;]+)/)?.[1] ?? null)
         : null);
+
+    // Never propagate a stale or sentinel workspace scope. If the persisted
+    // value is not a usable workspace id, drop it and proceed unscoped so the
+    // server resolves the user's real context instead of returning 403.
+    if (effectiveWorkspaceId && !isUsableWorkspaceId(effectiveWorkspaceId)) {
+      clearStaleWorkspaceScope();
+      effectiveWorkspaceId = null;
+    }
 
     if (effectiveWorkspaceId) {
       headers.set('X-Workspace-ID', effectiveWorkspaceId);

@@ -207,8 +207,9 @@ export interface UserProfile {
 }
 
 export interface BillingInfo {
-  tokenBalance: number;
-  plan: 'free' | 'pro' | 'enterprise';
+  /** null when the entitlement/quota service is degraded (unknown, not zero). */
+  tokenBalance: number | null;
+  plan: 'free' | 'pro' | 'enterprise' | null;
   nextBillingDate?: string;
 }
 
@@ -259,10 +260,18 @@ export interface WorkspaceSummary {
   role: string; // OWNER, ADMIN, EDITOR, RUNNER, VIEWER
 }
 
+export type EntitlementStatus = 'available' | 'degraded';
+
 export interface EntitlementContext {
-  tier: 'FREE' | 'PRO' | 'ENTERPRISE';
-  wallet_balance: number;
-  features: string[];
+  /**
+   * `available` — quota/ledger reachable; the fields below are authoritative.
+   * `degraded` — quota/ledger unavailable; the fields below are unknown and MUST
+   * NOT be rendered as zero or unlimited, and paid generation must stay closed.
+   */
+  status: EntitlementStatus;
+  tier?: 'FREE' | 'PRO' | 'ENTERPRISE';
+  wallet_balance?: number;
+  features?: string[];
 }
 
 export interface OnboardingProgress {
@@ -445,8 +454,9 @@ export interface SdkClient {
       numOutputs?: number;
       isByo?: boolean;
     }) => Promise<{
-      estimatedCredits: number;
-      rateCardVersion: string;
+      /** null when the estimate service is degraded (unknown, never a guess). */
+      estimatedCredits: number | null;
+      rateCardVersion: string | null;
       breakdown?: Record<string, unknown>;
     }>;
   };

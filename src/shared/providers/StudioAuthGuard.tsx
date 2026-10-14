@@ -26,6 +26,11 @@ export function StudioAuthGuard({ children }: { children: React.ReactNode }) {
   const unavailable = error instanceof PlatformApiError && error.status === 503;
   const unavailableMessage = error instanceof PlatformApiError && error.reason === 'ERROR_REASON_USER_RECORD_NOT_FOUND'
     ? copy.missingUser : copy.connecting;
+  const forbidden = error instanceof PlatformApiError && error.status === 403 &&
+    (error.reason === 'ERROR_REASON_WORKSPACE_FORBIDDEN' ||
+      error.reason === 'ERROR_REASON_PERMISSION_DENIED_WORKSPACE' ||
+      error.reason === 'ERROR_REASON_WORKSPACE_ACCESS_DENIED' ||
+      error.reason === 'WORKSPACE_ACCESS_DENIED');
 
   useEffect(() => {
     if (state === 'signed-out') {
@@ -129,9 +134,9 @@ export function StudioAuthGuard({ children }: { children: React.ReactNode }) {
     return (
       <div className="studio-auth-error-screen" role="alert">
         <div className="error-card">
-          <h3 className="error-heading">{unavailable ? copy.title : 'Connection Error'}</h3>
+          <h3 className="error-heading">{unavailable ? copy.title : forbidden ? copy.title : 'Connection Error'}</h3>
           <p className="error-label">
-            {unavailable ? unavailableMessage : error?.message || 'Unable to connect to platform services.'}
+            {unavailable ? unavailableMessage : forbidden ? copy.noWorkspaceAccess : error?.message || 'Unable to connect to platform services.'}
           </p>
           <button
             type="button"

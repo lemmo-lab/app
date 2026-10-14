@@ -48,7 +48,12 @@ export default function StudioSidebar() {
   const activeWorkspace = studioCtx?.activeWorkspace;
   const avatarUrl = user?.avatar_url;
   const displayName = user?.display_name || user?.handle || 'User';
-  const planLabel = activeWorkspace?.name || (activeWorkspace?.role ? `${activeWorkspace.role} Workspace` : 'Pro Workspace');
+  const planLabel =
+    activeWorkspace?.name ||
+    (activeWorkspace?.role ? `${activeWorkspace.role} Workspace` : locale === 'fa' ? 'نامعلوم' : 'Unknown');
+  const entitlementsKnown = studioCtx?.context?.entitlements?.status === 'available';
+  const walletBalance = entitlementsKnown ? studioCtx?.context?.entitlements?.wallet_balance : undefined;
+  const balanceLabel = typeof walletBalance === 'number' ? walletBalance.toLocaleString() : '—';
   const initials = (() => {
     const nameToUse = displayName.trim();
     const parts = nameToUse.split(/\s+/).filter(Boolean);
@@ -101,7 +106,7 @@ export default function StudioSidebar() {
           >
             <span className="token-icon-dot" />
             <span className="token-text" data-numeric>
-              2,450
+              {balanceLabel}
             </span>
           </Link>
 

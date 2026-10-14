@@ -18,7 +18,7 @@ describe('TASK-INT-003: SDK Chat Options Facade Suite', () => {
     vi.restoreAllMocks();
     vi.useRealTimers();
     cancelProactiveRefresh();
-    setTransportContext('ws-test-456', 1);
+    setTransportContext('b3e0d5a2-4c1f-4a7e-9b2d-8f6a1c3e5d40', 1);
   });
 
   afterEach(() => {
@@ -72,7 +72,7 @@ describe('TASK-INT-003: SDK Chat Options Facade Suite', () => {
       expect(requestedMethod).toBe('POST');
 
       // Verification of Header Context (ADR-016)
-      expect(requestedHeaders['x-workspace-id']).toBe('ws-test-456');
+      expect(requestedHeaders['x-workspace-id']).toBe('b3e0d5a2-4c1f-4a7e-9b2d-8f6a1c3e5d40');
 
       // Verification of Payload
       expect(requestedBody.threadId).toBe('th-123');

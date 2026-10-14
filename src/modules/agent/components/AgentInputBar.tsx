@@ -28,6 +28,8 @@ interface AgentInputBarProps {
   onChangeConfig: (updater: (prev: AgentGenerationConfig) => AgentGenerationConfig) => void;
   onSubmit: (expectedCost?: number) => void;
   isSubmitting?: boolean;
+  isDegraded?: boolean;
+  degradedMessage?: string;
   locale: string;
   isRtl: boolean;
   placeholder?: string;
@@ -43,6 +45,8 @@ export function AgentInputBar({
   onChangeConfig,
   onSubmit,
   isSubmitting = false,
+  isDegraded = false,
+  degradedMessage,
   locale,
   placeholder,
 }: AgentInputBarProps) {
@@ -80,7 +84,7 @@ export function AgentInputBar({
     () => false
   );
 
-  const canSubmit = (prompt.trim().length > 0 || references.length > 0 || activeTool !== null) && !isSubmitting;
+  const canSubmit = !isDegraded && (prompt.trim().length > 0 || references.length > 0 || activeTool !== null) && !isSubmitting;
   const isButtonDisabled = !mounted ? true : !canSubmit;
 
   const { data: tools = [] } = useTools();
@@ -104,10 +108,10 @@ export function AgentInputBar({
       onChangePrompt(fullPrompt);
       handleRemoveActiveTool();
       setTimeout(() => {
-        onSubmit(estimatedCredits);
+        onSubmit(estimatedCredits ?? undefined);
       }, 0);
     } else {
-      onSubmit(estimatedCredits);
+      onSubmit(estimatedCredits ?? undefined);
     }
   };
 
@@ -205,6 +209,17 @@ export function AgentInputBar({
           </div>
         )}
 
+        {isDegraded && (
+          <div className="degraded-mode-strip text-xs text-amber-500 bg-amber-500/10 rounded px-2.5 py-1 mb-1.5 flex items-center justify-between">
+            <span>
+              {degradedMessage ||
+                (locale === 'fa'
+                  ? 'سرویس در حالت محدودیت موقت (Degraded) است؛ ایجاد تولید جدید متوقف شده اما مطالعه تاریخچه در دسترس است.'
+                  : 'Operating in degraded mode; generation is temporarily paused while history remains accessible.')}
+            </span>
+          </div>
+        )}
+
         {/* 3. Textarea Prompt Input */}
         <div className="input-textarea-area">
           <textarea
@@ -266,7 +281,11 @@ export function AgentInputBar({
                   {config.aspectRatio}
                 </span>
                 <span className="config-trigger-credits">
-                  {estimatedCredits}c
+                  {isDegraded || estimatedCredits == null
+                    ? locale === 'fa'
+                      ? 'نامعلوم'
+                      : 'N/A'
+                    : `${estimatedCredits}c`}
                 </span>
               </button>
 

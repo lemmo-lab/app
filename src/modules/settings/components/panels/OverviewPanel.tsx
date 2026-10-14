@@ -16,26 +16,38 @@ export default function OverviewPanel(_props: OverviewPanelProps) {
   const { locale } = useUiStore();
   const { activeWorkspace, context } = useStudioContext();
 
-  const tier = context?.entitlements?.tier || 'FREE';
-  const tierDisplay = tier === 'ENTERPRISE' ? 'Studio Enterprise' : tier === 'PRO' ? 'Studio Pro' : 'Studio Free';
+  const entitlements = context?.entitlements;
+  const entitlementsKnown = entitlements?.status === 'available';
+  const tier = entitlementsKnown ? entitlements?.tier : undefined;
+  const tierDisplay =
+    tier === 'ENTERPRISE'
+      ? 'Studio Enterprise'
+      : tier === 'PRO'
+      ? 'Studio Pro'
+      : tier === 'FREE'
+      ? 'Studio Free'
+      : locale === 'fa'
+      ? 'نامعلوم'
+      : 'Unknown';
+  const unknownMetric = '—';
 
   const metrics = [
     {
       labelFa: 'اعضای فعال',
       labelEn: 'Active Collaborators',
-      val: activeWorkspace?.role === 'PERSONAL' ? '1' : '3',
+      val: unknownMetric,
       icon: <Users01 size={18} strokeWidth={1.5} />,
     },
     {
       labelFa: 'فضای ذخیره‌سازی ابری',
       labelEn: 'Cloud Storage Used',
-      val: '2.4 GB / 10 GB',
+      val: unknownMetric,
       icon: <Database01 size={18} strokeWidth={1.5} />,
     },
     {
       labelFa: 'درخواست‌های هوش مصنوعی ماه',
       labelEn: 'AI Generations (Month)',
-      val: '1,420 / 5,000',
+      val: unknownMetric,
       icon: <AiCpu size={18} strokeWidth={1.5} />,
     },
     {
@@ -79,19 +91,19 @@ export default function OverviewPanel(_props: OverviewPanelProps) {
             <span className="info-item-label">
               {locale === 'fa' ? 'نام فضای کاری' : 'Workspace Name'}
             </span>
-            <span className="info-item-val">{activeWorkspace?.name || 'Default Workspace'}</span>
+            <span className="info-item-val">{activeWorkspace?.name || unknownMetric}</span>
           </div>
           <div className="info-item-row">
             <span className="info-item-label">
               {locale === 'fa' ? 'شناسه یکتا (ID)' : 'Workspace ID'}
             </span>
-            <code className="info-item-code">{activeWorkspace?.id || 'ws_default'}</code>
+            <code className="info-item-code">{activeWorkspace?.id || unknownMetric}</code>
           </div>
           <div className="info-item-row">
             <span className="info-item-label">
               {locale === 'fa' ? 'نوع فضای کاری' : 'Workspace Type'}
             </span>
-            <span className="info-item-val">{activeWorkspace?.type || 'PERSONAL'}</span>
+            <span className="info-item-val">{activeWorkspace?.type || unknownMetric}</span>
           </div>
         </div>
       </SettingsSection>

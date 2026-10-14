@@ -31,7 +31,7 @@ describe('Stage 12B: Ingress Transport Hardening & Isolation', () => {
   });
 
   it('Gate 1: Header Sanitization — strips caller X-Workspace-ID and injects verified context', async () => {
-    const verifiedWsId = 'ws-verified-1111';
+    const verifiedWsId = 'b3e0d5a2-4c1f-4a7e-9b2d-8f6a1c3e5d41';
     setTransportContext(verifiedWsId, 1);
 
     let capturedHeaders: Headers | null = null;
@@ -55,7 +55,7 @@ describe('Stage 12B: Ingress Transport Hardening & Isolation', () => {
   });
 
   it('Gate 2: Context Freezing — preserves snapshot across retries and aborts on session generation change', async () => {
-    const initialWsId = 'ws-frozen-2222';
+    const initialWsId = 'b3e0d5a2-4c1f-4a7e-9b2d-8f6a1c3e5d42';
     setTransportContext(initialWsId, 5);
 
     let attempts = 0;

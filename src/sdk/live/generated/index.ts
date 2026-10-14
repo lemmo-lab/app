@@ -636,6 +636,20 @@ export type GetMeContext200ActiveWorkspace = {
   type: GetMeContext200ActiveWorkspaceType;
 } | null;
 
+/**
+ * `available` — quota/ledger reachable, entitlement
+ * fields are present and authoritative.
+ * `degraded` — quota/ledger unavailable; entitlement
+ * fields are absent (unknown).
+ */
+export type GetMeContext200EntitlementsStatus = typeof GetMeContext200EntitlementsStatus[keyof typeof GetMeContext200EntitlementsStatus];
+
+
+export const GetMeContext200EntitlementsStatus = {
+  available: 'available',
+  degraded: 'degraded',
+} as const;
+
 export type GetMeContext200EntitlementsTier = typeof GetMeContext200EntitlementsTier[keyof typeof GetMeContext200EntitlementsTier];
 
 
@@ -645,10 +659,20 @@ export const GetMeContext200EntitlementsTier = {
   ENTERPRISE: 'ENTERPRISE',
 } as const;
 
+/**
+ * Entitlement snapshot. `status` is always present. When `status` is `degraded` the quota/ledger service is unavailable and `tier`, `wallet_balance`, and `features` are absent: clients MUST treat them as unknown and MUST NOT render them as zero or unlimited, and paid generation MUST stay closed while read-only surfaces remain usable.
+ */
 export type GetMeContext200Entitlements = {
-  features: string[];
-  tier: GetMeContext200EntitlementsTier;
-  wallet_balance: number;
+  features?: string[];
+  /**
+     * `available` — quota/ledger reachable, entitlement
+     * fields are present and authoritative.
+     * `degraded` — quota/ledger unavailable; entitlement
+     * fields are absent (unknown).
+     */
+  status: GetMeContext200EntitlementsStatus;
+  tier?: GetMeContext200EntitlementsTier;
+  wallet_balance?: number;
 };
 
 export type GetMeContext200OnboardingSteps = {[key: string]: boolean};
@@ -681,6 +705,7 @@ export type GetMeContext200WorkspacesItem = {
 export type GetMeContext200 = {
   /** @nullable */
   active_workspace?: GetMeContext200ActiveWorkspace;
+  /** Entitlement snapshot. `status` is always present. When `status` is `degraded` the quota/ledger service is unavailable and `tier`, `wallet_balance`, and `features` are absent: clients MUST treat them as unknown and MUST NOT render them as zero or unlimited, and paid generation MUST stay closed while read-only surfaces remain usable. */
   entitlements: GetMeContext200Entitlements;
   onboarding: GetMeContext200Onboarding;
   user: GetMeContext200User;
